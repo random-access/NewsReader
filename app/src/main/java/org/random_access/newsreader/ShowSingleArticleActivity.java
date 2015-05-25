@@ -88,6 +88,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 String charset = headerData.getMessageCharset();
 
                 client = connectToNewsServer(serverId, charset);
+                headerData = new HeaderData();
                 headerData.parseHeaderData(new BufferedReader(client.retrieveArticleHeader(articleId)));
                 reader = new BufferedReader(client.retrieveArticleBody(articleId));
                 String line = "";
