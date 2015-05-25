@@ -25,8 +25,6 @@ public class HeaderData {
 
     public void parseHeaderData(BufferedReader inReader) throws IOException{
         String nextLine = "";
-        StringBuilder sb = new StringBuilder();
-        sb.append("Message: ");
         while((nextLine=inReader.readLine()) != null) {
             extractLine(nextLine);
         }

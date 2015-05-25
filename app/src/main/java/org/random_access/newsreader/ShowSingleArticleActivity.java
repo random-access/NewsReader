@@ -30,7 +30,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     public static final String KEY_GROUP_ID = "group-id";
     public static final String KEY_ARTICLE_ID = "article-id";
 
-    private TextView tvSubject, tvFrom, tvContentType, tvCharset, tvText;
+    private TextView tvSubject, tvFrom, tvContentType, tvCharset, tvDate, tvText;
 
     private long serverId;
     private long groupId;
@@ -48,6 +48,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         tvFrom = (TextView) findViewById(R.id.article_from);
         tvContentType = (TextView) findViewById(R.id.article_content_type);
         tvCharset = (TextView) findViewById(R.id.article_charset);
+        tvDate = (TextView) findViewById(R.id.article_date);
         tvText = (TextView) findViewById(R.id.article_text);
 
         new FetchArticleTask().execute();
@@ -90,7 +91,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 headerData.parseHeaderData(new BufferedReader(client.retrieveArticleHeader(articleId)));
                 reader = new BufferedReader(client.retrieveArticleBody(articleId));
                 String line = "";
-                String[] result = new String[5];
+                String[] result = new String[6];
                 StringBuilder sb = new StringBuilder();
                 sb.append("\n\nMessage: \n");
                 while((line=reader.readLine()) != null) {
@@ -103,7 +104,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 result[1] = headerData.getValue(HeaderData.KEY_SUBJECT);
                 result[2] = headerData.getValue(HeaderData.KEY_CONTENT_TYPE);
                 result[3] = headerData.getValue(HeaderData.KEY_CHARSET);
-                result[4] = sb.toString();
+                result[4] = headerData.getValue(HeaderData.KEY_DATE);
+                result[5] = sb.toString();
                 return result;
             } catch (IOException | LoginException e) {
                 e.printStackTrace();
@@ -117,7 +119,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
             tvSubject.setText(strings[1] == null ? "null" : strings[1]);
             tvContentType.setText(strings[2] == null ? "null" : strings[2]);
             tvCharset.setText(strings[3] == null ? "null" : strings[3]);
-            tvText.setText(strings[4] == null ? "null" : strings [4]);
+            tvDate.setText(strings[4] == null ? "null" : strings [4]);
+            tvText.setText(strings[5] == null ? "null" : strings [5]);
         }
     }
 
