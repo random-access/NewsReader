@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/colorselector_list_item"
+    android:descendantFocusability="blocksDescendants">
+
+    <TextView
+        android:id="@+id/id_server_title_extended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Newsserver Titel"
+        android:textSize="10pt"
+        android:textColor="@color/black"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <ImageButton
+        android:id="@+id/btn_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_open_blue"
+        android:padding="10dp" />
+
+    <TextView
+        android:id="@+id/id_server_name_extended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/id_server_title_extended"
+        android:text="Server: news.example.com"
+        android:textSize="8pt"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <ImageButton
+        android:id="@+id/btn_edit_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/id_server_name_extended"
+        android:layout_toEndOf="@id/id_server_name_extended"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_edit_blue"
+        android:padding="10dp"
+        android:layout_alignBottom="@id/id_server_name_extended" />
+
+    <TextView
+        android:id="@+id/id_subscriptions_extended"
+        android:layout_below="@id/id_server_name_extended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Abonniert: x Gruppen"
+        android:textSize="8pt"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <ImageButton
+        android:id="@+id/btn_edit_subscriptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/id_subscriptions_extended"
+        android:layout_toEndOf="@id/id_subscriptions_extended"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_settings_blue"
+        android:padding="10dp"
+        android:layout_alignBottom="@id/id_subscriptions_extended" />
+
+
+
+
+
+</RelativeLayout>

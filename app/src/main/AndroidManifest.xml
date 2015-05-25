@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.random_access.newsreader" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <provider
+            android:name=".provider.NNTPProvider"
+            android:authorities="org.random_access.newsreader.provider"
+            android:enabled="true"
+            android:exported="false"
+            android:label="NewsProvider"
+            android:syncable="true" >
+        </provider>
+
+        <service android:name=".sync.NNTPAuthenticatorService" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name=".sync.NNTPSyncService"
+            android:exported="true"
+            android:process=":sync" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <activity
+            android:name=".ShowServerActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".EditSubscriptionsActivity"
+            android:label="@string/title_activity_show_newsgroups" >
+        </activity>
+        <activity
+            android:name=".ShowNewsgroupsActivity"
+            android:label="@string/title_activity_show_newsgroups" >
+        </activity>
+        <activity
+            android:name=".ShowMessagesActivity"
+            android:label="@string/title_activity_show_messages" >
+        </activity>
+        <activity
+            android:name=".ShowSingleArticleActivity"
+            android:label="@string/title_activity_show_single_article" >
+        </activity>
+    </application>
+
+</manifest>

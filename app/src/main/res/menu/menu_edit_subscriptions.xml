@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.random_access.org.newsreader.EditSubscriptionsActivity">
+
+    <item android:title="@string/discard"
+        android:id="@+id/action_newsgroups_discard"
+        android:visible="true"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_discard_white"
+        app:showAsAction="ifRoom" />
+
+    <item android:title="@string/ok"
+        android:id="@+id/action_newsgroups_ok"
+        android:visible="true"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_check_white"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        android:text="@string/servertitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/txt_servertitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:lines="1"
+        android:inputType="text"
+        android:hint="@string/servertitle_hint"/>
+
+    <TextView
+        android:text="@string/server"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/txt_server"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:lines="1"
+        android:inputType="textUri"
+        android:hint="@string/server_hint"/>
+
+    <TextView
+        android:text="@string/port"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/txt_port"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:lines="1"
+        android:inputType="number"
+        android:hint="@string/port_hint"/>
+
+    <TextView
+        android:text="@string/user"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/txt_user"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:lines="1"
+        android:inputType="text"
+        android:hint="@string/user_hint"/>
+
+    <TextView
+        android:text="@string/password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/txt_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:lines="1"
+        android:hint="@string/password_hint"
+        android:inputType="textPassword"/>
+    </LinearLayout>
+
+</ScrollView>

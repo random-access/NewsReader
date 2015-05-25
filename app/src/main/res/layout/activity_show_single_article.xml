@@ -1,0 +1,42 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.random_access.newsreader.ShowSingleArticleActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/article_from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/article_subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/article_content_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/article_charset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/article_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+</ScrollView>

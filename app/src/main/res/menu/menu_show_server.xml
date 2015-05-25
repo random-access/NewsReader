@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:title="@string/server_add"
+        android:id="@+id/action_add_project"
+        android:visible="true"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_add_white"
+        app:showAsAction="ifRoom" />
+</menu>
