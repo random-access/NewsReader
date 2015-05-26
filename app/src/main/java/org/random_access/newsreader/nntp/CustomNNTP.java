@@ -24,6 +24,15 @@ import org.apache.commons.net.SocketClient;
 import org.apache.commons.net.nntp.NNTPCommand;
 import org.apache.commons.net.nntp.NNTPConnectionClosedException;
 
+/**
+ * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
+ *
+ * **** This class is a slightly modified version of the Apache Commons Net's NNTPClient class ****
+ *              The license can be found here: http://www.apache.org/licenses/LICENSE-2.0
+ */
 public class CustomNNTP extends SocketClient {
     public static final int DEFAULT_PORT = 119;
     private static String __DEFAULT_ENCODING = "ISO-8859-1";

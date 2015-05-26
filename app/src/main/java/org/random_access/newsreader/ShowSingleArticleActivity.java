@@ -25,7 +25,12 @@ import java.io.IOException;
 
 import javax.security.auth.login.LoginException;
 
-
+/**
+ * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
+ */
 public class ShowSingleArticleActivity extends AppCompatActivity {
 
     private static final String TAG = ShowSingleArticleActivity.class.getSimpleName();

@@ -26,7 +26,12 @@ import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
 
-
+/**
+ * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
+ */
 public class ShowServerActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 

@@ -8,10 +8,10 @@ import android.util.Log;
 import org.random_access.newsreader.provider.NNTPProvider;
 
 /**
- * Project: FlashCards Manager for Android
- * Date: 17.05.15
- * Author: Monika Schrenk
- * E-Mail: software@random-access.org
+ * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
  */
 public class SettingsContract {
     private static final String TAG = ServerContract.class.getSimpleName();

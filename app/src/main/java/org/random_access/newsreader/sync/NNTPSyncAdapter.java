@@ -29,10 +29,10 @@ import java.util.GregorianCalendar;
 import javax.security.auth.login.LoginException;
 
 /**
- * Project: FlashCards Manager for Android
- * Date: 18.05.15
- * Author: Monika Schrenk
- * E-Mail: software@random-access.org
+ * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
  */
 public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
