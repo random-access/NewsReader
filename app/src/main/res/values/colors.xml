@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <item name="grey" type="color">#837E7C</item>
     <item name="black" type="color">#000000</item>
     <item name="blue" type="color">#000090</item>
+    <item name="background_blue" type="color">#566DFF</item>
+    <item name="light_blue" type="color">#1589FF</item>
     <item name="white" type="color">#FFFFFF</item>
 </resources>

@@ -73,12 +73,15 @@ public class ShowMessagesActivity extends AppCompatActivity {
 
     class GetMessagesTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
+        private String groupName;
+
         @Override
         protected ArrayList<String> doInBackground(Void... voids) {
             try {
                 NNTPClient client = connectToNewsServer(serverId);
                 NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(new GregorianCalendar(15,01,01), true);
-                query.addNewsgroup(getNewsgroupName(groupId));
+                groupName = getNewsgroupName(groupId);
+                query.addNewsgroup(groupName);
                 String[] messages = client.listNewNews(query);
                 ArrayList<String> messageList = new ArrayList<>();
                 messageList.add("Total messages: " + messages.length);
@@ -103,6 +106,7 @@ public class ShowMessagesActivity extends AppCompatActivity {
                     intent.putExtra(ShowSingleArticleActivity.KEY_SERVER_ID, serverId);
                     intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_ID, groupId);
                     intent.putExtra(ShowSingleArticleActivity.KEY_ARTICLE_ID, adapter.getItem(position));
+                    intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_NAME, groupName);
                     startActivity(intent);
                 }
             });

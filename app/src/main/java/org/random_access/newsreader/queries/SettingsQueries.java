@@ -7,6 +7,8 @@ import android.net.Uri;
 
 import org.random_access.newsreader.provider.contracts.SettingsContract;
 
+import java.io.IOException;
+
 /**
  * Project: FlashCards Manager for Android
  * Date: 18.05.15
@@ -32,10 +34,23 @@ public class SettingsQueries {
         this.context = context;
     }
 
+    /**
+     * Get a cursor to all settings entries with all columns on a given server
+     * @param serverId server _ID field in database
+     * @return a cursor pointing before the first entry of the "table"
+     */
     public Cursor getSettingsForServer(long serverId) {
         return context.getContentResolver().query(Uri.parse(SettingsContract.CONTENT_URI + "/" + serverId), PROJECTION_SETTINGS, null, null, null);
     }
 
+    /**
+     * Add an entry to the settings table
+     * @param name name under which the user wants to post news
+     * @param email e-mail address under which the user wants to post news
+     * @param signature individual signature that will be automatically added below each message the user posts
+     * @param msgKeepDays number of days messages should be saved on the phone (NOT YET IMPLEMENTED)
+     * @return the URI to the created database entry, containing _ID for further use
+     */
     public Uri addSettingsEntry(String name, String email, String signature, int msgKeepDays){
         ContentValues values = new ContentValues();
         values.put(SettingsContract.SettingsEntry.COL_NAME, name);
@@ -44,5 +59,46 @@ public class SettingsQueries {
         values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DATE, msgKeepDays);
         values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, 0); // TODO handle this
         return context.getContentResolver().insert(SettingsContract.CONTENT_URI, values);
+    }
+
+    /**
+     * Helper method for getting the nummber of messages to keep in memory
+     * @param context the Sync context
+     * @param serverId database _ID field identifying a Server entry
+     * @return int - number of messages to keep
+     * @throws IOException
+     */
+    public int getNumberOfMessagesToKeep(Context context, long serverId) throws IOException{
+        SettingsQueries sQueries = new SettingsQueries(context);
+        Cursor c = sQueries.getSettingsForServer(serverId);
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            int i = c.getInt(SettingsQueries.COL_MSG_KEEP_NO);
+            c.close();
+            return i;
+        } else {
+            c.close();
+            throw new IOException("No settings for server with ID " + serverId + " found!");
+        }
+    }
+
+    /**
+     * Helper method for getting the number of days to keep message headers in memory
+     * @param context the Sync context
+     * @param serverId database _ID field identifying a Server entry
+     * @return int - number of days to keep messages
+     * @throws IOException
+     */
+    public int getNumberOfDaysForKeepingMessages(Context context, long serverId) throws IOException{
+        SettingsQueries sQueries = new SettingsQueries(context);
+        Cursor c =  sQueries.getSettingsForServer(serverId);
+        if (!c.moveToFirst()) {
+            c.close();
+            throw new IOException("No settings for the given newsgroup!");
+        } else {
+            int i =  c.getInt(SettingsQueries.COL_MSG_KEEP_DAYS);
+            c.close();
+            return i;
+        }
     }
 }

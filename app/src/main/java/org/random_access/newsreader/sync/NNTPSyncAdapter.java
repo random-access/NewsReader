@@ -43,6 +43,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     private ContentResolver mContentResolver;
     private Context context;
 
+    private static final String DATABASE_DATE_PATTERN = "yyyyMMddhhmmss Z";
+    private static final String NNTPHEADER_DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss Z";
+
 
     /**
      * Set up the sync adapter
@@ -130,20 +133,21 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param newsgroupId database _ID field identifying a NewsGroup entry
      */
     private void syncMessageHeaders(Context context, long serverId, long newsgroupId, String newsgroupName) throws IOException, LoginException, ParseException{
+        // get infos from database
+        ArrayList<String> youngestMessageIds = new MessageQueries(context).getListOfYoungestMessagesInNewsgroup(newsgroupId);
+        int numberOfMessagesToKeep = new SettingsQueries(context).getNumberOfMessagesToKeep(context, serverId);
+        int numberOfDaysToKeepMessages = new SettingsQueries(context).getNumberOfDaysForKeepingMessages(context, serverId);
+
+        // connect to server to get the message ID's
         NNTPClient nntpClient = connectToNewsServer(context, serverId);
-        ArrayList<String> youngestMessageIds = getYoungestMessageIds(context, newsgroupId);
-        String dateOfYoungestMessages = getDateOfYoungestMessages(context, newsgroupId);
-        int numberOfMessagesToKeep = getNumberOfMessagesToKeep(context, serverId);
-        int numberOfDaysToKeepMessages = getNumberOfDaysForKeepingMessages(context, serverId);
-        // TODO find out how to sync this
-        NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(parseDateStringToGregorianCalendar(dateOfYoungestMessages), true);
+        NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(parseDateStringToGregorianCalendar(youngestMessageIds.get(0), DATABASE_DATE_PATTERN), true);
         query.addNewsgroup(newsgroupName);
         String[] newNews = nntpClient.listNewNews(query);
-        Log.d("Test", "New news for " + newsgroupName + ": " + newNews.length);
-        Log.d("Content", newsListTostring(newNews));
+
         // TODO save message headers to database
     }
 
+    /**********************************************************************************************************************/
     private String newsListTostring (String[] list) {
         StringBuilder sb = new StringBuilder("***********NEWS****************");
         for (String s : list) {
@@ -168,116 +172,13 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /*************************************************************************************************************************/
 
-    /**
-     * Helper method for getting the number of days to keep message headers in memory
-     * @param context the Sync context
-     * @param serverId database _ID field identifying a Server entry
-     * @return int - number of days to keep messages
-     * @throws IOException
-     */
-    private int getNumberOfDaysForKeepingMessages(Context context, long serverId) throws IOException{
-        SettingsQueries sQueries = new SettingsQueries(context);
-        Cursor c =  sQueries.getSettingsForServer(serverId);
-        if (!c.moveToFirst()) {
-            c.close();
-            throw new IOException("No settings for the given newsgroup!");
-        } else {
-            int i =  c.getInt(SettingsQueries.COL_MSG_KEEP_DAYS);
-            c.close();
-            return i;
-        }
-    }
-
-    /**
-     * Helper method for getting the nummber of messages to keep in memory
-     * @param context the Sync context
-     * @param serverId database _ID field identifying a Server entry
-     * @return int - number of messages to keep
-     * @throws IOException
-     */
-    private int getNumberOfMessagesToKeep(Context context, long serverId) throws IOException{
-        SettingsQueries sQueries = new SettingsQueries(context);
-        Cursor c = sQueries.getSettingsForServer(serverId);
-        if (c.getCount() > 0 ) {
-            c.moveToFirst();
-            int i = c.getInt(SettingsQueries.COL_MSG_KEEP_NO);
-            c.close();
-            return i;
-        } else {
-            c.close();
-            throw new IOException("No settings for server with ID " + serverId + " found!");
-        }
-    }
-
-    /**
-     * Helper method to get the name of a newsgroup for a given ID
-     * @param context the Sync context
-     * @param newsGroupId database _ID field identifying a Newsgroup entry
-     * @return String containing the name of the given newsgroup, e.g. formatted like this: "section1.section2.*.sectionl"
-     * @throws IOException if there is no newsgroup matching the ID
-     */
-    private String getNewsgroupName(Context context, long newsGroupId) throws IOException {
-        NewsgroupQueries nQueries = new NewsgroupQueries(context);
-        Cursor c = nQueries.getNewsgroupForId(newsGroupId);
-        if (!c.moveToFirst()) {
-            throw new IOException("No newsgroup with the given ID found");
-        }
-        String newsgroupName = c.getString(NewsgroupQueries.COL_NAME);
-        c.close();
-        return newsgroupName;
-    }
-
-    /**
-     * Helper method to get all message ID's with the youngest date in the database
-     * @param context the Sync context
-     * @param newsGroupId database _ID field identifying a Newsgroup entry
-     * @return ArrayList<String> containing 0 ... n message ID's
-     */
-    private ArrayList<String> getYoungestMessageIds(Context context, long newsGroupId) {
-        MessageQueries mQueries = new MessageQueries(context);
-        ArrayList<String> youngestMessageIds = new ArrayList<>();
-        Cursor cursor = mQueries.getCursorToYoungestMessage(newsGroupId);
-        if ( cursor.moveToFirst()) {
-            String date = cursor.getString(MessageQueries.COL_DATE);
-            String nextDate = date;
-            while (nextDate.equals(date)) {
-                youngestMessageIds.add(cursor.getString(MessageQueries.COL_MSG_ID));
-                cursor.moveToNext();
-                nextDate = cursor.getString(MessageQueries.COL_DATE);
-            }
-        }
-        cursor.close();
-        return youngestMessageIds;
-    }
-
-    /**
-     * Helper method to get the date of the youngest message in the database or null if there is no message yet
-     * @param context the Sync context
-     * @param newsGroupId database _ID field identifying a Newsgroup entry
-     * @return String date in the format [yymmddhhmmss]
-     */
-    private String getDateOfYoungestMessages(Context context, long newsGroupId) {
-        MessageQueries mQueries = new MessageQueries(context);
-        ArrayList<String> youngestMessageIds = new ArrayList<>();
-        Cursor cursor = mQueries.getCursorToYoungestMessage(newsGroupId);
-        if (cursor.moveToFirst()) {
-            String s = cursor.getString(MessageQueries.COL_DATE);
-            cursor.close();
-            return s;
-        } else {
-            cursor.close();
-            return "150101000000";
-        }
-    }
-
-
 
 
     /**
      * Helper method to establish a connection to a given news server
      * @param context context of the sync operation
      * @param serverId database ID of a server entry
-     * @returna NNTPClient object to communicate with
+     * @return NNTPClient object to communicate with
      * @throws IOException
      */
     private NNTPClient connectToNewsServer(Context context, long serverId) throws IOException, LoginException{
@@ -314,13 +215,20 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         return groupNames;
     }
 
-    private GregorianCalendar parseDateStringToGregorianCalendar(String dateString) throws ParseException {
+    // pattern database: "yyyyMMddhhmmss Z"
+    // ----> eg 20150502181729 +0200
+    // pattern message header: "EEE, d MMM yyyy HH:mm:ss Z"
+    // ----> eg Sat, 02 May 2015 18:17:29 +0200
+    private GregorianCalendar parseDateStringToGregorianCalendar(String dateString, String pattern) throws ParseException {
         Log.d(TAG, "Date to parse: " + dateString);
-        DateFormat df = new SimpleDateFormat("yymmddhhmmss");
+        DateFormat df = new SimpleDateFormat(pattern);
         Date date = df.parse(dateString);
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(date);
         return cal;
     }
+
+
+
 
 }

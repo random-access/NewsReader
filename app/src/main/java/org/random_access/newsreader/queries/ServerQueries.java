@@ -38,14 +38,34 @@ public class ServerQueries {
         this.context = context;
     }
 
+    /**
+     * Get all servers from the database
+     * @return cursor pointing in front of the result "table"
+     */
     public Cursor getAllServers () {
         return context.getContentResolver().query(ServerContract.CONTENT_URI, PROJECTION_SERVER, null, null, null);
     }
 
-    public Cursor getServerWithId(long serverId) throws IOException {
+    /**
+     *
+     * @param serverId _ID field of server
+     * @return cursor pointing in front of the result "table"
+     */
+    public Cursor getServerWithId(long serverId) {
         return context.getContentResolver().query(Uri.parse(ServerContract.CONTENT_URI + "/" + serverId), PROJECTION_SERVER, null, null, null);
     }
 
+    /**
+     * Adds a server entry to the database
+     * @param serverTitle the title, custom string from user input
+     * @param serverName server URL e.g. news.example.org
+     * @param serverPort port for NNTP connection (default: 119)
+     * @param encryption 0 for no encryption, 1 for encryption (NOT YET IMPLEMENTED)
+     * @param user username to authenticate
+     * @param password password to authenticate
+     * @param settingsId _ID field of corresponding settings table entry
+     * @return the URI to the created database entry, containing _ID for further use
+     */
     public Uri addServer(String serverTitle, String serverName, int serverPort, boolean encryption, String user, String password, long settingsId) {
         ContentValues values = new ContentValues();
         values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
@@ -58,6 +78,17 @@ public class ServerQueries {
         return context.getContentResolver().insert(ServerContract.CONTENT_URI, values);
     }
 
+    /**
+     * Deletes a newsgroup with a given _ID field, deletes as well:
+     * <ul>
+     *     <li>all newsgroups</li>
+     *     <li>all message headers</li>
+     *     <li>the settings entry</li>
+     * </ul>
+     * that were synced from that server
+     * @param serverId _ID field of server
+     * @return number of server deletions (should be 1 if deletion was correct & successful)
+     */
     public int deleteServerWithId(long serverId) {
         Cursor newsgroupCursor = context.getContentResolver().query(NewsgroupContract.CONTENT_URI, new String[]{NewsgroupContract.NewsgroupEntry._ID},
                 NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, NewsgroupContract.NewsgroupEntry._ID + " ASC");

@@ -1,5 +1,6 @@
 package org.random_access.newsreader;
 
+import android.app.FragmentManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,7 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.HeaderData;
@@ -16,8 +22,6 @@ import org.random_access.newsreader.queries.ServerQueries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
 
@@ -29,29 +33,32 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     public static final String KEY_SERVER_ID = "server-id";
     public static final String KEY_GROUP_ID = "group-id";
     public static final String KEY_ARTICLE_ID = "article-id";
+    public static final String KEY_GROUP_NAME = "group-name";
 
-    private TextView tvSubject, tvFrom, tvContentType, tvCharset, tvDate, tvText;
+    private ShowSingleArticleFragment articleFragment;
+    private static final String TAG_ARTICLE_FRAGMENT = "article-fragment-tag";
+
+    private TextView tvSubject, tvFrom, tvDate, tvText;
+    private ImageButton btnReply;
 
     private long serverId;
     private long groupId;
     private String articleId;
 
+    private String [] articleData;
+    private boolean extended;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_single_article);
+
+        setTitle(getIntent().getExtras().getString(KEY_GROUP_NAME));
+
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         groupId = getIntent().getExtras().getLong(KEY_GROUP_ID);
         articleId = getIntent().getExtras().getString(KEY_ARTICLE_ID);
 
-        tvSubject = (TextView) findViewById(R.id.article_subject);
-        tvFrom = (TextView) findViewById(R.id.article_from);
-        tvContentType = (TextView) findViewById(R.id.article_content_type);
-        tvCharset = (TextView) findViewById(R.id.article_charset);
-        tvDate = (TextView) findViewById(R.id.article_date);
-        tvText = (TextView) findViewById(R.id.article_text);
-
-        new FetchArticleTask().execute();
+        loadArticles();
     }
 
     @Override
@@ -76,7 +83,38 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (articleFragment == null));
+        if (articleFragment != null) {
+            articleFragment.setArticleData(articleData);
+            articleFragment.setExtended(extended);
+        }
+    }
+
+
+    private void loadArticles() {
+        FragmentManager fragmentManager = getFragmentManager();
+        articleFragment = (ShowSingleArticleFragment) fragmentManager.findFragmentByTag(TAG_ARTICLE_FRAGMENT);
+        if(articleFragment == null) {
+            articleFragment = new ShowSingleArticleFragment();
+            fragmentManager.beginTransaction().add(articleFragment, TAG_ARTICLE_FRAGMENT).commit();
+            new FetchArticleTask().execute();
+        } else{
+            extended = articleFragment.isExtended();
+            articleData = articleFragment.getArticleData();
+            prepareGUI();
+        }
+    }
+
     class FetchArticleTask extends AsyncTask<Void, Void,String[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setContentView(R.layout.progress_wheel);
+        }
 
         @Override
         protected String[] doInBackground(Void... voids) {
@@ -92,9 +130,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 headerData.parseHeaderData(new BufferedReader(client.retrieveArticleHeader(articleId)));
                 reader = new BufferedReader(client.retrieveArticleBody(articleId));
                 String line = "";
-                String[] result = new String[6];
+                String[] result = new String[4];
                 StringBuilder sb = new StringBuilder();
-                sb.append("\n\nMessage: \n");
                 while((line=reader.readLine()) != null) {
                     sb.append(line).append("\n");
                 }
@@ -103,10 +140,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
 
                 result[0] = headerData.getValue(HeaderData.KEY_FROM);
                 result[1] = headerData.getValue(HeaderData.KEY_SUBJECT);
-                result[2] = headerData.getValue(HeaderData.KEY_CONTENT_TYPE);
-                result[3] = headerData.getValue(HeaderData.KEY_CHARSET);
-                result[4] = headerData.getValue(HeaderData.KEY_DATE);
-                result[5] = sb.toString();
+                result[2] = headerData.getValue(HeaderData.KEY_DATE);
+                result[3] = sb.toString();
                 return result;
             } catch (IOException | LoginException e) {
                 e.printStackTrace();
@@ -115,41 +150,51 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
-            tvFrom.setText(strings[0] == null? "null" : strings[0]);
-            tvSubject.setText(strings[1] == null ? "null" : strings[1]);
-            tvContentType.setText(strings[2] == null ? "null" : strings[2]);
-            tvCharset.setText(strings[3] == null ? "null" : strings[3]);
-            tvDate.setText(strings[4] == null ? "null" : strings [4]);
-            tvText.setText(strings[5] == null ? "null" : strings [5]);
+        protected void onPostExecute(String[] articleData) {
+            ShowSingleArticleActivity.this.articleData = articleData;
+            extended = true;
+            prepareGUI();
         }
     }
 
-    private HashMap<String, String> getRelevantHeaderData(ArrayList<String> headers) {
-        String from_key = "From: ";
-        String subject_key = "Subject: ";
-        String date_key = "Date: ";
-        String content_type_key = "Content-Type: ";
+    private void prepareGUI() {
+        setContentView(R.layout.activity_show_single_article);
 
-        HashMap<String,String> map = new HashMap<String, String>();
-        for (String s : headers) {
-            if (s.startsWith(from_key)) {
-                map.put(from_key, s);
-            } else if (s.startsWith(subject_key)) {
-                map.put(subject_key, s);
-            } else if (s.startsWith(date_key)) {
-                map.put(date_key, s);
-            } else if (s.startsWith(content_type_key)) {
-                String charset;
-                if (s.toLowerCase().contains("utf-8")) {
-                    charset = "UTF-8";
-                } else {
-                    charset = "ISO-8859-1";
-                }
-                map.put(content_type_key, charset);
+        tvSubject = (TextView) findViewById(R.id.article_subject);
+        tvFrom = (TextView) findViewById(R.id.article_from);
+        tvDate = (TextView) findViewById(R.id.article_date);
+        tvText = (TextView) findViewById(R.id.article_text);
+
+        tvFrom.setText(articleData[0] == null? "null" : articleData[0]);
+        tvSubject.setText(articleData[1] == null ? "null" : articleData[1]);
+        tvDate.setText(articleData[2] == null ? "null" : articleData [2]);
+        tvText.setText(articleData[3] == null ? "null" : articleData [3]);
+
+        btnReply = (ImageButton) findViewById(R.id.article_reply);
+
+        tvFrom.setVisibility(extended ? View.VISIBLE : View.GONE);
+        tvDate.setVisibility(extended ? View.VISIBLE : View.GONE);
+        btnReply.setVisibility(extended ? View.VISIBLE : View.GONE);
+
+        addListeners();
+    }
+
+    private void addListeners() {
+        tvSubject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvFrom.setVisibility(extended ? View.GONE : View.VISIBLE);
+                tvDate.setVisibility(extended ? View.GONE : View.VISIBLE);
+                btnReply.setVisibility(extended ? View.GONE : View.VISIBLE);
+                extended = !extended;
             }
-        }
-        return map;
+        });
+        btnReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

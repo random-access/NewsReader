@@ -41,11 +41,11 @@ public class HeaderData {
 
     private void extractLine(String s) {
         if (s.startsWith(KEY_FROM)) {
-            headers.put(KEY_FROM, s);
+            headers.put(KEY_FROM, s.replace("From: ", ""));
         } else if (s.startsWith(KEY_SUBJECT)) {
-            headers.put(KEY_SUBJECT, s);
+            headers.put(KEY_SUBJECT, s.replace("Subject: ", ""));
         } else if (s.startsWith(KEY_DATE)) {
-            headers.put(KEY_DATE, s);
+            headers.put(KEY_DATE, s.replace("Date: ", ""));
         } else if (s.startsWith(KEY_CONTENT_TYPE)) {
             if (s.toLowerCase().contains("utf-8")) {
                 charset = "UTF-8";

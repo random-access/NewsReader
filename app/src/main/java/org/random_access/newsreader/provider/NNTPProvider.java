@@ -78,10 +78,11 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE = new HashMap<>();
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_ID_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_MSG_ID, MessageContract.MessageEntry.COL_MSG_ID_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_CHARSET, MessageContract.MessageEntry.COL_CHARSET_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_SUBJECT, MessageContract.MessageEntry.COL_SUBJECT_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_DATE, MessageContract.MessageEntry.COL_DATE_FULLNAME);
-        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_TIME, MessageContract.MessageEntry.COL_TIME_FULLNAME);
-        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_READ, MessageContract.MessageEntry.COL_READ_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_TIMEZONE, MessageContract.MessageEntry.COL_TIMEZONE_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_NEW, MessageContract.MessageEntry.COL_NEW_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_IN_REPLY_TO, MessageContract.MessageEntry.COL_IN_REPLY_TO_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_FK_N_ID_FULLNAME);
     }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/message_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Das ist ein sehr sehr sehr langer Betreff als Test ob das Ellipsize-Verhalten passt"
+        android:textColor="@color/black"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:paddingBottom="0dp"/>
+
+    <TextView
+        android:id="@+id/message_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="monika.schrenk@fernuni-hagen.de"
+        android:layout_below="@id/message_title"
+        android:lines="1"
+        android:ellipsize="middle"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/message_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="05.05.2015, 10:04"
+        android:textColor="@color/light_blue"
+        android:layout_below="@id/message_title"
+        android:layout_alignParentRight="true"
+        android:lines="1"
+        android:ellipsize="none"
+        android:textStyle="bold"
+        android:padding="10dp"/>
+
+
+
+</RelativeLayout>
