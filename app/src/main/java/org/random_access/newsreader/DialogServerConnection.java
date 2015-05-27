@@ -107,9 +107,8 @@ public class DialogServerConnection extends DialogFragment {
             if (TextUtils.isEmpty(server)) {
                 mServerText.setError(res.getString(R.string.error_empty_field));
                 mServerText.requestFocus();
-            } else if (TextUtils.isEmpty(user)) {
-                mUserText.setError(res.getString(R.string.error_empty_field));
-                mUserText.requestFocus();
+                getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             } else {
                new ServerConnectTask().execute(servertitle, server, port, user, password);
             }
