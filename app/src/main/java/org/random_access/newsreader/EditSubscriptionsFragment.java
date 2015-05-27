@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class EditSubscriptionsFragment extends Fragment{
 
     private ArrayList<EditSubscriptionsActivity.NewsGroupItem> newsGroupItems;
+    private int checkedSelection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,5 +28,13 @@ public class EditSubscriptionsFragment extends Fragment{
 
     public void setNewsGroupItems(ArrayList<EditSubscriptionsActivity.NewsGroupItem> newsGroupItems) {
         this.newsGroupItems = newsGroupItems;
+    }
+
+    public int getCheckedSelection() {
+        return checkedSelection;
+    }
+
+    public void setCheckedSelection(int checkedSelection) {
+        this.checkedSelection = checkedSelection;
     }
 }

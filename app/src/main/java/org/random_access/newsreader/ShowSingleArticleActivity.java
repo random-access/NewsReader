@@ -49,6 +49,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     private long serverId;
     private long groupId;
     private String articleId;
+    private  boolean auth;
 
     private String [] articleData;
     private boolean extended;
@@ -124,13 +125,14 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         @Override
         protected String[] doInBackground(Void... voids) {
             try {
-                CustomNNTPClient client = connectToNewsServer(serverId, null);
+                auth = new ServerQueries(ShowSingleArticleActivity.this).hasServerAuth(serverId);
+                CustomNNTPClient client = connectToNewsServer(serverId, null, auth);
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
                 HeaderData headerData = new HeaderData();
                 headerData.parseHeaderData(reader);
                 String charset = headerData.getMessageCharset();
 
-                client = connectToNewsServer(serverId, charset);
+                client = connectToNewsServer(serverId, charset, auth);
                 headerData = new HeaderData();
                 headerData.parseHeaderData(new BufferedReader(client.retrieveArticleHeader(articleId)));
                 reader = new BufferedReader(client.retrieveArticleBody(articleId));
@@ -208,7 +210,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
      * @returna NNTPClient object to communicate with
      * @throws IOException
      */
-    private CustomNNTPClient connectToNewsServer(long serverId, String charset) throws IOException, LoginException {
+    private CustomNNTPClient connectToNewsServer(long serverId, String charset, boolean auth) throws IOException, LoginException {
         ServerQueries sQueries = new ServerQueries(ShowSingleArticleActivity.this);
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
@@ -222,8 +224,11 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         }
         // TODO handle encrypted connections
         nntpClient.connect(c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT));
+        if (!auth) {
+            c.close();
+            return nntpClient;
+        }
         boolean authOk = nntpClient.authenticate(c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
-
         c.close();
         if (authOk) {
             Log.d(TAG, "Successfully logged in!");

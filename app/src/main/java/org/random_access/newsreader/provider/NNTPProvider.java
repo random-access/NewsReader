@@ -65,6 +65,7 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_TITLE, ServerContract.ServerEntry.COL_TITLE_FULLNAME);
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_ENCRYPTION_FULLNAME);
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_SERVERPORT, ServerContract.ServerEntry.COL_SERVERPORT_FULLNAME);
+        PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_AUTH, ServerContract.ServerEntry.COL_AUTH_FULLNAME);
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_USER_FULLNAME);
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_PASSWORD, ServerContract.ServerEntry.COL_PASSWORD_FULLNAME);
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry.COL_FK_SET_ID, ServerContract.ServerEntry.COL_FK_SET_ID_FULLNAME);

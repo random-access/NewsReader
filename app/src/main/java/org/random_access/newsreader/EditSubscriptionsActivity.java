@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.apache.commons.net.nntp.NNTPClient;
@@ -40,6 +41,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     public static final String TAG_SUBSCRIPTIONS_FRAGMENT = "subscriptions-fragment";
 
     private SubscriptionListAdapter adapter;
+    private RadioGroup selection;
     private ListView lv;
     private EditText txtSearch;
     private EditSubscriptionsFragment subscriptionsFragment;
@@ -48,8 +50,11 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     private long serverId;
     private String serverName;
     private int serverPort;
+    private boolean auth;
     private String user;
     private String password;
+
+    private int checkedSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +97,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             serverName = cursor.getString(ServerQueries.COL_NAME);
             serverPort = cursor.getInt(ServerQueries.COL_PORT);
+            auth = cursor.getInt(ServerQueries.COL_AUTH) == 1;
             user = cursor.getString(ServerQueries.COL_USER);
             password = cursor.getString(ServerQueries.COL_PASSWORD);
         } else {
@@ -104,9 +110,11 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (subscriptionsFragment == null));
+        // Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (subscriptionsFragment == null));
         if (subscriptionsFragment != null) {
             subscriptionsFragment.setNewsGroupItems(items);
+            subscriptionsFragment.setCheckedSelection(selection.getCheckedRadioButtonId());
+            Log.d(TAG, "Save selection: only selected = " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
         }
     }
 
@@ -116,9 +124,12 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         if(subscriptionsFragment == null) {
             subscriptionsFragment = new EditSubscriptionsFragment();
             fragmentManager.beginTransaction().add(subscriptionsFragment, TAG_SUBSCRIPTIONS_FRAGMENT).commit();
+           checkedSelection = R.id.groups_all;
             new GetNewsTask().execute();
         } else{
             items = subscriptionsFragment.getNewsGroupItems();
+            checkedSelection = subscriptionsFragment.getCheckedSelection();
+            Log.d(TAG, "Restore selection: only selected = " + (checkedSelection == R.id.groups_selection));
             prepareGUI();
         }
     }
@@ -168,7 +179,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             try {
                 getServerData();
                 NNTPConnector connector = new NNTPConnector(EditSubscriptionsActivity.this);
-                NNTPClient client = connector.connectToNewsServer(EditSubscriptionsActivity.this, serverName, serverPort, user,password);
+                NNTPClient client = connector.connectToNewsServer(EditSubscriptionsActivity.this, serverName, serverPort, auth, user, password);
                 String[] newNews = null;
                 NewsgroupInfo[] infos = client.listNewsgroups();
                // Thread.sleep(500);
@@ -219,10 +230,33 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
                 adapter.getFilter().filter(s.toString());
             }
         });
+        selection = (RadioGroup)findViewById(R.id.radio_group);
+
+        selection.check(checkedSelection);
+        Log.d(TAG, "*** in prepareGui: only selected? " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
+        selection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                manageCheckFilter(checkedId);
+            }
+        });
+        if (selection.getCheckedRadioButtonId() == R.id.groups_selection) {
+            selection.requestFocus();
+        }
+        manageCheckFilter(selection.getCheckedRadioButtonId());
     }
 
 
-
+    private void manageCheckFilter(int checkedId) {
+        switch (checkedId) {
+            case R.id.groups_all:
+                adapter.getFilter().filter("");
+                break;
+            case R.id.groups_selection:
+                adapter.getFilter().filter(getResources().getString(R.string.cmd_selected));
+                break;
+        }
+    }
 
 
     public ArrayList<NewsGroupItem> getNewsgroupItems (NewsgroupInfo[] infos) {

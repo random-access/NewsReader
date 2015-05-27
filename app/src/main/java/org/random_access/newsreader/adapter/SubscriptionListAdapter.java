@@ -131,6 +131,14 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
+    public void setTextConstraint(CharSequence constraint) {
+
+    }
+
+
+    public void setRadioButtonConstraint(CharSequence constraint) {
+
+    }
 
     private class SubscriptionFilter extends Filter {
         @Override
@@ -142,10 +150,19 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
             constraint = constraint.toString().toLowerCase();
             Log.d(TAG, "Constraint: " + "*" + constraint + "*");
             if (constraint.toString().length() > 0) {
-                for (int i = 0; i < originalSubscriptions.size(); i++) {
-                    EditSubscriptionsActivity.NewsGroupItem subscriptionName = originalSubscriptions.get(i);
-                    if (subscriptionName.getNewsgroupInfo().getNewsgroup().toLowerCase().contains(constraint.toString())) {
-                        filteredSubscriptions.add(subscriptionName);
+                if (constraint.equals(context.getResources().getString(R.string.cmd_selected))){
+                    for (int i = 0; i < originalSubscriptions.size(); i++) {
+                        EditSubscriptionsActivity.NewsGroupItem subscriptionName = originalSubscriptions.get(i);
+                        if (subscriptionName.isSelected()) {
+                            filteredSubscriptions.add(subscriptionName);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < originalSubscriptions.size(); i++) {
+                        EditSubscriptionsActivity.NewsGroupItem subscriptionName = originalSubscriptions.get(i);
+                        if (subscriptionName.getNewsgroupInfo().getNewsgroup().toLowerCase().contains(constraint.toString())) {
+                            filteredSubscriptions.add(subscriptionName);
+                        }
                     }
                 }
                 results.count = filteredSubscriptions.size();
@@ -157,7 +174,7 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
                     results.count = originalSubscriptions.size();
                 }
             }
-            Log.d(TAG, "Number of results: " + results.count);
+            // Log.d(TAG, "Number of results: " + results.count);
             return results;
         }
 
@@ -165,7 +182,7 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
         protected void publishResults(CharSequence constraint, FilterResults results) {
             subscriptions = (ArrayList<EditSubscriptionsActivity.NewsGroupItem>) results.values;
             resetDetailView();
-            Log.d(TAG, "Resetted currentDetailView");
+            // Log.d(TAG, "Resetted currentDetailView");
             notifyDataSetChanged();
         }
     }

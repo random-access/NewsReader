@@ -12,6 +12,7 @@
     <string name="server_hint">news.example.com</string>
     <string name="port">Port</string>
     <string name="port_hint">Default: 119</string>
+    <string name="authenticate">With authentication</string>
     <string name="user">Username</string>
     <string name="user_hint">user@example.com</string>
     <string name="password">Password</string>
@@ -46,7 +47,13 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
 
+    <string name="show">Show</string>
+    <string name="selected">Currently selected</string>
+    <string name="all">All</string>
+
     <string name="delete">Delete</string>
+
+    <string name="cmd_selected">:selected</string>
 
     <plurals name="really_delete_server">
         <item quantity="one">Really delete news server?</item> ,

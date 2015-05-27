@@ -24,14 +24,15 @@ public class ServerQueries {
 
     private static final String[] PROJECTION_SERVER = new String[] {ServerContract.ServerEntry._ID,
             ServerContract.ServerEntry.COL_SERVERNAME, ServerContract.ServerEntry.COL_SERVERPORT,
-            ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_PASSWORD};
+            ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_AUTH, ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_PASSWORD};
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
     public static final int COL_PORT = 2;
     public static final int COL_ENCRYPTION = 3;
-    public static final int COL_USER = 4;
-    public static final int COL_PASSWORD = 5;
+    public static final int COL_AUTH = 4;
+    public static final int COL_USER = 5;
+    public static final int COL_PASSWORD = 6;
 
 
     public ServerQueries(Context context) {
@@ -61,17 +62,19 @@ public class ServerQueries {
      * @param serverName server URL e.g. news.example.org
      * @param serverPort port for NNTP connection (default: 119)
      * @param encryption 0 for no encryption, 1 for encryption (NOT YET IMPLEMENTED)
+     * @param auth 0 for no authentication, 1 for authentication
      * @param user username to authenticate
      * @param password password to authenticate
      * @param settingsId _ID field of corresponding settings table entry
      * @return the URI to the created database entry, containing _ID for further use
      */
-    public Uri addServer(String serverTitle, String serverName, int serverPort, boolean encryption, String user, String password, long settingsId) {
+    public Uri addServer(String serverTitle, String serverName, int serverPort, boolean encryption, boolean auth, String user, String password, long settingsId) {
         ContentValues values = new ContentValues();
         values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
         values.put(ServerContract.ServerEntry.COL_SERVERNAME, serverName);
         values.put(ServerContract.ServerEntry.COL_SERVERPORT, serverPort);
         values.put(ServerContract.ServerEntry.COL_ENCRYPTION, 0); // TODO handle encrypted connections
+        values.put(ServerContract.ServerEntry.COL_AUTH, auth ? 1 : 0);
         values.put(ServerContract.ServerEntry.COL_USER, user);
         values.put(ServerContract.ServerEntry.COL_PASSWORD, password);
         values.put(ServerContract.ServerEntry.COL_FK_SET_ID, settingsId);
@@ -113,10 +116,26 @@ public class ServerQueries {
 
         int noOfServerRows =  context.getContentResolver().delete(ServerContract.CONTENT_URI, ServerContract.ServerEntry._ID + " = ?", new String[] {serverId + ""});
 
-        context.getContentResolver().delete(SettingsContract.CONTENT_URI, SettingsContract.SettingsEntry._ID + "= ?", new String[] {settingsId + ""});
+        context.getContentResolver().delete(SettingsContract.CONTENT_URI, SettingsContract.SettingsEntry._ID + "= ?", new String[]{settingsId + ""});
 
         return noOfServerRows;
     }
 
+
+    /**
+     * Helper method to get the name of a newsgroup for a given ID
+     * @param serverId database _ID field identifying a Newsgroup entry
+     * @return String containing the name of the given newsgroup, e.g. formatted like this: "section1.section2.*.sectionl"
+     * @throws IOException if there is no newsgroup matching the ID
+     */
+    public boolean hasServerAuth(long serverId) throws IOException {
+        Cursor c = getServerWithId(serverId);
+        if (!c.moveToFirst()) {
+            throw new IOException("No newsgroup with the given ID found");
+        }
+        boolean auth = c.getInt(ServerQueries.COL_AUTH) == 1;
+        c.close();
+        return auth;
+    }
 
 }

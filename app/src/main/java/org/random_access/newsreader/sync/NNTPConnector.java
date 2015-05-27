@@ -34,7 +34,7 @@ public class NNTPConnector {
      * @return NNTPClient object to communicate with
      * @throws IOException
      */
-    public NNTPClient connectToNewsServer(Context context, String server, int port, String user, String password) throws IOException, LoginException {
+    public NNTPClient connectToNewsServer(Context context, String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
         NNTPClient nntpClient = new NNTPClient();
         // nntpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
         // TODO handle encrypted connections
@@ -42,6 +42,9 @@ public class NNTPConnector {
             nntpClient.connect(server);
         } else {
             nntpClient.connect(server, port);
+        }
+        if (!auth) { // Connection without authentication
+            return nntpClient;
         }
         boolean authOk = nntpClient.authenticate(user, password);
         if (authOk) {

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.queries.NewsgroupQueries;
@@ -83,11 +84,15 @@ public class ShowMessagesActivity extends AppCompatActivity {
         @Override
         protected ArrayList<String> doInBackground(Void... voids) {
             try {
-                NNTPClient client = connectToNewsServer(serverId);
+                boolean auth = new ServerQueries(ShowMessagesActivity.this).hasServerAuth(serverId);
+                NNTPClient client = connectToNewsServer(serverId, auth);
                 NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(new GregorianCalendar(15,01,01), true);
                 groupName = getNewsgroupName(groupId);
                 query.addNewsgroup(groupName);
                 String[] messages = client.listNewNews(query);
+                if (messages == null) {
+                    messages = applyNextCommand(client, groupName);
+                }
                 ArrayList<String> messageList = new ArrayList<>();
                 messageList.add("Total messages: " + messages.length);
                 Collections.addAll(messageList, messages);
@@ -97,6 +102,21 @@ public class ShowMessagesActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        private String[] applyNextCommand (NNTPClient client, String group) throws  IOException{
+            ArrayList<String> articleList = new ArrayList<>();
+            client.selectNewsgroup(group);
+            ArticleInfo pointer = new ArticleInfo();
+            int i = 0;
+            while (client.selectNextArticle(pointer) && i < 100){
+                // client.selectArticle(pointer.articleNumber, pointer);
+                Log.d(TAG, "pointer.articleNumber = " + pointer.articleNumber + ", pointer.articleId = " + pointer.articleId);
+                articleList.add(pointer.articleId);
+                i++;
+            }
+            String[] articleArray = new String[articleList.size()];
+            return articleList.toArray(articleArray);
         }
 
         @Override
@@ -124,7 +144,7 @@ public class ShowMessagesActivity extends AppCompatActivity {
      * @returna NNTPClient object to communicate with
      * @throws IOException
      */
-    private NNTPClient connectToNewsServer(long serverId) throws IOException, LoginException {
+    private NNTPClient connectToNewsServer(long serverId, boolean auth) throws IOException, LoginException {
         ServerQueries sQueries = new ServerQueries(ShowMessagesActivity.this);
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
@@ -135,6 +155,10 @@ public class ShowMessagesActivity extends AppCompatActivity {
         NNTPClient nntpClient = new NNTPClient();
         // TODO handle encrypted connections
         nntpClient.connect(c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT));
+        if (!auth) {
+            c.close();
+            return nntpClient;
+        }
         boolean authOk = nntpClient.authenticate(c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
         c.close();
         if (authOk) {
@@ -161,4 +185,6 @@ public class ShowMessagesActivity extends AppCompatActivity {
         c.close();
         return newsgroupName;
     }
+
+
 }

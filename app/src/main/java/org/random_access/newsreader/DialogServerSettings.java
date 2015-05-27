@@ -34,6 +34,7 @@ public class DialogServerSettings extends DialogFragment{
     private static final String TAG_SERVER = "server";
     private static final String TAG_PORT = "port";
     private static final String TAG_ENCRYPTION = "encryption";
+    private static final String TAG_AUTH = "authentication";
     private static final String TAG_USER = "user";
     private static final String TAG_PASSWORD = "password";
 
@@ -41,6 +42,7 @@ public class DialogServerSettings extends DialogFragment{
     private String mServer;
     private int mPort;
     private boolean mEncryption; // TODO input for encryption - chooser?
+    private boolean mAuthentication;
     private String mUser;
     private String mPassword;
 
@@ -49,12 +51,13 @@ public class DialogServerSettings extends DialogFragment{
     View dialogView;
     EditText mNameText, mEmailText, mSignatureText, mMsgKeepText;
 
-    public static DialogServerSettings newInstance(String servertitle, String server, int port, boolean encryption, String user, String password) {
+    public static DialogServerSettings newInstance(String servertitle, String server, int port, boolean encryption, boolean auth, String user, String password) {
         Bundle bundle = new Bundle();
         bundle.putString(TAG_SERVERTITLE, servertitle);
         bundle.putString(TAG_SERVER, server);
         bundle.putInt(TAG_PORT, port);
         bundle.putBoolean(TAG_ENCRYPTION, encryption);
+        bundle.putBoolean(TAG_AUTH, auth);
         bundle.putString(TAG_USER, user);
         bundle.putString(TAG_PASSWORD, password);
         DialogServerSettings fragment = new DialogServerSettings();
@@ -68,6 +71,7 @@ public class DialogServerSettings extends DialogFragment{
         mServer = getArguments().getString(TAG_SERVER);
         mPort = getArguments().getInt(TAG_PORT);
         mEncryption = getArguments().getBoolean(TAG_ENCRYPTION);
+        mAuthentication = getArguments().getBoolean(TAG_AUTH);
         mUser = getArguments().getString(TAG_USER);
         mPassword = getArguments().getString(TAG_PASSWORD);
 
@@ -136,7 +140,7 @@ public class DialogServerSettings extends DialogFragment{
                 long settingsId = Integer.parseInt(uri.getLastPathSegment());
                 Log.i(TAG, uri.getPath());
                 ServerQueries serverQueries = new ServerQueries(getActivity());
-                uri = serverQueries.addServer(mServerTitle, mServer, mPort, false, mUser, mPassword, settingsId); // TODO handle encrypted connections
+                uri = serverQueries.addServer(mServerTitle, mServer, mPort, false, mAuthentication, mUser, mPassword, settingsId); // TODO handle encrypted connections
                 Log.i(TAG, uri.getPath());
                 Toast.makeText(getActivity(), res.getString(R.string.success_adding_server), Toast.LENGTH_SHORT).show();
                 dismiss();

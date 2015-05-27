@@ -43,6 +43,7 @@ public class ServerContract {
         public static final String COL_SERVERNAME = "_SERVERNAME";
         public static final String COL_SERVERPORT = "_SERVERPORT";
         public static final String COL_ENCRYPTION = "_ENCRYPTION";
+        public static final String COL_AUTH = "_AUTH";
         public static final String COL_USER = "_USER";
         public static final String COL_PASSWORD = "_PASSWORD";
         public static final String COL_FK_SET_ID = "FK_SET_ID";
@@ -52,6 +53,7 @@ public class ServerContract {
         public static final String COL_SERVERNAME_FULLNAME = TABLE_NAME + "." +"_SERVERNAME";
         public static final String COL_SERVERPORT_FULLNAME = TABLE_NAME + "." + "_SERVERPORT";
         public static final String COL_ENCRYPTION_FULLNAME = TABLE_NAME + "." +"_ENCRYPTION";
+        public static final String COL_AUTH_FULLNAME = TABLE_NAME + "." + "_AUTH";
         public static final String COL_USER_FULLNAME = TABLE_NAME + "." +"_USER";
         public static final String COL_PASSWORD_FULLNAME = TABLE_NAME + "." + "_PASSWORD";
         public static final String COL_FK_SET_ID_FULLNAME = TABLE_NAME + "." + "FK_SET_ID";
@@ -65,7 +67,8 @@ public class ServerContract {
             + ServerEntry.COL_SERVERNAME + " text not null, "
             + ServerEntry.COL_SERVERPORT + " integer, "
             + ServerEntry.COL_ENCRYPTION + " integer, "
-            + ServerEntry.COL_USER + " text not null, "
+            + ServerEntry.COL_AUTH + " integer not null, "
+            + ServerEntry.COL_USER + " text, "
             + ServerEntry.COL_PASSWORD + " text, "
             + ServerEntry.COL_FK_SET_ID + " integer not null, "
             + "foreign key (" + ServerEntry.COL_FK_SET_ID + ") references "

@@ -8,6 +8,27 @@
     android:orientation="vertical"
     tools:context="org.random_access.org.newsreader.EditSubscriptionsActivity">
 
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/groups_all"
+            android:text="@string/all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
+        <RadioButton
+            android:id="@+id/groups_selection"
+            android:text="@string/selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
+    </RadioGroup>
+
     <EditText
         android:id="@+id/groups_search"
         android:layout_width="fill_parent"
