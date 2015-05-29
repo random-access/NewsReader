@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.random_access.newsreader.nntp.CustomNNTPClient;
+import org.random_access.newsreader.nntp.MessageHeaderDecoder;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
@@ -130,8 +131,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 CustomNNTPClient client = connectToNewsServer(serverId, null, auth);
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
                 NNTPMessageHeader headerData = new NNTPMessageHeader();
-                decodingOk = headerData.parseHeaderData(reader);
-                String charset = headerData.getMessageCharset();
+                decodingOk = headerData.parseHeaderData(reader, articleId, ShowSingleArticleActivity.this);
+                String charset = headerData.getValue(NNTPMessageHeader.KEY_CHARSET);
                 client.disconnect();
 
                 // fetch body
@@ -153,7 +154,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 result[2] = headerData.getValue(NNTPMessageHeader.KEY_DATE);
                 result[3] = sb.toString();
                 result[4] = headerData.getValue(NNTPMessageHeader.KEY_TRANSFER_ENCODING);
-                Log.d(TAG, headerData.getHeaderSrc());
+                Log.d(TAG, headerData.getValue(NNTPMessageHeader.KEY_HEADER_SOURCE));
                 return result;
             } catch (IOException | LoginException e) {
                 e.printStackTrace();

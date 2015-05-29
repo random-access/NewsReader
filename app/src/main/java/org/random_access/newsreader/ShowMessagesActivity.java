@@ -18,9 +18,12 @@ import android.widget.ListView;
 import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
+import org.random_access.newsreader.adapter.MessageAdapter;
+import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +52,6 @@ public class ShowMessagesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_messages);
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         groupId = getIntent().getExtras().getLong(KEY_GROUP_ID);
         new GetMessagesTask().execute();
@@ -77,12 +79,18 @@ public class ShowMessagesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class GetMessagesTask extends AsyncTask<Void, Void, ArrayList<String>> {
+    class GetMessagesTask extends AsyncTask<Void, Void, ArrayList<NNTPMessageHeader>> {
 
         private String groupName;
 
         @Override
-        protected ArrayList<String> doInBackground(Void... voids) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setContentView(R.layout.progress_wheel);
+        }
+
+        @Override
+        protected ArrayList<NNTPMessageHeader> doInBackground(Void... voids) {
             try {
                 boolean auth = new ServerQueries(ShowMessagesActivity.this).hasServerAuth(serverId);
                 NNTPClient client = connectToNewsServer(serverId, auth);
@@ -93,11 +101,20 @@ public class ShowMessagesActivity extends AppCompatActivity {
                 if (messages == null) {
                     messages = applyNextCommand(client, groupName);
                 }
-                ArrayList<String> messageList = new ArrayList<>();
+                ArrayList<NNTPMessageHeader> headers = new ArrayList<>();
+                for (String m : messages) {
+                    NNTPMessageHeader header = new NNTPMessageHeader();
+                    BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(m));
+                    header.parseHeaderData(reader, m, ShowMessagesActivity.this);
+                    headers.add(header);
+                }
+                client.disconnect();
+                return headers;
+                /*ArrayList<String> messageList = new ArrayList<>();
                 messageList.add("Total messages: " + messages.length);
                 Collections.addAll(messageList, messages);
                 client.disconnect();
-                return messageList;
+                return messageList; */
             } catch (IOException | LoginException e) {
                 e.printStackTrace();
             }
@@ -120,17 +137,20 @@ public class ShowMessagesActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> strings) {
+        protected void onPostExecute(ArrayList<NNTPMessageHeader> headers) {
+            setContentView(R.layout.activity_show_messages);
             ListView lv = (ListView)findViewById(R.id.show_messages_list);
-            final ArrayAdapter<String> adapter = new ArrayAdapter<>(ShowMessagesActivity.this, R.layout.item_message, strings);
+            final MessageAdapter adapter = new MessageAdapter(ShowMessagesActivity.this, R.layout.item_message_template, headers);
             lv.setAdapter(adapter);
+            /* final ArrayAdapter<String> adapter = new ArrayAdapter<>(ShowMessagesActivity.this, R.layout.item_message, strings);
+            lv.setAdapter(adapter); */
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(ShowMessagesActivity.this, ShowSingleArticleActivity.class);
                     intent.putExtra(ShowSingleArticleActivity.KEY_SERVER_ID, serverId);
                     intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_ID, groupId);
-                    intent.putExtra(ShowSingleArticleActivity.KEY_ARTICLE_ID, adapter.getItem(position));
+                    intent.putExtra(ShowSingleArticleActivity.KEY_ARTICLE_ID, ((NNTPMessageHeader)adapter.getItem(position)).getValue(NNTPMessageHeader.KEY_MESSAGE_ID));
                     intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_NAME, groupName);
                     startActivity(intent);
                 }

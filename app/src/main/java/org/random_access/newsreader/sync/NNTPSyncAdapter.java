@@ -215,6 +215,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         return groupNames;
     }
 
+
     // pattern database: "yyyyMMddhhmmss Z"
     // ----> eg 20150502181729 +0200
     // pattern message header: "EEE, d MMM yyyy HH:mm:ss Z"
@@ -227,8 +228,5 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         cal.setTime(date);
         return cal;
     }
-
-
-
 
 }

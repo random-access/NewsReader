@@ -9,11 +9,13 @@
         android:layout_height="wrap_content"
         android:text="Das ist ein sehr sehr sehr langer Betreff als Test ob das Ellipsize-Verhalten passt"
         android:textColor="@color/black"
-        android:lines="1"
+        android:lines="2"
         android:ellipsize="end"
         android:textStyle="bold"
-        android:padding="10dp"
-        android:paddingBottom="0dp"/>
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp" />
 
 
 
@@ -28,18 +30,25 @@
         android:lines="1"
         android:ellipsize="none"
         android:textStyle="bold"
-        android:padding="10dp"/>
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp" />
 
     <TextView
         android:id="@+id/message_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Monika Schrenk <monika.schrenk@fernuni-hagen.de>"
+        android:text="Monika Schrenk"
         android:layout_below="@id/message_title"
         android:layout_toLeftOf="@id/message_date"
+        android:layout_alignParentLeft="true"
         android:lines="1"
         android:ellipsize="end"
-        android:padding="10dp"/>
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp" />
 
 
 
