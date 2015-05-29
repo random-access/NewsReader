@@ -49,6 +49,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     private String articleId;
     private  boolean auth;
 
+    private boolean decodingOk;
     private String [] articleData;
     private boolean extended;
 
@@ -90,7 +91,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (articleFragment == null));
+      //   Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (articleFragment == null));
         if (articleFragment != null) {
             articleFragment.setArticleData(articleData);
             articleFragment.setExtended(extended);
@@ -129,7 +130,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 CustomNNTPClient client = connectToNewsServer(serverId, null, auth);
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
                 NNTPMessageHeader headerData = new NNTPMessageHeader();
-                headerData.parseHeaderData(reader);
+                decodingOk = headerData.parseHeaderData(reader);
                 String charset = headerData.getMessageCharset();
                 client.disconnect();
 
@@ -146,11 +147,13 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 client.disconnect();
 
                 // save results
-                String[] result = new String[4];
+                String[] result = new String[5];
                 result[0] = headerData.getValue(NNTPMessageHeader.KEY_FROM);
                 result[1] = headerData.getValue(NNTPMessageHeader.KEY_SUBJECT);
                 result[2] = headerData.getValue(NNTPMessageHeader.KEY_DATE);
                 result[3] = sb.toString();
+                result[4] = headerData.getValue(NNTPMessageHeader.KEY_TRANSFER_ENCODING);
+                Log.d(TAG, headerData.getHeaderSrc());
                 return result;
             } catch (IOException | LoginException e) {
                 e.printStackTrace();
@@ -186,6 +189,12 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         btnReply.setVisibility(extended ? View.VISIBLE : View.GONE);
 
         addListeners();
+        if (!decodingOk) {
+            Toast.makeText(this, "Could not decode headers properly!", Toast.LENGTH_SHORT).show();
+        }
+        /*if (!articleData[4].equals("8bit")) {
+            Toast.makeText(this, "Transport encoding: " + articleData[4], Toast.LENGTH_SHORT).show();
+        }*/
     }
 
     private void addListeners() {
@@ -233,7 +242,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         boolean authOk = nntpClient.authenticate(c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
         c.close();
         if (authOk) {
-            Log.d(TAG, "Successfully logged in!");
+           // Log.d(TAG, "Successfully logged in!");
             return nntpClient;
         } else {
             throw new LoginException("Login failed");
