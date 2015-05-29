@@ -9,14 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.random_access.newsreader.nntp.CustomNNTPClient;
-import org.random_access.newsreader.nntp.HeaderData;
+import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 
@@ -126,28 +124,32 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         protected String[] doInBackground(Void... voids) {
             try {
                 auth = new ServerQueries(ShowSingleArticleActivity.this).hasServerAuth(serverId);
+
+                // fetch header
                 CustomNNTPClient client = connectToNewsServer(serverId, null, auth);
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
-                HeaderData headerData = new HeaderData();
+                NNTPMessageHeader headerData = new NNTPMessageHeader();
                 headerData.parseHeaderData(reader);
                 String charset = headerData.getMessageCharset();
+                client.disconnect();
 
+                // fetch body
                 client = connectToNewsServer(serverId, charset, auth);
-                headerData = new HeaderData();
-                headerData.parseHeaderData(new BufferedReader(client.retrieveArticleHeader(articleId)));
-                reader = new BufferedReader(client.retrieveArticleBody(articleId));
                 String line = "";
-                String[] result = new String[4];
+
                 StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(client.retrieveArticleBody(articleId));
                 while((line=reader.readLine()) != null) {
                     sb.append(line).append("\n");
                 }
                 reader.close();
                 client.disconnect();
 
-                result[0] = headerData.getValue(HeaderData.KEY_FROM);
-                result[1] = headerData.getValue(HeaderData.KEY_SUBJECT);
-                result[2] = headerData.getValue(HeaderData.KEY_DATE);
+                // save results
+                String[] result = new String[4];
+                result[0] = headerData.getValue(NNTPMessageHeader.KEY_FROM);
+                result[1] = headerData.getValue(NNTPMessageHeader.KEY_SUBJECT);
+                result[2] = headerData.getValue(NNTPMessageHeader.KEY_DATE);
                 result[3] = sb.toString();
                 return result;
             } catch (IOException | LoginException e) {
