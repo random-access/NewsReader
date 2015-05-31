@@ -17,8 +17,8 @@ import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import java.util.ArrayList;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
- * <b>Date:</b> 29.05.15 <br>
+ * <b>Project:</b> Newsreader for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -44,12 +44,12 @@ public class MessageAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return messageHeaders.size() - 1 - position;
     }
 
     @Override
     public Object getItem(int position) {
-        return messageHeaders.get(position);
+        return messageHeaders.get(messageHeaders.size() - 1 - position);
     }
 
     @Override
@@ -68,10 +68,11 @@ public class MessageAdapter extends BaseAdapter {
             holder.from = (TextView) newView.findViewById(R.id.message_from);
             newView.setTag(holder);
         }
-        String name = messageHeaders.get(position).getValue(NNTPMessageHeader.KEY_NAME);
-        String email = messageHeaders.get(position).getValue(NNTPMessageHeader.KEY_EMAIL);
-        holder.title.setText(messageHeaders.get(position).getValue(NNTPMessageHeader.KEY_SUBJECT));
-        holder.date.setText(messageHeaders.get(position).getValue(NNTPMessageHeader.KEY_DATE));
+        NNTPMessageHeader currentElem = (NNTPMessageHeader)getItem(position);
+        String name = currentElem.getFullName();
+        String email = currentElem.getEmail();
+        holder.title.setText(currentElem.getSubject());
+        holder.date.setText(currentElem.getDate());
         holder.from.setText(TextUtils.isEmpty(name) ? email : name);
         return newView;
     }

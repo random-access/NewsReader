@@ -18,7 +18,7 @@ import org.random_access.newsreader.adapter.NewsgroupCursorAdapter;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -65,7 +65,6 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show_newsgroups, menu);
         return true;
     }

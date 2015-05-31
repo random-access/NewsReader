@@ -3,8 +3,8 @@ package org.random_access.newsreader.nntp;
 import java.util.HashMap;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
- * <b>Date:</b> 29.05.15 <br>
+ * <b>Project:</b> Newsreader for Android <br>
+ * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */

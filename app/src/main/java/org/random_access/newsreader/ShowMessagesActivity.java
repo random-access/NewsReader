@@ -34,7 +34,7 @@ import java.util.List;
 import javax.security.auth.login.LoginException;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -52,8 +52,10 @@ public class ShowMessagesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Loading...");
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         groupId = getIntent().getExtras().getLong(KEY_GROUP_ID);
+
         new GetMessagesTask().execute();
     }
 
@@ -139,6 +141,7 @@ public class ShowMessagesActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<NNTPMessageHeader> headers) {
             setContentView(R.layout.activity_show_messages);
+            setTitle(groupName);
             ListView lv = (ListView)findViewById(R.id.show_messages_list);
             final MessageAdapter adapter = new MessageAdapter(ShowMessagesActivity.this, R.layout.item_message_template, headers);
             lv.setAdapter(adapter);
@@ -150,7 +153,7 @@ public class ShowMessagesActivity extends AppCompatActivity {
                     Intent intent = new Intent(ShowMessagesActivity.this, ShowSingleArticleActivity.class);
                     intent.putExtra(ShowSingleArticleActivity.KEY_SERVER_ID, serverId);
                     intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_ID, groupId);
-                    intent.putExtra(ShowSingleArticleActivity.KEY_ARTICLE_ID, ((NNTPMessageHeader)adapter.getItem(position)).getValue(NNTPMessageHeader.KEY_MESSAGE_ID));
+                    intent.putExtra(ShowSingleArticleActivity.KEY_ARTICLE_ID, ((NNTPMessageHeader)adapter.getItem(position)).getMessageId());
                     intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_NAME, groupName);
                     startActivity(intent);
                 }

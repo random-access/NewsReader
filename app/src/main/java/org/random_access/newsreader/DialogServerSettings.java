@@ -19,11 +19,12 @@ import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
+
 public class DialogServerSettings extends DialogFragment{
 
     private static final String TAG = DialogServerConnection.class.getSimpleName();

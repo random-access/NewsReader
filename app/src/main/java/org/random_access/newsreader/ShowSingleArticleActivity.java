@@ -25,7 +25,7 @@ import java.io.IOException;
 import javax.security.auth.login.LoginException;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 18.05.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -132,7 +132,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
                 NNTPMessageHeader headerData = new NNTPMessageHeader();
                 decodingOk = headerData.parseHeaderData(reader, articleId, ShowSingleArticleActivity.this);
-                String charset = headerData.getValue(NNTPMessageHeader.KEY_CHARSET);
+                String charset = headerData.getCharset();
                 client.disconnect();
 
                 // fetch body
@@ -149,12 +149,12 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
 
                 // save results
                 String[] result = new String[5];
-                result[0] = headerData.getValue(NNTPMessageHeader.KEY_FROM);
-                result[1] = headerData.getValue(NNTPMessageHeader.KEY_SUBJECT);
-                result[2] = headerData.getValue(NNTPMessageHeader.KEY_DATE);
+                result[0] = headerData.getSender();
+                result[1] = headerData.getSubject();
+                result[2] = headerData.getDate();
                 result[3] = sb.toString();
-                result[4] = headerData.getValue(NNTPMessageHeader.KEY_TRANSFER_ENCODING);
-                Log.d(TAG, headerData.getValue(NNTPMessageHeader.KEY_HEADER_SOURCE));
+                result[4] = headerData.getTransferEncoding();
+                Log.d(TAG, headerData.getHeaderSource());
                 return result;
             } catch (IOException | LoginException e) {
                 e.printStackTrace();

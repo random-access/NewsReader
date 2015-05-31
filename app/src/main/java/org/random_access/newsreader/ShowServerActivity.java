@@ -27,11 +27,11 @@ import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
- * <b>Date:</b> 18.05.15 <br>
- * <b>Author:</b> Monika Schrenk <br>
- * <b>E-Mail:</b> software@random-access.org <br>
- */
+* <b>Project:</b> Newsreader for Android <br>
+        * <b>Date:</b> 18.05.15 <br>
+        * <b>Author:</b> Monika Schrenk <br>
+        * <b>E-Mail:</b> software@random-access.org <br>
+*/
 public class ShowServerActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -203,14 +203,10 @@ public class ShowServerActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
-            }
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) { /* unused */ }
 
             @Override
-            public void onDestroyActionMode(ActionMode mode) {
-
-            }
+            public void onDestroyActionMode(ActionMode mode) { /* unused */ }
         });
     }
 

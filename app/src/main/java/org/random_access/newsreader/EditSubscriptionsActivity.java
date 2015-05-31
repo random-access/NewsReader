@@ -66,23 +66,18 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_edit_subscriptions, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
             case R.id.action_newsgroups_discard:
                 finish();
                 return true;
             case R.id.action_newsgroups_ok:
-                //Toast.makeText(this, "Save newsgroup subscriptions -> to be implemented", Toast.LENGTH_SHORT).show();
                 new AddNewsgroupTask().execute();
                 finish();
                 return true;
@@ -91,6 +86,10 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Get server data from local database
+     * @throws IOException if there is no data for the given _ID
+     */
     private void getServerData() throws IOException{
         ServerQueries serverQueries = new ServerQueries(this);
         Cursor cursor = serverQueries.getServerWithId(serverId);
@@ -110,30 +109,38 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Log.d(TAG, "In onDestroy - subscriptionsFragment == null? " + (subscriptionsFragment == null));
         if (subscriptionsFragment != null) {
             subscriptionsFragment.setNewsGroupItems(items);
             subscriptionsFragment.setCheckedSelection(selection.getCheckedRadioButtonId());
+            subscriptionsFragment.setCurrentDetailView(adapter.getCurrentDetailView());
             Log.d(TAG, "Save selection: only selected = " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
         }
     }
 
+    /**
+     * Load all newsgroups either from the web if activity is started for the first time, otherwise from a non-visible fragment
+     * storing data across config changes
+     */
     private void loadNewsgroups() {
         FragmentManager fragmentManager = getFragmentManager();
         subscriptionsFragment = (EditSubscriptionsFragment) fragmentManager.findFragmentByTag(TAG_SUBSCRIPTIONS_FRAGMENT);
         if(subscriptionsFragment == null) {
             subscriptionsFragment = new EditSubscriptionsFragment();
             fragmentManager.beginTransaction().add(subscriptionsFragment, TAG_SUBSCRIPTIONS_FRAGMENT).commit();
-           checkedSelection = R.id.groups_all;
+            checkedSelection = R.id.groups_all;
             new GetNewsTask().execute();
         } else{
             items = subscriptionsFragment.getNewsGroupItems();
             checkedSelection = subscriptionsFragment.getCheckedSelection();
             Log.d(TAG, "Restore selection: only selected = " + (checkedSelection == R.id.groups_selection));
             prepareGUI();
+            adapter.setCurrentDetailView(subscriptionsFragment.getCurrentDetailView());
         }
     }
 
+    /**
+     * Add selected groups not in database yet and remove groups that were in database but are not selected anymore
+     */
     class AddNewsgroupTask extends AsyncTask<Void, Void, Integer[]> {
         @Override
         protected void onPreExecute() {
@@ -166,6 +173,9 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Get list of available newsgroups (NewsgroupInfo elements) from the given server, using given login data
+     */
     class GetNewsTask extends AsyncTask<Void, Void, ArrayList<NewsGroupItem>> {
 
         @Override
@@ -180,26 +190,12 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
                 getServerData();
                 NNTPConnector connector = new NNTPConnector(EditSubscriptionsActivity.this);
                 NNTPClient client = connector.connectToNewsServer(EditSubscriptionsActivity.this, serverName, serverPort, auth, user, password);
-                String[] newNews = null;
                 NewsgroupInfo[] infos = client.listNewsgroups();
-               // Thread.sleep(500);
                 return getNewsgroupItems(infos);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (LoginException e) {
-                e.printStackTrace();
+            } catch (IOException | LoginException e) {
+                e.printStackTrace();  // TODO handle exceptions
             }
-            return new ArrayList<>(); // TODO handle exceptions
-
-                //nntpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
-                // nntpClient.connect("news.fernuni-hagen.de");
-                //nntpClient.authenticate("q9101101", "ph71oj63!");
-                //NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(new GregorianCalendar(2015, 01, 01), true);
-                //query.addNewsgroup("feu.test");
-                //newNews = nntpClient.listNewNews(query);
-                //Log.d("Test", "New news: " + newNews.length);
-                //infos = nntpClient.listNewsgroups();
-                // return getNewsgroupNames(infos);
+            return new ArrayList<>();
         }
 
 
@@ -211,6 +207,9 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Find and configure all view elements
+     */
     private void prepareGUI () {
         setContentView(R.layout.activity_edit_subscriptions);
         adapter = new SubscriptionListAdapter(EditSubscriptionsActivity.this, R.layout.item_subscription, items);
@@ -220,45 +219,35 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         txtSearch = (EditText) findViewById(R.id.groups_search);
         txtSearch.addTextChangedListener(new TextWatcher() {
 
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) { /* unused */  }
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)  { /* unused */  }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapter.getFilter().filter(s.toString());
             }
         });
         selection = (RadioGroup)findViewById(R.id.radio_group);
-
         selection.check(checkedSelection);
-        Log.d(TAG, "*** in prepareGui: only selected? " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
         selection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 manageCheckFilter(checkedId);
             }
         });
-        if (selection.getCheckedRadioButtonId() == R.id.groups_selection) {
-            selection.requestFocus();
-        }
         manageCheckFilter(selection.getCheckedRadioButtonId());
     }
 
-
     private void manageCheckFilter(int checkedId) {
-        switch (checkedId) {
-            case R.id.groups_all:
-                adapter.getFilter().filter("");
-                break;
-            case R.id.groups_selection:
-                adapter.getFilter().filter(getResources().getString(R.string.cmd_selected));
-                break;
-        }
+        adapter.setSelectedItemsOnly(checkedId == R.id.groups_selection);
+        adapter.getFilter().filter(txtSearch.getText().toString());
     }
 
-
+    /**
+     * Wrap all NewsgroupInfos that were downloaded in NewsgroupItems and return an arraylist
+     * @param infos array of downloaded NewsgroupInfos
+     * @return arraylist containing all NewsgroupItems
+     */
     public ArrayList<NewsGroupItem> getNewsgroupItems (NewsgroupInfo[] infos) {
         Cursor c = new NewsgroupQueries(EditSubscriptionsActivity.this).getNewsgroupsOfServer(serverId);
         ArrayList<NewsGroupItem> items  = new ArrayList<>();
@@ -269,14 +258,17 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         return items;
     }
 
+    /**
+     * Check if this newsgroup is already saved in local database
+     * @param c a cursor pointing to the beginning of the local newsgroup database
+     * @param info NewsgroupInfo to wrap with this item
+     * @return a selected newsgroup item if the user already subscribed to this group, otherwise a deselected item
+     */
     private NewsGroupItem setupItem(Cursor c, NewsgroupInfo info) {
         NewsGroupItem item = new NewsGroupItem(info);
         if (c.getCount() > 0) {
             c.moveToFirst();
             while (!c.isAfterLast()) {
-               // Log.d(TAG, "Already selected: " + item.getNewsgroupInfo().getNewsgroup());
-               // Log.d(TAG, "Name in DB: " + c.getString(NewsgroupQueries.COL_NAME));
-              //  Log.d(TAG, "Name in net: " + item.getNewsgroupInfo().getNewsgroup());
                 if (c.getString(NewsgroupQueries.COL_NAME).equals(item.getNewsgroupInfo().getNewsgroup())) {
                     item.setNewsgroupId(c.getLong(NewsgroupQueries.COL_ID));
                     item.setSelected(true);
@@ -288,7 +280,11 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         return item;
     }
 
-    public class NewsGroupItem {
+    /**
+     * Wrapper class for a newsgroup info downloaded from a server, its database _ID value (if in database, otherwise -1) and
+     * its selection status
+     */
+    public class NewsGroupItem implements Comparable<NewsGroupItem>{
         private long newsgroupId;
         private boolean selected;
         private NewsgroupInfo newsgroupInfo;
@@ -297,6 +293,14 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             this.newsgroupInfo = newsgroupInfo;
             this.selected = false;
             this.newsgroupId = -1;
+        }
+
+        @Override
+        public int compareTo(NewsGroupItem item) {
+            if (item == null || item.getNewsgroupInfo() == null || item.getNewsgroupInfo().getNewsgroup() == null) {
+                return -1;
+            }
+            return newsgroupInfo.getNewsgroup().compareTo(item.getNewsgroupInfo().getNewsgroup());
         }
 
         public NewsgroupInfo getNewsgroupInfo() {
