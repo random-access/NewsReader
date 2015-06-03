@@ -36,16 +36,16 @@ public class ShowServerActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // The authority for the sync adapter's content provider
-    public static final String AUTHORITY = "org.random_access.newsreader.provider";
+    private static final String AUTHORITY = "org.random_access.newsreader.provider";
 
     private Account mAccount;
 
     // Sync interval constants
-    public static final long SECONDS_PER_MINUTE = 60L;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 2L; //15L;
-    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+    private static final long SECONDS_PER_MINUTE = 60L;
+    private static final long SYNC_INTERVAL_IN_MINUTES = 2L; //15L;
+    private static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
-    String[] serverProjection = { ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
+    private final String[] serverProjection = { ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
             ServerContract.ServerEntry.COL_SERVERNAME };
     public static final int COL_SERVER_ID = 0;
     public static final int COL_SERVER_TITLE = 1;
@@ -134,7 +134,7 @@ public class ShowServerActivity extends AppCompatActivity implements
 
     class OnDeleteProjectsDialogListener implements DialogInterface.OnClickListener {
 
-        long[] currentSelection;
+        final long[] currentSelection;
 
         OnDeleteProjectsDialogListener(long[] currentSelection) {
             this.currentSelection = currentSelection;
@@ -158,7 +158,7 @@ public class ShowServerActivity extends AppCompatActivity implements
                     break;
             }
         }
-    };
+    }
 
     private void setListActions () {
         mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

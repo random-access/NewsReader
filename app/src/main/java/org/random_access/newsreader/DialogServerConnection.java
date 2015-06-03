@@ -36,18 +36,25 @@ public class DialogServerConnection extends DialogFragment {
 
     public static final String TAG_ADD_SERVER = "Add-server";
 
-    Resources res;
-    LayoutInflater inflater;
-    View dialogView;
-    EditText mServerTitle, mServerText, mPortText, mUserText, mPasswordText;
-    TextView mUserLabel, mPassLabel;
-    CheckBox mAuthentication;
+    private Resources res;
+    private LayoutInflater inflater;
+    private View dialogView;
+    private EditText mServerTitle;
+    private EditText mServerText;
+    private EditText mPortText;
+    private EditText mUserText;
+    private EditText mPasswordText;
+    private TextView mUserLabel;
+    private TextView mPassLabel;
+    private CheckBox mAuthentication;
+
+    private AlertDialog dialog;
 
     public static DialogServerConnection newInstance() {
         // Bundle bundle = new Bundle();
-        DialogServerConnection fragment = new DialogServerConnection();
+        // DialogServerConnection fragment = new DialogServerConnection();
         // fragment.setArguments(bundle);
-        return fragment;
+        return new DialogServerConnection();
     }
 
     @Override
@@ -73,9 +80,9 @@ public class DialogServerConnection extends DialogFragment {
             }
         });
         mServerText.requestFocus();
-        MyAlertDialog d = new MyAlertDialog(getActivity(), getResources().getString(R.string.server_add), dialogView);
         // d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return d;
+        dialog = new MyAlertDialog(getActivity(), getResources().getString(R.string.server_add), dialogView);
+        return dialog;
     }
 
     /**
@@ -175,9 +182,12 @@ public class DialogServerConnection extends DialogFragment {
                 Log.e(TAG, "Error in ServerConnectTask: " + message);
                 if (exc.getClass() == LoginException.class) {
                     Toast.makeText(getActivity(), res.getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
+
                 } else {
                     Toast.makeText(getActivity(), res.getString(R.string.error_password), Toast.LENGTH_SHORT).show();
                 }
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             }
         }
     }

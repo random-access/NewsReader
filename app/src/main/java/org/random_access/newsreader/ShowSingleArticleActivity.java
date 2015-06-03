@@ -1,7 +1,6 @@
 package org.random_access.newsreader;
 
 import android.app.FragmentManager;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.random_access.newsreader.nntp.CustomNNTPClient;
-import org.random_access.newsreader.nntp.MessageHeaderDecoder;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
-import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +28,7 @@ import javax.security.auth.login.LoginException;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
+@SuppressWarnings("ALL")
 public class ShowSingleArticleActivity extends AppCompatActivity {
 
     private static final String TAG = ShowSingleArticleActivity.class.getSimpleName();
@@ -114,7 +113,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         }
     }
 
-    class FetchArticleTask extends AsyncTask<Void, Void,String[]> {
+    private class FetchArticleTask extends AsyncTask<Void, Void,String[]> {
 
         @Override
         protected void onPreExecute() {
@@ -128,7 +127,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 auth = new ServerQueries(ShowSingleArticleActivity.this).hasServerAuth(serverId);
 
                 // fetch header
-                CustomNNTPClient client = connectToNewsServer(serverId, null, auth);
+                CustomNNTPClient client = new NNTPConnector(ShowSingleArticleActivity.this).connectToNewsServer(serverId, null, auth);
                 BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
                 NNTPMessageHeader headerData = new NNTPMessageHeader();
                 decodingOk = headerData.parseHeaderData(reader, articleId, ShowSingleArticleActivity.this);
@@ -136,8 +135,8 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 client.disconnect();
 
                 // fetch body
-                client = connectToNewsServer(serverId, charset, auth);
-                String line = "";
+                client = new NNTPConnector(ShowSingleArticleActivity.this).connectToNewsServer(serverId, charset, auth);
+                String line;
 
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(client.retrieveArticleBody(articleId));
@@ -214,56 +213,5 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    /**
-     * Helper method to establish a connection to a given news server
-     * @param serverId database ID of a server entry
-     * @returna NNTPClient object to communicate with
-     * @throws IOException
-     */
-    private CustomNNTPClient connectToNewsServer(long serverId, String charset, boolean auth) throws IOException, LoginException {
-        ServerQueries sQueries = new ServerQueries(ShowSingleArticleActivity.this);
-        Cursor c = sQueries.getServerWithId(serverId);
-        if (!c.moveToFirst()){
-            c.close();
-            Log.d(TAG, "Found no server with the given ID in database");
-            throw new IOException("Found no server with the given ID in database");
-        }
-        CustomNNTPClient nntpClient = new CustomNNTPClient();
-        if (charset != null) {
-           nntpClient.setCustomEncoding(charset);
-        }
-        // TODO handle encrypted connections
-        nntpClient.connect(c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT));
-        if (!auth) {
-            c.close();
-            return nntpClient;
-        }
-        boolean authOk = nntpClient.authenticate(c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
-        c.close();
-        if (authOk) {
-           // Log.d(TAG, "Successfully logged in!");
-            return nntpClient;
-        } else {
-            throw new LoginException("Login failed");
-        }
-    }
-
-    /**
-     * Helper method to get the name of a newsgroup for a given ID
-     * @param newsGroupId database _ID field identifying a Newsgroup entry
-     * @return String containing the name of the given newsgroup, e.g. formatted like this: "section1.section2.*.sectionl"
-     * @throws IOException if there is no newsgroup matching the ID
-     */
-    private String getNewsgroupName(long newsGroupId) throws IOException {
-        NewsgroupQueries nQueries = new NewsgroupQueries(ShowSingleArticleActivity.this);
-        Cursor c = nQueries.getNewsgroupForId(newsGroupId);
-        if (!c.moveToFirst()) {
-            throw new IOException("No newsgroup with the given ID found");
-        }
-        String newsgroupName = c.getString(NewsgroupQueries.COL_NAME);
-        c.close();
-        return newsgroupName;
     }
 }

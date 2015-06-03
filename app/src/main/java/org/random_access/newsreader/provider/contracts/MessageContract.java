@@ -41,24 +41,34 @@ public class MessageContract {
     public static abstract class MessageEntry implements BaseColumns {
 
         public static final String COL_MSG_ID = "_MSG_ID";
+        public static final String COL_FROM_NAME = "_FROM_NAME";
+        public static final String COL_FROM_EMAIL = "_FROM_EMAIL";
         public static final String COL_SUBJECT = "_SUBJECT";
         public static final String COL_CHARSET = "_CHARSET";
         public static final String COL_DATE = "_DATE";
         public static final String COL_TIMEZONE = "_TIMEZONE";
-
         public static final String COL_NEW = "_READ";
-        public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO";
+        public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO"; // TODO table with message hierarchy
         public static final String COL_FK_N_ID = "_FK_N_ID";
+        // for offline use:
+        public static final String COL_HEADER = "_HEADER";
+        public static final String COL_BODY = "_BODY";
+
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
         public static final String COL_MSG_ID_FULLNAME = TABLE_NAME + "." + COL_MSG_ID;
-        public static final String COL_CHARSET_FULLNAME = TABLE_NAME + "." + COL_CHARSET;
+        public static final String COL_FROM_NAME_FULLNAME = TABLE_NAME + "." + COL_FROM_NAME;
+        public static final String COL_FROM_EMAIL_FULLNAME = TABLE_NAME + "." + COL_FROM_EMAIL;
         public static final String COL_SUBJECT_FULLNAME = TABLE_NAME + "." + COL_SUBJECT;
+        public static final String COL_CHARSET_FULLNAME = TABLE_NAME + "." + COL_CHARSET;
         public static final String COL_DATE_FULLNAME = TABLE_NAME + "." + COL_DATE;
         public static final String COL_TIMEZONE_FULLNAME = TABLE_NAME + "." + COL_TIMEZONE;
         public static final String COL_NEW_FULLNAME = TABLE_NAME + "." + COL_NEW;
         public static final String COL_IN_REPLY_TO_FULLNAME = TABLE_NAME + "." + COL_IN_REPLY_TO;
         public static final String COL_FK_N_ID_FULLNAME = TABLE_NAME + "." + COL_FK_N_ID;
+        // for offline use:
+        public static final String COL_HEADER_FULLNAME = TABLE_NAME + "." + COL_HEADER;
+        public static final String COLL_BODY_FULLNAME = TABLE_NAME + "." + COL_BODY;
     }
 
     private static final String DATABASE_CREATE = "create table if not exists "
@@ -66,13 +76,17 @@ public class MessageContract {
             + "("
             + MessageEntry._ID + " integer primary key autoincrement, "
             + MessageEntry.COL_MSG_ID + " text not null, "
-            + MessageEntry.COL_CHARSET + " text not null, "
+            + MessageEntry.COL_FROM_EMAIL + " text, "
+            + MessageEntry.COL_FROM_NAME + " text, "
             + MessageEntry.COL_SUBJECT + " text not null, "
+            + MessageEntry.COL_CHARSET + " text not null, "
             + MessageEntry.COL_DATE + " integer not null, "
             + MessageEntry.COL_TIMEZONE + " string not null, "
             + MessageEntry.COL_NEW + " integer not null, "
             + MessageEntry.COL_IN_REPLY_TO + " integer, "
             + MessageEntry.COL_FK_N_ID + " integer, "
+            + MessageEntry.COL_HEADER + " text not null, "
+            + MessageEntry.COL_BODY + " text, "
             + "foreign key (" + MessageEntry.COL_IN_REPLY_TO + ") references "
             +  MessageContract.TABLE_NAME + " (" + MessageEntry._ID + "), "
             + "foreign key (" + MessageEntry.COL_FK_N_ID + ") references "
@@ -84,6 +98,7 @@ public class MessageContract {
         Log.d(TAG, DATABASE_CREATE);
     }
 
+    @SuppressWarnings("EmptyMethod")
     public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion) {
         // add upgrade procedure if necessary
     }

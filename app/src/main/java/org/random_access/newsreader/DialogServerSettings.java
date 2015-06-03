@@ -47,10 +47,13 @@ public class DialogServerSettings extends DialogFragment{
     private String mUser;
     private String mPassword;
 
-    Resources res;
-    LayoutInflater inflater;
-    View dialogView;
-    EditText mNameText, mEmailText, mSignatureText, mMsgKeepText;
+    private Resources res;
+    private LayoutInflater inflater;
+    private View dialogView;
+    private EditText mNameText;
+    private EditText mEmailText;
+    private EditText mSignatureText;
+    private EditText mMsgKeepText;
 
     public static DialogServerSettings newInstance(String servertitle, String server, int port, boolean encryption, boolean auth, String user, String password) {
         Bundle bundle = new Bundle();
@@ -84,9 +87,8 @@ public class DialogServerSettings extends DialogFragment{
         mSignatureText = (EditText)dialogView.findViewById(R.id.txt_signature);
         mMsgKeepText= (EditText) dialogView.findViewById(R.id.txt_msgkeep);
         mNameText.requestFocus();
-        MyAlertDialog d = new MyAlertDialog(getActivity(), getResources().getString(R.string.server_settings), dialogView);
         // d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return d;
+        return new MyAlertDialog(getActivity(), getResources().getString(R.string.server_settings), dialogView);
     }
 
     /**

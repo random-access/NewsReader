@@ -1,7 +1,6 @@
 package org.random_access.newsreader.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,13 +21,8 @@ import org.random_access.newsreader.ShowNewsgroupsActivity;
  */
 public class NewsgroupCursorAdapter extends CursorAdapter {
 
-    private Resources res;
-    private TextView tvTitle;
-    private TextView tvNewNews;
-
     public NewsgroupCursorAdapter(Context context, Cursor cursor)  {
         super(context, cursor, 0);
-        res = context.getResources();
     }
 
 
@@ -39,11 +33,11 @@ public class NewsgroupCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        tvTitle = (TextView)view.findViewById(R.id.group_title);
-        tvNewNews = (TextView)view.findViewById(R.id.new_news);
+        TextView tvTitle = (TextView) view.findViewById(R.id.group_title);
+        TextView tvNewNews = (TextView) view.findViewById(R.id.new_news);
         String name = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_NAME);
         String title = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_TITLE);
-        String newNews = 0 + ""; //TODO count new news
+        String newNews = ((cursor.getLong(ShowNewsgroupsActivity.COL_NEWSGROUP_ID) + 97) % 101)*10 + ""; //TODO count new news
         tvTitle.setText(TextUtils.isEmpty(title) ? name : title);
         tvNewNews.setText(newNews);
 

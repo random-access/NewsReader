@@ -1,13 +1,11 @@
 package org.random_access.newsreader.nntp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -18,7 +16,7 @@ import java.util.Locale;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class NNTPDateFormatter {
+class NNTPDateFormatter {
 
     private static final String TAG = NNTPDateFormatter.class.getSimpleName();
 
@@ -39,7 +37,7 @@ public class NNTPDateFormatter {
         return cal;
     }
 
-    public String getPrettyDateString(String rawDate, String pattern, Context context) {
+    public String getPrettyDateString(String rawDate, @SuppressWarnings("SameParameterValue") String pattern, Context context) {
         SimpleDateFormat rawFormat = new SimpleDateFormat(pattern, Locale.US);
         Date date = null;
         try {

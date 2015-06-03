@@ -8,9 +8,9 @@ import java.util.HashMap;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class SupportedEncodings {
+class SupportedEncodings {
 
-    private static HashMap<Integer, String> encodings;
+    private static final HashMap<Integer, String> encodings;
     public static final String UTF_8 = "UTF-8";
     public static final String ISO_8859_15 = "ISO-8859-15";
     public static final String ISO_8859_1 = "ISO-8859-1";

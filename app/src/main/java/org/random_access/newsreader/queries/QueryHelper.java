@@ -10,7 +10,7 @@ import android.net.Uri;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class QueryHelper {
+class QueryHelper {
 
     public static int count(Context context, Uri uri,String selection,String[] selectionArgs) {
         Cursor cursor = context.getContentResolver().query(uri,new String[] {"count(*) AS count"},

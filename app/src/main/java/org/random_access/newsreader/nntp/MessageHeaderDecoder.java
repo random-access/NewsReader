@@ -7,7 +7,6 @@ import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.net.util.Base64;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ import java.util.regex.Pattern;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class MessageHeaderDecoder {
+class MessageHeaderDecoder {
 
     private static final String TAG = MessageHeaderDecoder.class.getSimpleName();
 
@@ -27,7 +26,7 @@ public class MessageHeaderDecoder {
 
 
 
-    String decodePattern = "=\\?(.*?)\\?([bBqQ])\\?(.*?)\\?=";
+    private final String decodePattern = "=\\?(.*?)\\?([bBqQ])\\?(.*?)\\?=";
 
     //=?UTF-8?B?w6TDtsO8?=
     public String decode(String text) throws DecoderException {

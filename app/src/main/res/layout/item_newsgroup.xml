@@ -13,17 +13,20 @@
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:paddingRight="10dp"
         android:layout_gravity="center_vertical" />
 
     <TextView
         android:id="@+id/new_news"
-        android:text="0"
+        android:text="1000"
         android:padding="5dp"
-        android:textColor="@color/white"
+        android:textColor="@color/blue"
         android:textStyle="bold"
         android:background="@drawable/shape_new_messages"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center" />
 

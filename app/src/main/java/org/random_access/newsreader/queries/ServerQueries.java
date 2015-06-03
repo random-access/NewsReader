@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class ServerQueries {
 
-    private Context context;
+    private final Context context;
 
     private static final String[] PROJECTION_SERVER = new String[] {ServerContract.ServerEntry._ID,
             ServerContract.ServerEntry.COL_SERVERNAME, ServerContract.ServerEntry.COL_SERVERPORT,
@@ -52,7 +52,7 @@ public class ServerQueries {
      * @param serverId _ID field of server
      * @return cursor pointing in front of the result "table"
      */
-    public Cursor getServerWithId(long serverId) {
+    public Cursor getServerWithId(long serverId){
         return context.getContentResolver().query(Uri.parse(ServerContract.CONTENT_URI + "/" + serverId), PROJECTION_SERVER, null, null, null);
     }
 
@@ -68,6 +68,7 @@ public class ServerQueries {
      * @param settingsId _ID field of corresponding settings table entry
      * @return the URI to the created database entry, containing _ID for further use
      */
+    @SuppressWarnings("SameParameterValue")
     public Uri addServer(String serverTitle, String serverName, int serverPort, boolean encryption, boolean auth, String user, String password, long settingsId) {
         ContentValues values = new ContentValues();
         values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
@@ -111,7 +112,7 @@ public class ServerQueries {
             // we just have 1 setting entry for 1 project
             settingsId = serverCursor.getLong(0);
         }
-
+        serverCursor.close();
         context.getContentResolver().delete(NewsgroupContract.CONTENT_URI, NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""});
 
         int noOfServerRows =  context.getContentResolver().delete(ServerContract.CONTENT_URI, ServerContract.ServerEntry._ID + " = ?", new String[] {serverId + ""});

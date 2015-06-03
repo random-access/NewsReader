@@ -29,8 +29,6 @@ public class NNTPMessageHeader {
     private String transferEncoding;
     private String headerSource;
 
-
-
     public static final String KEY_MESSAGE_ID = "Message-ID";
     public static final String KEY_FROM = "From";
     public static final String KEY_NAME = "Name";
@@ -52,7 +50,7 @@ public class NNTPMessageHeader {
         // headers.put(KEY_MESSAGE_ID, messageId);
         MessageHeaderDecoder decoder = new MessageHeaderDecoder();
         boolean success = true;
-        String nextLine = "";
+        String nextLine;
         StringBuilder sb = new StringBuilder();
         while((nextLine=inReader.readLine()) != null) {
             sb.append(nextLine).append("\n");
@@ -90,8 +88,7 @@ public class NNTPMessageHeader {
             this.subject = s.replace("Subject: ", "");
             afterSubject = true;
         } else if (s.startsWith(KEY_DATE)) {
-            String date = new NNTPDateFormatter().getPrettyDateString(s.replace("Date: ", ""), NNTPDateFormatter.DATE_PATTERN_MSG_HEADER, context);
-            this.date = date;
+            this.date = new NNTPDateFormatter().getPrettyDateString(s.replace("Date: ", ""), NNTPDateFormatter.DATE_PATTERN_MSG_HEADER, context);
             // headers.put(KEY_DATE, date);
         } else if (s.startsWith(KEY_CONTENT_TYPE)) {
             if (s.toUpperCase().contains("UTF-8")) {

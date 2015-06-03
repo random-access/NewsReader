@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,11 +39,10 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     private static final String TAG = EditSubscriptionsActivity.class.getSimpleName();
 
     public static final String KEY_SERVER_ID = "server-id";
-    public static final String TAG_SUBSCRIPTIONS_FRAGMENT = "subscriptions-fragment";
+    private static final String TAG_SUBSCRIPTIONS_FRAGMENT = "subscriptions-fragment";
 
     private SubscriptionListAdapter adapter;
     private RadioGroup selection;
-    private ListView lv;
     private EditText txtSearch;
     private EditSubscriptionsFragment subscriptionsFragment;
     private ArrayList<NewsGroupItem> items;
@@ -79,7 +79,6 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
                 return true;
             case R.id.action_newsgroups_ok:
                 new AddNewsgroupTask().execute();
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -141,11 +140,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     /**
      * Add selected groups not in database yet and remove groups that were in database but are not selected anymore
      */
-    class AddNewsgroupTask extends AsyncTask<Void, Void, Integer[]> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    private class AddNewsgroupTask extends AsyncTask<Void, Void, Integer[]> {
 
         @Override
         protected Integer[] doInBackground(Void... params) {
@@ -170,13 +165,14 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         protected void onPostExecute(Integer[] count) {
             Toast.makeText(EditSubscriptionsActivity.this, getResources().getQuantityString(R.plurals.success_add_groups, count[0], count[0])
                     + ", " + getResources().getQuantityString(R.plurals.delete_groups, count[1], count[1]), Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
     /**
      * Get list of available newsgroups (NewsgroupInfo elements) from the given server, using given login data
      */
-    class GetNewsTask extends AsyncTask<Void, Void, ArrayList<NewsGroupItem>> {
+    private class GetNewsTask extends AsyncTask<Void, Void, ArrayList<NewsGroupItem>> {
 
         @Override
         protected void onPreExecute() {
@@ -212,8 +208,8 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
      */
     private void prepareGUI () {
         setContentView(R.layout.activity_edit_subscriptions);
-        adapter = new SubscriptionListAdapter(EditSubscriptionsActivity.this, R.layout.item_subscription, items);
-        lv = (ListView) findViewById(R.id.groups_list);
+        adapter = new SubscriptionListAdapter(EditSubscriptionsActivity.this, items);
+        ListView lv = (ListView) findViewById(R.id.groups_list);
         lv.setTextFilterEnabled(true);
         lv.setAdapter(adapter);
         txtSearch = (EditText) findViewById(R.id.groups_search);
@@ -248,7 +244,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
      * @param infos array of downloaded NewsgroupInfos
      * @return arraylist containing all NewsgroupItems
      */
-    public ArrayList<NewsGroupItem> getNewsgroupItems (NewsgroupInfo[] infos) {
+    private ArrayList<NewsGroupItem> getNewsgroupItems(NewsgroupInfo[] infos) {
         Cursor c = new NewsgroupQueries(EditSubscriptionsActivity.this).getNewsgroupsOfServer(serverId);
         ArrayList<NewsGroupItem> items  = new ArrayList<>();
         for (int i = 0; i < infos.length; i++) {
@@ -277,6 +273,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             }
             c.moveToFirst();
         }
+        c.close();
         return item;
     }
 
@@ -287,7 +284,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     public class NewsGroupItem implements Comparable<NewsGroupItem>{
         private long newsgroupId;
         private boolean selected;
-        private NewsgroupInfo newsgroupInfo;
+        private final NewsgroupInfo newsgroupInfo;
 
         public  NewsGroupItem(NewsgroupInfo newsgroupInfo) {
             this.newsgroupInfo = newsgroupInfo;
@@ -296,8 +293,8 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         }
 
         @Override
-        public int compareTo(NewsGroupItem item) {
-            if (item == null || item.getNewsgroupInfo() == null || item.getNewsgroupInfo().getNewsgroup() == null) {
+        public int compareTo(@NonNull NewsGroupItem item) {
+            if (item.getNewsgroupInfo() == null || item.getNewsgroupInfo().getNewsgroup() == null) {
                 return -1;
             }
             return newsgroupInfo.getNewsgroup().compareTo(item.getNewsgroupInfo().getNewsgroup());

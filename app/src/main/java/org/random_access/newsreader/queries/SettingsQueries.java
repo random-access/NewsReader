@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class SettingsQueries {
 
-    private Context context;
+    private final Context context;
 
     private static final String[] PROJECTION_SETTINGS = new String[] {SettingsContract.SettingsEntry._ID,
             SettingsContract.SettingsEntry.COL_NAME, SettingsContract.SettingsEntry.COL_EMAIL, SettingsContract.SettingsEntry.COL_SIGNATURE,
@@ -39,7 +39,7 @@ public class SettingsQueries {
      * @param serverId server _ID field in database
      * @return a cursor pointing before the first entry of the "table"
      */
-    public Cursor getSettingsForServer(long serverId) {
+    private Cursor getSettingsForServer(long serverId) {
         return context.getContentResolver().query(Uri.parse(SettingsContract.CONTENT_URI + "/" + serverId), PROJECTION_SETTINGS, null, null, null);
     }
 

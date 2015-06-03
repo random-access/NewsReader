@@ -45,10 +45,10 @@ public class NNTPProvider extends ContentProvider {
     private static final int NEWSGROUP_ROW = 2002;
     private static final int MESSAGE_ROW = 2003;
 
-    private static HashMap<String, String> PROJECTION_MAP_SETTINGS;
-    private static HashMap<String, String> PROJECTION_MAP_SERVER;
-    private static HashMap<String, String> PROJECTION_MAP_NEWSGROUP;
-    private static HashMap<String, String> PROJECTION_MAP_MESSAGE;
+    private static final HashMap<String, String> PROJECTION_MAP_SETTINGS;
+    private static final HashMap<String, String> PROJECTION_MAP_SERVER;
+    private static final HashMap<String, String> PROJECTION_MAP_NEWSGROUP;
+    private static final HashMap<String, String> PROJECTION_MAP_MESSAGE;
 
     static {
         PROJECTION_MAP_SETTINGS = new HashMap<>();
@@ -79,6 +79,8 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE = new HashMap<>();
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_ID_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_MSG_ID, MessageContract.MessageEntry.COL_MSG_ID_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FROM_NAME, MessageContract.MessageEntry.COL_FROM_NAME_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FROM_EMAIL, MessageContract.MessageEntry.COL_FROM_EMAIL_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_CHARSET, MessageContract.MessageEntry.COL_CHARSET_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_SUBJECT, MessageContract.MessageEntry.COL_SUBJECT_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_DATE, MessageContract.MessageEntry.COL_DATE_FULLNAME);
@@ -86,6 +88,8 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_NEW, MessageContract.MessageEntry.COL_NEW_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_IN_REPLY_TO, MessageContract.MessageEntry.COL_IN_REPLY_TO_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_FK_N_ID_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_HEADER, MessageContract.MessageEntry.COL_HEADER_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_BODY, MessageContract.MessageEntry.COLL_BODY_FULLNAME);
     }
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -285,6 +289,7 @@ public class NNTPProvider extends ContentProvider {
     }
 
 
+    @SuppressWarnings("EmptyMethod")
     private void checkColumnProjection(String[] projection) {
         // TODO check if requested columns in selection are valid
     }

@@ -18,6 +18,7 @@ import java.io.Reader;
  * **** This class is a slightly modified version of the Apache Commons Net's NNTPClient class ****
  *              The license can be found here: http://www.apache.org/licenses/LICENSE-2.0
  */
+@SuppressWarnings("ALL")
 public class CustomNNTPClient extends CustomNNTP {
 
     public BufferedReader retrieveArticleBody(String articleId, ArticleInfo pointer) throws IOException {
@@ -55,7 +56,7 @@ public class CustomNNTPClient extends CustomNNTP {
                 pointer.articleId = tokens[var7++];
                 return;
             } catch (NumberFormatException var6) {
-                ;
+
             }
         }
 

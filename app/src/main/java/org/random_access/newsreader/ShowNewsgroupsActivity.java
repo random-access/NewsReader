@@ -29,7 +29,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     public static final String KEY_SERVER_ID = "server-id";
     public static final String KEY_SERVER_TITLE = "server-title";
 
-    private String[] newsgroupProjection = { NewsgroupContract.NewsgroupEntry._ID, NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_TITLE,
+    private final String[] newsgroupProjection = { NewsgroupContract.NewsgroupEntry._ID, NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_TITLE,
             NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID};
     public static final int COL_NEWSGROUP_ID = 0;
     public static final int COL_NEWSGROUP_NAME = 1;
@@ -39,7 +39,6 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     private long serverId;
 
     private NewsgroupCursorAdapter mNewsgroupAdapter;
-    private ListView mNewsgroupListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         setContentView(R.layout.activity_show_newsgroups);
         setTitle(getIntent().getExtras().getString(KEY_SERVER_TITLE));
-        mNewsgroupListView = (ListView)findViewById(R.id.show_groups_list);
+        ListView mNewsgroupListView = (ListView) findViewById(R.id.show_groups_list);
         mNewsgroupListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mNewsgroupAdapter = new NewsgroupCursorAdapter(this, null);
         mNewsgroupListView.setAdapter(mNewsgroupAdapter);

@@ -22,7 +22,7 @@
             android:syncable="true" >
         </provider>
 
-        <service android:name=".sync.NNTPAuthenticatorService" >
+        <service android:name=".sync.NNTPAuthenticatorService" android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -33,7 +33,7 @@
         </service>
         <service
             android:name=".sync.NNTPSyncService"
-            android:exported="true"
+            android:exported="false"
             android:process=":sync" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />

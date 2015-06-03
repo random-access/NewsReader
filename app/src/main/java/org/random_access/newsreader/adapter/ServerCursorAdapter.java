@@ -25,18 +25,23 @@ import org.random_access.newsreader.queries.NewsgroupQueries;
  */
 public class ServerCursorAdapter extends CursorAdapter {
 
-    public static final int COLLAPSED = 0;
-    public static final int EXTENDED = 1;
+    private static final int COLLAPSED = 0;
+    private static final int EXTENDED = 1;
     private int mCurrentDetailPosition = -1;
 
     // resources
-    TextView txtTitle, txtName, txtSubscriptions;
-    ImageButton btnShowNewsgroups, btnEditServerSettings, btnEditSubscriptions;
+    private TextView txtTitle;
+    private TextView txtName;
+    private TextView txtSubscriptions;
+    private ImageButton btnShowNewsgroups;
+    private ImageButton btnEditServerSettings;
+    private ImageButton btnEditSubscriptions;
 
     private static final String TAG = ServerCursorAdapter.class.getSimpleName();
 
-    private Resources res;
+    private final Resources res;
 
+    @SuppressWarnings("SameParameterValue")
     public ServerCursorAdapter(Context context, Cursor cursor)  {
         super(context, cursor, 0);
         res = context.getResources();
@@ -136,7 +141,5 @@ public class ServerCursorAdapter extends CursorAdapter {
         this.mCurrentDetailPosition = mCurrentDetailPosition;
         notifyDataSetChanged();
     }
-
-
 
 }

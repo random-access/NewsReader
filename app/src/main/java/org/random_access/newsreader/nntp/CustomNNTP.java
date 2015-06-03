@@ -33,12 +33,13 @@ import org.apache.commons.net.nntp.NNTPConnectionClosedException;
  * **** This class is a slightly modified version of the Apache Commons Net's NNTPClient class ****
  *              The license can be found here: http://www.apache.org/licenses/LICENSE-2.0
  */
+@SuppressWarnings("ALL")
 public class CustomNNTP extends SocketClient {
     public static final int DEFAULT_PORT = 119;
     private static String __DEFAULT_ENCODING = "ISO-8859-1";
     boolean _isAllowedToPost;
     int _replyCode;
-    String _replyString;
+    private String _replyString;
     protected BufferedReader _reader_;
     protected BufferedWriter _writer_;
     protected ProtocolCommandSupport _commandSupport_;

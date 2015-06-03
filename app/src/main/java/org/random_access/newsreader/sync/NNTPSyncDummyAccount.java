@@ -17,12 +17,12 @@ public class NNTPSyncDummyAccount {
 
     private static final String TAG = NNTPSyncDummyAccount.class.getSimpleName();
 
-    public static final String AUTHORITY = "org.random_access.newsreader.provider";
+    private static final String AUTHORITY = "org.random_access.newsreader.provider";
 
     // An account type, in the form of a domain name
-    public static final String ACCOUNT_TYPE = "org.random_access.newsreader.datasync";
+    private static final String ACCOUNT_TYPE = "org.random_access.newsreader.datasync";
     // The account name
-    public static final String ACCOUNT = "dummyaccount";
+    private static final String ACCOUNT = "dummyaccount";
     // Instance fields
 
     /**

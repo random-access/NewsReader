@@ -61,6 +61,7 @@ public class NewsgroupContract {
         Log.d(TAG, DATABASE_CREATE);
     }
 
+    @SuppressWarnings("EmptyMethod")
     public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion) {
         // add upgrade procedure if necessary
     }

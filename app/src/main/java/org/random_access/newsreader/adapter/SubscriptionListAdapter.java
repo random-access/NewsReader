@@ -28,11 +28,11 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
 
     private static final String TAG = SubscriptionListAdapter.class.getSimpleName();
 
-    private Context context; // activity hosting list view
-    private int layoutId; // ID of list item
+    private final Context context; // activity hosting list view
+    private final int layoutId; // ID of list item
 
     // data - whole data & filter result
-    private ArrayList<EditSubscriptionsActivity.NewsGroupItem> originalNewsgroupItems;
+    private final ArrayList<EditSubscriptionsActivity.NewsGroupItem> originalNewsgroupItems;
     private ArrayList<EditSubscriptionsActivity.NewsGroupItem> filteredNewsgroupItems;
 
     private int currentDetailView = -1; // view that takes as much lines as it needs to display the whole text
@@ -40,9 +40,9 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
     private boolean selectedItemsOnly = false; // show only items selected by users or all items
     private SubscriptionFilter filter = null; // filter list according to edittext & selection state
 
-    public SubscriptionListAdapter(Context context, int layoutId, ArrayList<EditSubscriptionsActivity.NewsGroupItem> subscriptions) {
+    public SubscriptionListAdapter(Context context, ArrayList<EditSubscriptionsActivity.NewsGroupItem> subscriptions) {
         this.context = context;
-        this.layoutId = layoutId;
+        this.layoutId = R.layout.item_subscription;
         Collections.sort(subscriptions);
         this.originalNewsgroupItems = subscriptions;
         this.filteredNewsgroupItems = originalNewsgroupItems;
@@ -67,7 +67,7 @@ public class SubscriptionListAdapter extends BaseAdapter implements Filterable {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View newView = convertView;
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         // reuse existing views
         if (newView != null) {

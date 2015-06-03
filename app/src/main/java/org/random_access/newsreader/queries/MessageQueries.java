@@ -5,7 +5,6 @@ import android.database.Cursor;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -16,20 +15,32 @@ import java.util.ArrayList;
  */
 public class MessageQueries {
 
-    private Context context;
+    private final Context context;
 
-    private static final String[] PROJECTION_MESSAGE = new String[] {MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_MSG_ID,
-            MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_DATE , MessageContract.MessageEntry.COL_TIMEZONE};
+    private static final String[] PROJECTION_MESSAGE = new String[] {MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_MSG_ID, MessageContract.MessageEntry.COL_FROM_EMAIL,
+            MessageContract.MessageEntry.COL_FROM_NAME, MessageContract.MessageEntry.COL_SUBJECT, MessageContract.MessageEntry.COL_CHARSET,
+            MessageContract.MessageEntry.COL_DATE, MessageContract.MessageEntry.COL_TIMEZONE,MessageContract.MessageEntry.COL_NEW, MessageContract.MessageEntry.COL_IN_REPLY_TO,
+            MessageContract.MessageEntry.COL_FK_N_ID};
 
-    // TODO 0 line -> charset
-    public static final int COL_ID = 1;
-    public static final int COL_MSG_ID = 2;
-    public static final int COL_FK_N_ID = 3;
-    public static final int COL_DATE = 4;
-    public static final int COL_TIMEZONE = 5;
+    public static final int COL_ID = 0;
+    public static final int COL_MSG_ID = 1;
+    public static final int COL_FROM_EMAIL = 2;
+    public static final int COL_FROM_NAME = 3;
+    public static final int COL_SUBJECT = 4;
+    public static final int COL_CHARSET = 5;
+    public static final int COL_DATE = 6;
+    public static final int COL_TIMEZONE = 7;
+    public static final int COL_NEW = 8;
+    public static final int COL_IN_REPLY_TO = 9;
+    public static final int COL_FK_N_ID = 10;
 
     public MessageQueries(Context context) {
         this.context = context;
+    }
+
+    public Cursor getMessagesOfNewsgroup(long newsgroupId) {
+        return context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {newsgroupId + ""},
+                MessageContract.MessageEntry.COL_DATE + " DESC");
     }
 
     /**
@@ -43,21 +54,14 @@ public class MessageQueries {
      * @param newsgroupId ID of newsgroup we want to look at
      * @return ArrayList<String>, containing all the message ID's of the youngest message(-s) or being empty
      */
-    public ArrayList<String> getListOfYoungestMessagesInNewsgroup (long newsgroupId) {
-        ArrayList<String> result = new ArrayList<>();
+    public long getDateOfYoungestMessagesInNewsgroup (long newsgroupId) {
+        long result = 0;
         Cursor c =  context.getContentResolver().query
                 (MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {newsgroupId + ""},
-                        MessageContract.MessageEntry.COL_DATE + " DESC, " + MessageContract.MessageEntry.COL_TIMEZONE + " DESC");
+                        MessageContract.MessageEntry.COL_DATE + " DESC");
         if (c.moveToFirst()) {
-            long messageDate = c.getLong(COL_DATE) + convertTimeZoneInNumber(c.getString(COL_TIMEZONE));
-            long newMessageDate = messageDate;
-            while (messageDate == newMessageDate) {
-                result.add(c.getString(COL_MSG_ID));
-                c.moveToNext();
-                newMessageDate  = c.getLong(COL_DATE) + convertTimeZoneInNumber(c.getString(COL_TIMEZONE));
-            }
+            result = c.getLong(COL_DATE) + convertTimeZoneInNumber(c.getString(COL_TIMEZONE));
         }
-
         c.close();
         return  result;
     }

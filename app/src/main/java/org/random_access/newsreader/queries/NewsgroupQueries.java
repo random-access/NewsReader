@@ -18,7 +18,7 @@ import java.io.IOException;
  */
 public class NewsgroupQueries {
 
-    private Context context;
+    private final Context context;
 
     private static final String[] PROJECTION_NEWSGROUP = new String[] {NewsgroupContract.NewsgroupEntry._ID,
             NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_TITLE , NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID};
@@ -37,7 +37,7 @@ public class NewsgroupQueries {
      * @param newsgroupId the _ID field from database
      * @return a cursor pointing in front of the result
      */
-    public Cursor getNewsgroupForId(long newsgroupId) {
+    private Cursor getNewsgroupForId(long newsgroupId) {
         return context.getContentResolver().query(Uri.parse(NewsgroupContract.CONTENT_URI + "/" + newsgroupId), PROJECTION_NEWSGROUP, null, null, null);
     }
 
@@ -48,7 +48,7 @@ public class NewsgroupQueries {
      */
     public Cursor getNewsgroupsOfServer(long serverId) {
         return context.getContentResolver().query(NewsgroupContract.CONTENT_URI, PROJECTION_NEWSGROUP,
-                NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[] {serverId + ""}, null);
+                NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, null);
     }
 
     /**
@@ -87,12 +87,11 @@ public class NewsgroupQueries {
 
     /**
      * Helper method to get the name of a newsgroup for a given ID
-     * @param context the Sync context
      * @param newsGroupId database _ID field identifying a Newsgroup entry
      * @return String containing the name of the given newsgroup, e.g. formatted like this: "section1.section2.*.sectionl"
      * @throws IOException if there is no newsgroup matching the ID
      */
-    private String getNewsgroupName(Context context, long newsGroupId) throws IOException {
+    public String getNewsgroupName(long newsGroupId) throws IOException {
         NewsgroupQueries nQueries = new NewsgroupQueries(context);
         Cursor c = nQueries.getNewsgroupForId(newsGroupId);
         if (!c.moveToFirst()) {

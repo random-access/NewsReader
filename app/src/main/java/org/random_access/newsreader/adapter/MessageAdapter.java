@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import org.random_access.newsreader.R;
@@ -26,13 +25,13 @@ public class MessageAdapter extends BaseAdapter {
 
     private static final String TAG = MessageAdapter.class.getSimpleName();
 
-    private Context context;
-    private int layoutId;
-    private ArrayList<NNTPMessageHeader> messageHeaders;
+    private final Context context;
+    private final int layoutId;
+    private final ArrayList<NNTPMessageHeader> messageHeaders;
 
-    public MessageAdapter (Context context, int layoutId, ArrayList<NNTPMessageHeader> messageHeaders) {
+    public MessageAdapter(Context context, ArrayList<NNTPMessageHeader> messageHeaders) {
         this.context = context;
-        this. layoutId = layoutId;
+        this. layoutId = R.layout.item_message_template;
         this.messageHeaders = messageHeaders;
         Log.d(TAG, "Number of messages: " + messageHeaders.size());
     }
@@ -55,7 +54,7 @@ public class MessageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View newView = convertView;
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if (newView != null) {
             holder = (ViewHolder) newView.getTag();

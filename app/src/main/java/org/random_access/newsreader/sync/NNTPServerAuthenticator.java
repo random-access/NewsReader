@@ -13,7 +13,7 @@ import android.os.Bundle;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class NNTPServerAuthenticator extends AbstractAccountAuthenticator {
+class NNTPServerAuthenticator extends AbstractAccountAuthenticator {
 
     public NNTPServerAuthenticator(Context context) {
         super(context);

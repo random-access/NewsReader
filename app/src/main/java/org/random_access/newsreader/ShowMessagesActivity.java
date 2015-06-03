@@ -1,10 +1,7 @@
 package org.random_access.newsreader;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.apache.commons.net.nntp.ArticleInfo;
@@ -22,14 +18,12 @@ import org.random_access.newsreader.adapter.MessageAdapter;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
@@ -95,9 +89,9 @@ public class ShowMessagesActivity extends AppCompatActivity {
         protected ArrayList<NNTPMessageHeader> doInBackground(Void... voids) {
             try {
                 boolean auth = new ServerQueries(ShowMessagesActivity.this).hasServerAuth(serverId);
-                NNTPClient client = connectToNewsServer(serverId, auth);
-                NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(new GregorianCalendar(15,01,01), true);
-                groupName = getNewsgroupName(groupId);
+                NNTPClient client = new NNTPConnector(ShowMessagesActivity.this).connectToNewsServer(serverId, auth);
+                NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(new GregorianCalendar(15, 1, 1), true);
+                groupName = new NewsgroupQueries(ShowMessagesActivity.this).getNewsgroupName(groupId);
                 query.addNewsgroup(groupName);
                 String[] messages = client.listNewNews(query);
                 if (messages == null) {
@@ -143,7 +137,7 @@ public class ShowMessagesActivity extends AppCompatActivity {
             setContentView(R.layout.activity_show_messages);
             setTitle(groupName);
             ListView lv = (ListView)findViewById(R.id.show_messages_list);
-            final MessageAdapter adapter = new MessageAdapter(ShowMessagesActivity.this, R.layout.item_message_template, headers);
+            final MessageAdapter adapter = new MessageAdapter(ShowMessagesActivity.this, headers);
             lv.setAdapter(adapter);
             /* final ArrayAdapter<String> adapter = new ArrayAdapter<>(ShowMessagesActivity.this, R.layout.item_message, strings);
             lv.setAdapter(adapter); */
@@ -159,54 +153,6 @@ public class ShowMessagesActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    /**
-     * Helper method to establish a connection to a given news server
-     * @param serverId database ID of a server entry
-     * @returna NNTPClient object to communicate with
-     * @throws IOException
-     */
-    private NNTPClient connectToNewsServer(long serverId, boolean auth) throws IOException, LoginException {
-        ServerQueries sQueries = new ServerQueries(ShowMessagesActivity.this);
-        Cursor c = sQueries.getServerWithId(serverId);
-        if (!c.moveToFirst()){
-            c.close();
-            Log.d(TAG, "Found no server with the given ID in database");
-            throw new IOException("Found no server with the given ID in database");
-        }
-        NNTPClient nntpClient = new NNTPClient();
-        // TODO handle encrypted connections
-        nntpClient.connect(c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT));
-        if (!auth) {
-            c.close();
-            return nntpClient;
-        }
-        boolean authOk = nntpClient.authenticate(c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
-        c.close();
-        if (authOk) {
-            Log.d(TAG, "Successfully logged in!");
-            return nntpClient;
-        } else {
-            throw new LoginException("Login failed");
-        }
-    }
-
-    /**
-     * Helper method to get the name of a newsgroup for a given ID
-     * @param newsGroupId database _ID field identifying a Newsgroup entry
-     * @return String containing the name of the given newsgroup, e.g. formatted like this: "section1.section2.*.sectionl"
-     * @throws IOException if there is no newsgroup matching the ID
-     */
-    private String getNewsgroupName(long newsGroupId) throws IOException {
-        NewsgroupQueries nQueries = new NewsgroupQueries(ShowMessagesActivity.this);
-        Cursor c = nQueries.getNewsgroupForId(newsGroupId);
-        if (!c.moveToFirst()) {
-            throw new IOException("No newsgroup with the given ID found");
-        }
-        String newsgroupName = c.getString(NewsgroupQueries.COL_NAME);
-        c.close();
-        return newsgroupName;
     }
 
 
