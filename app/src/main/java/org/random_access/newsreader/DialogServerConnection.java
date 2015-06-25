@@ -26,7 +26,7 @@ import javax.security.auth.login.LoginException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -181,10 +181,9 @@ public class DialogServerConnection extends DialogFragment {
             } else {
                 Log.e(TAG, "Error in ServerConnectTask: " + message);
                 if (exc.getClass() == LoginException.class) {
-                    Toast.makeText(getActivity(), res.getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
-
-                } else {
                     Toast.makeText(getActivity(), res.getString(R.string.error_password), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), res.getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
                 }
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);

@@ -9,7 +9,7 @@ import org.random_access.newsreader.provider.NNTPProvider;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -42,14 +42,14 @@ public class SettingsContract {
         public static final String COL_EMAIL = "_EMAIL";
         public static final String COL_SIGNATURE = "_SIGNATURE";
         public static final String COL_MSG_KEEP_NO = "_MSG_KEEP_NO";
-        public static final String COL_MSG_KEEP_DATE = "_MSG_KEEP_DATE";
+        public static final String COL_MSG_KEEP_DAYS = "_MSG_KEEP_DAYS";
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
-        public static final String COL_NAME_FULLNAME = TABLE_NAME + "." + "_NAME";
-        public static final String COL_EMAIL_FULLNAME = TABLE_NAME + "." + "_EMAIL";
-        public static final String COL_SIGNATURE_FULLNAME = TABLE_NAME + "." + "_SIGNATURE";
-        public static final String COL_MSG_KEEP_NO_FULLNAME = TABLE_NAME + "." +"_MSG_KEEP_NO";
-        public static final String COL_MSG_KEEP_DATE_FULLNAME = TABLE_NAME + "." +"_MSG_KEEP_DATE";
+        public static final String COL_NAME_FULLNAME = TABLE_NAME + "." + COL_NAME;
+        public static final String COL_EMAIL_FULLNAME = TABLE_NAME + "." + COL_EMAIL;
+        public static final String COL_SIGNATURE_FULLNAME = TABLE_NAME + "." + COL_SIGNATURE;
+        public static final String COL_MSG_KEEP_NO_FULLNAME = TABLE_NAME + "." + COL_MSG_KEEP_NO;
+        public static final String COL_MSG_KEEP_DAYS_FULLNAME = TABLE_NAME + "." + COL_MSG_KEEP_DAYS;
     }
 
     private static final String DATABASE_CREATE = "create table if not exists "
@@ -60,7 +60,7 @@ public class SettingsContract {
             + SettingsEntry.COL_EMAIL + " text not null, "
             + SettingsEntry.COL_SIGNATURE + " text, "
             + SettingsEntry.COL_MSG_KEEP_NO + " integer not null, "
-            + SettingsEntry.COL_MSG_KEEP_DATE + " integer not null"
+            + SettingsEntry.COL_MSG_KEEP_DAYS + " integer not null"
             + ");";
 
     public static void onCreate (SQLiteDatabase db) {

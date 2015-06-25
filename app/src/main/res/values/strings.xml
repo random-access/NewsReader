@@ -33,7 +33,7 @@
     <string name="email_hint">john-doe@example.com</string>
     <string name="signature">Signature</string>
     <string name="signature_hint">Optional</string>
-    <string name="msg_keep">Days to keep message headers</string>
+    <string name="msg_keep">Days to keep messageBody headers</string>
     <string name="msg_keep_hint">Default: 30</string>
 
     <string name="server_delete">Delete server</string>

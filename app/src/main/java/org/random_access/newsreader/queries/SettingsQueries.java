@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -21,7 +21,7 @@ public class SettingsQueries {
 
     private static final String[] PROJECTION_SETTINGS = new String[] {SettingsContract.SettingsEntry._ID,
             SettingsContract.SettingsEntry.COL_NAME, SettingsContract.SettingsEntry.COL_EMAIL, SettingsContract.SettingsEntry.COL_SIGNATURE,
-    SettingsContract.SettingsEntry.COL_MSG_KEEP_DATE, SettingsContract.SettingsEntry.COL_MSG_KEEP_NO};
+    SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS, SettingsContract.SettingsEntry.COL_MSG_KEEP_NO};
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
@@ -56,19 +56,18 @@ public class SettingsQueries {
         values.put(SettingsContract.SettingsEntry.COL_NAME, name);
         values.put(SettingsContract.SettingsEntry.COL_EMAIL, email);
         values.put(SettingsContract.SettingsEntry.COL_SIGNATURE, signature);
-        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DATE, msgKeepDays);
-        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, 0); // TODO handle this
+        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS, msgKeepDays);
+        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, -1); // TODO handle this
         return context.getContentResolver().insert(SettingsContract.CONTENT_URI, values);
     }
 
     /**
      * Helper method for getting the nummber of messages to keep in memory
-     * @param context the Sync context
      * @param serverId database _ID field identifying a Server entry
      * @return int - number of messages to keep
      * @throws IOException
      */
-    public int getNumberOfMessagesToKeep(Context context, long serverId) throws IOException{
+    public int getNumberOfMessagesToKeep(long serverId) throws IOException{
         SettingsQueries sQueries = new SettingsQueries(context);
         Cursor c = sQueries.getSettingsForServer(serverId);
         if (c.getCount() > 0 ) {
@@ -84,12 +83,11 @@ public class SettingsQueries {
 
     /**
      * Helper method for getting the number of days to keep message headers in memory
-     * @param context the Sync context
      * @param serverId database _ID field identifying a Server entry
      * @return int - number of days to keep messages
      * @throws IOException
      */
-    public int getNumberOfDaysForKeepingMessages(Context context, long serverId) throws IOException{
+    public int getNumberOfDaysForKeepingMessages(long serverId) throws IOException{
         SettingsQueries sQueries = new SettingsQueries(context);
         Cursor c =  sQueries.getSettingsForServer(serverId);
         if (!c.moveToFirst()) {
@@ -101,4 +99,8 @@ public class SettingsQueries {
             return i;
         }
     }
+
+
+
+
 }

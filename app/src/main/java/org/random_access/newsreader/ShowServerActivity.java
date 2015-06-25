@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
+import android.content.SyncInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,28 +23,31 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.random_access.newsreader.adapter.ServerCursorAdapter;
+import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.sync.NNTPSyncAdapter;
 import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
 
+import java.util.List;
+
 /**
-* <b>Project:</b> Newsreader for Android <br>
-        * <b>Date:</b> 18.05.15 <br>
-        * <b>Author:</b> Monika Schrenk <br>
-        * <b>E-Mail:</b> software@random-access.org <br>
-*/
+ * <b>Project:</b> Newsreader for Android <br>
+ * <b>Date:</b> 25.07.2015 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
+ */
 public class ShowServerActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // The authority for the sync adapter's content provider
-    private static final String AUTHORITY = "org.random_access.newsreader.provider";
-
-    private Account mAccount;
+    public static final String AUTHORITY = "org.random_access.newsreader.provider";
+    public static Account ACCOUNT;
 
     // Sync interval constants
     private static final long SECONDS_PER_MINUTE = 60L;
-    private static final long SYNC_INTERVAL_IN_MINUTES = 2L; //15L;
-    private static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+    private static final long SYNC_INTERVAL_IN_MINUTES = 15L; //15L;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     private final String[] serverProjection = { ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
             ServerContract.ServerEntry.COL_SERVERNAME };
@@ -61,8 +65,13 @@ public class ShowServerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_server);
         // Create the dummy account
-        mAccount = NNTPSyncDummyAccount.createSyncAccount(this);
-        ContentResolver.addPeriodicSync(mAccount, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+        ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
+        Bundle extras = new Bundle();
+        extras.putString(NNTPSyncAdapter.SYNC_REQUEST_ORIGIN, TAG);
+        extras.putBoolean(NNTPSyncAdapter.SYNC_REQUEST_TAG, true);
+        ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, extras, SYNC_INTERVAL);
+        NewsgroupObserver newsgroupObserver = new NewsgroupObserver();
+        getContentResolver().registerContentObserver(NewsgroupContract.CONTENT_URI, false, newsgroupObserver);
         mServerListView = (ListView)findViewById(R.id.server_list);
         mServerListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mServerAdapter = new ServerCursorAdapter(this, null);
@@ -102,7 +111,6 @@ public class ShowServerActivity extends AppCompatActivity implements
         // Starts a new or restarts an existing Loader
         getLoaderManager().restartLoader(0, null, this);
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

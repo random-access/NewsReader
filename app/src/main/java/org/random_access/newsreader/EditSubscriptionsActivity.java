@@ -1,6 +1,7 @@
 package org.random_access.newsreader;
 
 import android.app.FragmentManager;
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,8 +30,8 @@ import java.util.ArrayList;
 import javax.security.auth.login.LoginException;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Project:</b> Newsreader for Android <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -59,6 +60,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "In onCreate");
         setTitle(getResources().getString(R.string.select_newsgroups));
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         loadNewsgroups();
@@ -228,6 +230,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         selection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                txtSearch.setText("");
                 manageCheckFilter(checkedId);
             }
         });
@@ -273,7 +276,6 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             }
             c.moveToFirst();
         }
-        c.close();
         return item;
     }
 

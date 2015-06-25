@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -94,8 +94,9 @@ public class ServerQueries {
      * @return number of server deletions (should be 1 if deletion was correct & successful)
      */
     public int deleteServerWithId(long serverId) {
-        Cursor newsgroupCursor = context.getContentResolver().query(NewsgroupContract.CONTENT_URI, new String[]{NewsgroupContract.NewsgroupEntry._ID},
-                NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, NewsgroupContract.NewsgroupEntry._ID + " ASC");
+        Cursor newsgroupCursor = context.getContentResolver().query(NewsgroupContract.CONTENT_URI, new String[]{NewsgroupContract.NewsgroupEntry._ID,
+                        NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID},
+                NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, null);
         if (newsgroupCursor.moveToFirst()) {
             while (!newsgroupCursor.isAfterLast()) {
                 long newsgroupId = newsgroupCursor.getLong(0);
@@ -106,11 +107,11 @@ public class ServerQueries {
         newsgroupCursor.close();
 
         long settingsId = 0;
-        Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, new String[]{ServerContract.ServerEntry.COL_FK_SET_ID},
+        Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, new String[]{ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_FK_SET_ID},
                 ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}, null);
         if (!serverCursor.moveToFirst()) {
             // we just have 1 setting entry for 1 project
-            settingsId = serverCursor.getLong(0);
+            settingsId = serverCursor.getLong(1);
         }
         serverCursor.close();
         context.getContentResolver().delete(NewsgroupContract.CONTENT_URI, NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""});

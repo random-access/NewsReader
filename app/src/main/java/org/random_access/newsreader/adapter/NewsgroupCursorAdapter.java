@@ -11,11 +11,12 @@ import android.widget.TextView;
 
 import org.random_access.newsreader.R;
 import org.random_access.newsreader.ShowNewsgroupsActivity;
+import org.random_access.newsreader.queries.MessageQueries;
 
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -37,10 +38,10 @@ public class NewsgroupCursorAdapter extends CursorAdapter {
         TextView tvNewNews = (TextView) view.findViewById(R.id.new_news);
         String name = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_NAME);
         String title = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_TITLE);
-        String newNews = ((cursor.getLong(ShowNewsgroupsActivity.COL_NEWSGROUP_ID) + 97) % 101)*10 + ""; //TODO count new news
+        int newNewsCount= new MessageQueries(context).getNewMessagesCount(cursor.getLong(ShowNewsgroupsActivity.COL_NEWSGROUP_ID));
         tvTitle.setText(TextUtils.isEmpty(title) ? name : title);
-        tvNewNews.setText(newNews);
-
+        tvNewNews.setText(Integer.toString(newNewsCount));
+        tvNewNews.setVisibility(newNewsCount == 0 ? View.GONE : View.VISIBLE);
     }
 
 

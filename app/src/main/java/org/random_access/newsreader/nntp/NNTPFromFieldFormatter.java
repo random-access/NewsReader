@@ -5,13 +5,13 @@ import java.util.regex.Pattern;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
 class NNTPFromFieldFormatter {
 
-    private static final String decodePatternMail = "(<[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}>)";
+    private static final String decodePatternMail = "([<]{0,1}[A-Za-zäöüÄÖÜ0-9.!#$%&'*+-\\/=?^_`{|}~]*@[A-Za-zäöüÄÖÜ0-9-]{1,}+\\.[A-Za-z]{2,}[>]{0,1})";
     private String fullName = "";
     private String email = "";
 
@@ -25,7 +25,7 @@ class NNTPFromFieldFormatter {
         if (matcher.find()) {
             email = matcher.group(0);
             text = text.replace(email, "");
-            email = email.substring(1,email.length()-1);
+            email = email.replace("<","").replace(">","");
         }
         text = text.replaceAll("[_\"\'()]", " ");
         String[] nameArray = text.split("\\s+");

@@ -24,7 +24,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_open_blue"
+        android:src="@drawable/ic_open_white"
         android:padding="10dp" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:layout_toRightOf="@id/id_server_name_extended"
         android:layout_toEndOf="@id/id_server_name_extended"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_edit_blue"
+        android:src="@drawable/ic_edit_white"
         android:padding="10dp"
         android:layout_alignBottom="@id/id_server_name_extended" />
 
@@ -65,7 +65,7 @@
         android:layout_toRightOf="@id/id_subscriptions_extended"
         android:layout_toEndOf="@id/id_subscriptions_extended"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_settings_blue"
+        android:src="@drawable/ic_settings_white"
         android:padding="10dp"
         android:layout_alignBottom="@id/id_subscriptions_extended" />
 

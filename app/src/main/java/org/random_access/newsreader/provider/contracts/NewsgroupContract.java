@@ -9,7 +9,7 @@ import org.random_access.newsreader.provider.NNTPProvider;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -37,12 +37,14 @@ public class NewsgroupContract {
         
         public static final String COL_NAME = "_NAME";
         public static final String COL_TITLE = "_TITLE";
+        public static final String COL_LAST_SYNC_DATE = "_LAST_SYNC_DATE";
         public static final String COL_FK_SERV_ID= "_FK_SERV_ID";
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
-        public static final String COL_NAME_FULLNAME = TABLE_NAME + "." + "_NAME";
-        public static final String COL_TITLE_FULLNAME = TABLE_NAME + "." + "_TITLE";
-        public static final String COL_FK_SERV_ID_FULLNAME = TABLE_NAME + "." + "_FK_SERV_ID";
+        public static final String COL_NAME_FULLNAME = TABLE_NAME + "." + COL_NAME;
+        public static final String COL_TITLE_FULLNAME = TABLE_NAME + "." + COL_TITLE;
+        public static final String COL_LAST_SYNC_DATE_FULLNAME = TABLE_NAME + "." + COL_LAST_SYNC_DATE;
+        public static final String COL_FK_SERV_ID_FULLNAME = TABLE_NAME + "." + COL_FK_SERV_ID;
     }
 
     private static final String DATABASE_CREATE = "create table if not exists "
@@ -51,6 +53,7 @@ public class NewsgroupContract {
             + NewsgroupEntry._ID + " integer primary key autoincrement, "
             + NewsgroupEntry.COL_NAME + " text not null, "
             + NewsgroupEntry.COL_TITLE + " text, "
+            + NewsgroupEntry.COL_LAST_SYNC_DATE + " integer not null, "
             + NewsgroupEntry.COL_FK_SERV_ID + " integer not null, "
             + "foreign key (" + NewsgroupEntry.COL_FK_SERV_ID + ") references "
             +  ServerContract.TABLE_NAME+ " (" + ServerContract.ServerEntry._ID + ")"

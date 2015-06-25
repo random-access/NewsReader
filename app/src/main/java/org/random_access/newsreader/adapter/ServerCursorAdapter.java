@@ -1,9 +1,11 @@
 package org.random_access.newsreader.adapter;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,7 @@ import org.random_access.newsreader.queries.NewsgroupQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -73,20 +75,23 @@ public class ServerCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         final int position = cursor.getPosition();
         final int type = getItemViewType(position);
-        findResources(type, view);
+        findResources(type, view, context);
         assignValuesToViewElems(context, type, cursor);
         setListeners(type, cursor, context);
     }
 
-    private void findResources(int type, View parent) {
+    private void findResources(int type, View parent, Context context) {
         switch (type) {
             case EXTENDED:
                 txtTitle = (TextView) parent.findViewById(R.id.id_server_title_extended);
                 txtName = (TextView) parent.findViewById(R.id.id_server_name_extended);
                 txtSubscriptions = (TextView) parent.findViewById(R.id.id_subscriptions_extended);
                 btnShowNewsgroups = (ImageButton) parent.findViewById(R.id.btn_open);
+                btnShowNewsgroups.setColorFilter(context.getResources().getColor(R.color.light_blue));
                 btnEditServerSettings = (ImageButton) parent.findViewById(R.id.btn_edit_server);
+                btnEditServerSettings.setColorFilter(context.getResources().getColor(R.color.light_blue));
                 btnEditSubscriptions = (ImageButton) parent.findViewById(R.id.btn_edit_subscriptions);
+                btnEditSubscriptions.setColorFilter(context.getResources().getColor(R.color.light_blue));
                 break;
             default:
                 txtTitle = (TextView) parent.findViewById(R.id.id_server_title);
@@ -108,7 +113,7 @@ public class ServerCursorAdapter extends CursorAdapter {
         }
     }
 
-    private void setListeners(int type, Cursor cursor, Context context) {
+    private void setListeners(int type, Cursor cursor, final Context context) {
         if (type == EXTENDED) {
             final Context fContext = context;
             final long id = cursor.getLong(ShowServerActivity.COL_SERVER_ID);
@@ -116,6 +121,7 @@ public class ServerCursorAdapter extends CursorAdapter {
             btnEditSubscriptions.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ContentResolver.cancelSync(null, null);
                     Intent intent = new Intent (fContext, EditSubscriptionsActivity.class);
                     intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
                     fContext.startActivity(intent);

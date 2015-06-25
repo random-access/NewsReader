@@ -14,12 +14,13 @@ import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.provider.contracts.SettingsContract;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -57,7 +58,6 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_EMAIL, SettingsContract.SettingsEntry.COL_EMAIL_FULLNAME);
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_SIGNATURE, SettingsContract.SettingsEntry.COL_SIGNATURE_FULLNAME);
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, SettingsContract.SettingsEntry.COL_MSG_KEEP_NO_FULLNAME);
-        PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DATE, SettingsContract.SettingsEntry.COL_MSG_KEEP_DATE_FULLNAME);
 
         PROJECTION_MAP_SERVER = new HashMap<>();
         PROJECTION_MAP_SERVER.put(ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_ID_FULLNAME);
@@ -75,6 +75,7 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_NEWSGROUP.put(NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_NAME_FULLNAME);
         PROJECTION_MAP_NEWSGROUP.put(NewsgroupContract.NewsgroupEntry.COL_TITLE, NewsgroupContract.NewsgroupEntry.COL_TITLE_FULLNAME);
         PROJECTION_MAP_NEWSGROUP.put(NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID, NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID_FULLNAME);
+        PROJECTION_MAP_NEWSGROUP.put(NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE, NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE_FULLNAME);
 
         PROJECTION_MAP_MESSAGE = new HashMap<>();
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_ID_FULLNAME);
@@ -84,7 +85,6 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_CHARSET, MessageContract.MessageEntry.COL_CHARSET_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_SUBJECT, MessageContract.MessageEntry.COL_SUBJECT_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_DATE, MessageContract.MessageEntry.COL_DATE_FULLNAME);
-        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_TIMEZONE, MessageContract.MessageEntry.COL_TIMEZONE_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_NEW, MessageContract.MessageEntry.COL_NEW_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_IN_REPLY_TO, MessageContract.MessageEntry.COL_IN_REPLY_TO_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_FK_N_ID_FULLNAME);
@@ -149,7 +149,7 @@ public class NNTPProvider extends ContentProvider {
         String itemId = getTableIdColumn(uriCode);
         if (itemId != null) {
             queryBuilder.appendWhere(itemId + "="
-                    + uri.getLastPathSegment());
+                    + uri.getLastPathSegment()); // TODO this is not safe!
         }
         SQLiteDatabase db = newsDBOpenHelper.getWritableDatabase();
         Cursor cursor = queryBuilder.query(db, projection, selection,
@@ -182,10 +182,14 @@ public class NNTPProvider extends ContentProvider {
         } else {
             String id = uri.getLastPathSegment();
             if (TextUtils.isEmpty(selection)) {
-                numberOfUpdates = sqlDB.update(tableName, values, itemId + " = ? ", new String[]{id + ""});
+                numberOfUpdates = sqlDB.update(tableName, values, itemId + " = ? ", new String[]{id});
             } else {
-                numberOfUpdates = sqlDB.update(tableName, values, itemId + " = " +  id + " and "
-                        + selection, selectionArgs);
+                if (selectionArgs == null || selectionArgs.length == 0) {
+                    numberOfUpdates = sqlDB.update(tableName, values, itemId + " = ?", new String[]{id});
+                } else {
+                    numberOfUpdates = sqlDB.update(tableName, values, selection + " AND " + itemId + " = ?",
+                            buildSelectionArgs(selectionArgs, id));
+                }
             }
         }
         //notify observers
@@ -204,16 +208,23 @@ public class NNTPProvider extends ContentProvider {
             numberOfDeletions = sqlDB.delete(tableName, selection, selectionArgs);
         } else {
             String id = uri.getLastPathSegment();
-            if (TextUtils.isEmpty(id)) {
-                numberOfDeletions = sqlDB.delete(tableName, itemId + "=" + id, null);
+            if (selectionArgs == null || selectionArgs.length == 0) {
+                numberOfDeletions = sqlDB.delete(tableName, itemId + " = ?", new String[]{id});
             } else {
-                numberOfDeletions = sqlDB.delete(tableName, itemId + "=" + id + " and " + selection,
-                        selectionArgs);
+                numberOfDeletions = sqlDB.delete(tableName, selection + " AND " + itemId + " = ?",
+                        buildSelectionArgs(selectionArgs, id));
             }
         }
         // notify potential observers
         getContext().getContentResolver().notifyChange(uri,null);
         return numberOfDeletions;
+    }
+
+    private String[] buildSelectionArgs(String[] originalArgs, String id) {
+        String[] newArgs = new String[originalArgs.length + 1];
+        Arrays.copyOfRange(originalArgs, 0, originalArgs.length);
+        newArgs[newArgs.length-1] = id;
+        return newArgs;
     }
 
 

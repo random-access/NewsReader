@@ -9,7 +9,7 @@ import org.random_access.newsreader.provider.NNTPProvider;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -46,7 +46,6 @@ public class MessageContract {
         public static final String COL_SUBJECT = "_SUBJECT";
         public static final String COL_CHARSET = "_CHARSET";
         public static final String COL_DATE = "_DATE";
-        public static final String COL_TIMEZONE = "_TIMEZONE";
         public static final String COL_NEW = "_READ";
         public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO"; // TODO table with message hierarchy
         public static final String COL_FK_N_ID = "_FK_N_ID";
@@ -62,7 +61,6 @@ public class MessageContract {
         public static final String COL_SUBJECT_FULLNAME = TABLE_NAME + "." + COL_SUBJECT;
         public static final String COL_CHARSET_FULLNAME = TABLE_NAME + "." + COL_CHARSET;
         public static final String COL_DATE_FULLNAME = TABLE_NAME + "." + COL_DATE;
-        public static final String COL_TIMEZONE_FULLNAME = TABLE_NAME + "." + COL_TIMEZONE;
         public static final String COL_NEW_FULLNAME = TABLE_NAME + "." + COL_NEW;
         public static final String COL_IN_REPLY_TO_FULLNAME = TABLE_NAME + "." + COL_IN_REPLY_TO;
         public static final String COL_FK_N_ID_FULLNAME = TABLE_NAME + "." + COL_FK_N_ID;
@@ -81,7 +79,6 @@ public class MessageContract {
             + MessageEntry.COL_SUBJECT + " text not null, "
             + MessageEntry.COL_CHARSET + " text not null, "
             + MessageEntry.COL_DATE + " integer not null, "
-            + MessageEntry.COL_TIMEZONE + " string not null, "
             + MessageEntry.COL_NEW + " integer not null, "
             + MessageEntry.COL_IN_REPLY_TO + " integer, "
             + MessageEntry.COL_FK_N_ID + " integer, "

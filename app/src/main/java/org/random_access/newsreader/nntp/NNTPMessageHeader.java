@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 18.05.15 <br>
+ * <b>Date:</b> 25.07.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -88,7 +88,8 @@ public class NNTPMessageHeader {
             this.subject = s.replace("Subject: ", "");
             afterSubject = true;
         } else if (s.startsWith(KEY_DATE)) {
-            this.date = new NNTPDateFormatter().getPrettyDateString(s.replace("Date: ", ""), NNTPDateFormatter.DATE_PATTERN_MSG_HEADER, context);
+            this.date = s.replace("Date: ", "");
+            //  this.date = new NNTPDateFormatter().getPrettyDateString(s.replace("Date: ", ""), NNTPDateFormatter.DATE_PATTERN_MSG_HEADER, context);
             // headers.put(KEY_DATE, date);
         } else if (s.startsWith(KEY_CONTENT_TYPE)) {
             if (s.toUpperCase().contains("UTF-8")) {
