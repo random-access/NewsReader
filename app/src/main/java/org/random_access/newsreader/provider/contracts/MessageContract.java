@@ -46,7 +46,7 @@ public class MessageContract {
         public static final String COL_SUBJECT = "_SUBJECT";
         public static final String COL_CHARSET = "_CHARSET";
         public static final String COL_DATE = "_DATE";
-        public static final String COL_NEW = "_READ";
+        public static final String COL_NEW = "_NEW";
         public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO"; // TODO table with message hierarchy
         public static final String COL_FK_N_ID = "_FK_N_ID";
         // for offline use:

@@ -36,7 +36,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
     private static final String TAG_ARTICLE_FRAGMENT = "article-fragment-tag";
 
     private TextView tvSubject, tvFrom, tvDate, tvText;
-    private ImageButton btnReply;
+    private ImageButton btnReply, btnFullHeader;
 
     private long serverId;
     private long groupId;
@@ -115,9 +115,10 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 articleFragment.setSubject(c.getString(MessageQueries.COL_SUBJECT));
                 articleFragment.setPrettyDate(NNTPDateFormatter.getPrettyDateString(c.getLong(MessageQueries.COL_DATE), ShowSingleArticleActivity.this));
                 articleFragment.setMessageBody(c.getString(MessageQueries.COL_BODY));
+                articleFragment.setMessageHeader(c.getString(MessageQueries.COL_HEADER));
             }
             c.close();
-            mQueries.setMessageRead(messageId);
+            mQueries.setMessageUnread(messageId, false);
             return null;
         }
 
@@ -143,10 +144,14 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         tvText.setText(articleFragment.getMessageBody());
 
         btnReply = (ImageButton) findViewById(R.id.article_reply);
+        btnReply.setColorFilter(getResources().getColor(R.color.light_blue));
+        btnFullHeader = (ImageButton) findViewById(R.id.article_fullheader);
+        btnFullHeader.setColorFilter(getResources().getColor(R.color.light_blue));
 
         tvFrom.setVisibility(extended ? View.VISIBLE : View.GONE);
         tvDate.setVisibility(extended ? View.VISIBLE : View.GONE);
         btnReply.setVisibility(extended ? View.VISIBLE : View.GONE);
+        btnFullHeader.setVisibility(extended ? View.VISIBLE : View.GONE);
 
         addListeners();
     }
@@ -158,6 +163,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 tvFrom.setVisibility(extended ? View.GONE : View.VISIBLE);
                 tvDate.setVisibility(extended ? View.GONE : View.VISIBLE);
                 btnReply.setVisibility(extended ? View.GONE : View.VISIBLE);
+                btnFullHeader.setVisibility(extended ? View.GONE : View.VISIBLE);
                 extended = !extended;
             }
         });
@@ -165,6 +171,13 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnFullHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InfoFragment df = InfoFragment.getInstance(getResources().getString(R.string.title_msg_header), articleFragment.getMessageHeader());
+                df.show(getFragmentManager(), "FullHeaderFragmen");
             }
         });
     }

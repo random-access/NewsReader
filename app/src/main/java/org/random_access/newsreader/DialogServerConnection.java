@@ -143,7 +143,7 @@ public class DialogServerConnection extends DialogFragment {
 
     class ServerConnectTask extends AsyncTask<String, Void, String[]> {
 
-        private Exception exc;
+        private String msg;
         private String message;
         private String servertitle;
         private String server;
@@ -162,29 +162,31 @@ public class DialogServerConnection extends DialogFragment {
             password = params[5];
             message = "SERVERTITLE: " + servertitle + ", SERVER: " + server + ", PORT: " + port + ", AUTH: " + withAuth + ", USER: " + user +
                     ", GOT PASSWORD: " + (!TextUtils.isEmpty(password));
-            try {
-                NNTPConnector connector = new NNTPConnector(getActivity());
-                connector.connectToNewsServer(getActivity(), server, port, withAuth, user, password);
-            } catch (IOException | LoginException e) {
-                exc = e;
+            if (NetworkStateHelper.isOnline(getActivity())) {
+                try {
+                    NNTPConnector connector = new NNTPConnector(getActivity());
+                    connector.connectToNewsServer(getActivity(), server, port, withAuth, user, password);
+                } catch (IOException e) {
+                    msg = res.getString(R.string.error_connection);
+                } catch (LoginException e) {
+                    msg = res.getString(R.string.error_password);
+                }
+            } else {
+                msg = res.getString(R.string.error_offline);
             }
             return params;
         }
 
         @Override
         protected void onPostExecute(String[] args) {
-            if (exc == null) {
+            if (TextUtils.isEmpty(msg)) {
                 Toast.makeText(getActivity(), res.getString(R.string.success_connect_server), Toast.LENGTH_SHORT).show();
                 dismiss();
                 DialogServerSettings serverSettingsFragment = DialogServerSettings.newInstance(servertitle, server, port, false, withAuth, user, password);
                 serverSettingsFragment.show(getFragmentManager(), DialogServerSettings.TAG_ADD_SETTINGS);
             } else {
                 Log.e(TAG, "Error in ServerConnectTask: " + message);
-                if (exc.getClass() == LoginException.class) {
-                    Toast.makeText(getActivity(), res.getString(R.string.error_password), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), res.getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             }

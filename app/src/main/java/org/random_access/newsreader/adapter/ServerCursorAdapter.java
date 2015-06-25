@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.random_access.newsreader.EditSubscriptionsActivity;
+import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.R;
 import org.random_access.newsreader.ShowNewsgroupsActivity;
 import org.random_access.newsreader.ShowServerActivity;
@@ -121,10 +123,14 @@ public class ServerCursorAdapter extends CursorAdapter {
             btnEditSubscriptions.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ContentResolver.cancelSync(null, null);
-                    Intent intent = new Intent (fContext, EditSubscriptionsActivity.class);
-                    intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
-                    fContext.startActivity(intent);
+                    if (!NetworkStateHelper.isOnline(context)) {
+                        Toast.makeText(context, context.getResources().getString(R.string.error_offline), Toast.LENGTH_SHORT).show();
+                    } else {
+                        ContentResolver.cancelSync(null, null);
+                        Intent intent = new Intent(fContext, EditSubscriptionsActivity.class);
+                        intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
+                        fContext.startActivity(intent);
+                    }
                 }
             });
             btnShowNewsgroups.setOnClickListener(new View.OnClickListener() {

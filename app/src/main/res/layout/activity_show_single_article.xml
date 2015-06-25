@@ -33,7 +33,18 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/article_from"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_reply_blue"
+            android:src="@drawable/ic_reply_white"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
+            />
+
+        <ImageButton
+            android:id="@+id/article_fullheader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/article_from"
+            android:layout_toLeftOf="@id/article_reply"
+            android:src="@drawable/ic_info_white"
             android:background="@android:color/transparent"
             android:padding="5dp"
             />

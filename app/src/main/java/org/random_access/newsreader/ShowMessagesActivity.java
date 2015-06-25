@@ -6,14 +6,16 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.random_access.newsreader.adapter.MessageCursorAdapter;
-import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 
@@ -59,6 +61,7 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
                 startActivity(intent);
             }
         });
+        setListActions();
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -104,6 +107,65 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mMessageAdapter.swapCursor(null);
+    }
+
+    private void setListActions () {
+
+        lvMessages.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        lvMessages.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_messages_context, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.action_mark_read:
+                        markMessagesNew(false);
+                        mode.finish();
+                        return true;
+                    case R.id.action_mark_unread:
+                        markMessagesNew(true);
+                        mode.finish();
+                        return true;
+                    case R.id.action_select_all:
+                        setAllItemsChecked();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) { /* unused */ }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) { /* unused */ }
+        });
+    }
+
+    private void markMessagesNew(boolean isNew) {
+        long[] ids = lvMessages.getCheckedItemIds();
+        MessageQueries queries = new MessageQueries(this);
+        for (long l : ids) {
+            queries.setMessageUnread(l, isNew);
+        }
+    }
+
+    private void setAllItemsChecked() {
+        int count = lvMessages.getCount();
+        for (int i = 0; i < count; i++) {
+            lvMessages.setItemChecked(i, true);
+        }
     }
 
 }

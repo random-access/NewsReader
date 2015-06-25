@@ -23,6 +23,7 @@
     <string name="error_empty_field">Empty not allowed here</string>
     <string name="error_connection">Sorry for that &#8230; network or server error!</string>
     <string name="error_password">Sorry for that &#8230; wrong user or password!</string>
+    <string name="error_offline">You are offline! Please connect to the internet and try again!</string>
     <string name="success_connect_server">Strike! Connection test successful ;)</string>
     <string name="success_adding_server">Successfully added news server! Happy posting ;)</string>
 
@@ -75,5 +76,11 @@
     </plurals>
     <string name="title_activity_show_messages">ShowMessagesActivity</string>
     <string name="title_activity_show_single_article">ShowSingleArticleActivity</string>
+
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_as_unread">Mark as unread</string>
+    <string name="select_all">Select all</string>
+
+    <string name="title_msg_header">Message header</string>
 
 </resources>

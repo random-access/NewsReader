@@ -16,6 +16,7 @@ public class ShowSingleArticleFragment extends Fragment {
     private String subject;
     private String prettyDate;
     private String messageBody;
+    private String messageHeader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,5 +62,13 @@ public class ShowSingleArticleFragment extends Fragment {
 
     public void setMessageBody(String messageBody) {
         this.messageBody = messageBody;
+    }
+
+    public String getMessageHeader() {
+        return messageHeader;
+    }
+
+    public void setMessageHeader(String messageHeader) {
+        this.messageHeader = messageHeader;
     }
 }

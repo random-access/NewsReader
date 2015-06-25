@@ -7,12 +7,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
 import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
+import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
@@ -99,7 +102,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
      // TODO Put the data transfer code here.
-        if (extras.getBoolean(SYNC_REQUEST_TAG)) {
+        if (extras.getBoolean(SYNC_REQUEST_TAG) && NetworkStateHelper.isOnline(context)) {
             Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " from " + extras.getString(SYNC_REQUEST_ORIGIN) + " *****************");
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();

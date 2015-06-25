@@ -62,9 +62,10 @@ public class MessageQueries {
                 new String[]{newsgroupId + "", "1"});
     }
 
-    public boolean setMessageRead(long messageId) {
+    public boolean setMessageUnread(long messageId, boolean isNew) {
+        int value = isNew ? 1 : 0;
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MessageContract.MessageEntry.COL_NEW, 0);
+        contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
         return context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
                 new String[] {messageId + ""}) > 0;
     }

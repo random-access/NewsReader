@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.random_access.org.newsreader.ShowMessagesActivity">
+
+    <item
+        android:title="@string/mark_as_read"
+        android:id="@+id/action_mark_read"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource" />
+
+    <item
+        android:title="@string/mark_as_unread"
+        android:id="@+id/action_mark_unread"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource" />
+
+    <item android:title="@string/select_all"
+        android:id="@+id/action_select_all"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource" />
+</menu>
