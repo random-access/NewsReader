@@ -47,7 +47,6 @@ public class MessageContract {
         public static final String COL_CHARSET = "_CHARSET";
         public static final String COL_DATE = "_DATE";
         public static final String COL_NEW = "_NEW";
-        public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO"; // TODO table with message hierarchy
         public static final String COL_FK_N_ID = "_FK_N_ID";
         // for offline use:
         public static final String COL_HEADER = "_HEADER";
@@ -62,7 +61,6 @@ public class MessageContract {
         public static final String COL_CHARSET_FULLNAME = TABLE_NAME + "." + COL_CHARSET;
         public static final String COL_DATE_FULLNAME = TABLE_NAME + "." + COL_DATE;
         public static final String COL_NEW_FULLNAME = TABLE_NAME + "." + COL_NEW;
-        public static final String COL_IN_REPLY_TO_FULLNAME = TABLE_NAME + "." + COL_IN_REPLY_TO;
         public static final String COL_FK_N_ID_FULLNAME = TABLE_NAME + "." + COL_FK_N_ID;
         // for offline use:
         public static final String COL_HEADER_FULLNAME = TABLE_NAME + "." + COL_HEADER;
@@ -80,12 +78,9 @@ public class MessageContract {
             + MessageEntry.COL_CHARSET + " text not null, "
             + MessageEntry.COL_DATE + " integer not null, "
             + MessageEntry.COL_NEW + " integer not null, "
-            + MessageEntry.COL_IN_REPLY_TO + " integer, "
             + MessageEntry.COL_FK_N_ID + " integer, "
             + MessageEntry.COL_HEADER + " text not null, "
             + MessageEntry.COL_BODY + " text, "
-            + "foreign key (" + MessageEntry.COL_IN_REPLY_TO + ") references "
-            +  MessageContract.TABLE_NAME + " (" + MessageEntry._ID + "), "
             + "foreign key (" + MessageEntry.COL_FK_N_ID + ") references "
             +  NewsgroupContract.TABLE_NAME + " (" + NewsgroupContract.NewsgroupEntry._ID + ")"
             + ");";

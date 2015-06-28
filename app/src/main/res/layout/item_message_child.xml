@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
-    android:background="@drawable/colorselector_list_item"
-    android:layout_height="wrap_content">
+android:orientation="vertical" android:layout_width="wrap_content"
+android:background="@drawable/colorselector_list_item"
+android:layout_height="wrap_content">
+
+    <org.random_access.newsreader.MsgHierarchyView
+        android:id="@+id/ic_level"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/message_from"
+        android:layout_alignTop="@+id/message_title" />
+
 
     <TextView
         android:id="@+id/message_title"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Das ist ein sehr sehr sehr langer Betreff als Test ob das Ellipsize-Verhalten passt"
+        android:layout_toRightOf="@id/ic_level"
         android:textColor="@color/black"
         android:lines="2"
         android:ellipsize="end"
@@ -18,16 +27,14 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp" />
 
-
-
     <TextView
         android:id="@+id/message_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:text="05.05.2015, 10:04"
         android:textColor="@color/light_blue"
         android:layout_below="@id/message_title"
-        android:layout_alignParentRight="true"
         android:lines="1"
         android:ellipsize="none"
         android:textStyle="bold"
@@ -43,7 +50,7 @@
         android:text="Monika Schrenk"
         android:layout_below="@id/message_title"
         android:layout_toLeftOf="@id/message_date"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/ic_level"
         android:lines="1"
         android:ellipsize="end"
         android:paddingLeft="10dp"

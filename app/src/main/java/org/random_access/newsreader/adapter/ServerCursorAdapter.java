@@ -126,7 +126,7 @@ public class ServerCursorAdapter extends CursorAdapter {
                     if (!NetworkStateHelper.isOnline(context)) {
                         Toast.makeText(context, context.getResources().getString(R.string.error_offline), Toast.LENGTH_SHORT).show();
                     } else {
-                        ContentResolver.cancelSync(null, null);
+                        //ContentResolver.cancelSync(null, null);
                         Intent intent = new Intent(fContext, EditSubscriptionsActivity.class);
                         intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
                         fContext.startActivity(intent);

@@ -3,9 +3,12 @@ package org.random_access.newsreader;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +32,8 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
 
     private static final String TAG = ShowMessagesActivity.class.getSimpleName();
 
+    public static final int RESULT_DATA_CHANGE = 1001;
+
     public static final String KEY_SERVER_ID = "server-id";
     public static final String KEY_GROUP_ID = "group-id";
 
@@ -39,16 +44,21 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
     private MessageCursorAdapter mMessageAdapter;
     private ListView lvMessages;
 
+    private SharedPreferences sharedPreferences;
+    private Boolean showOnlyTopItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_messages);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         groupId = getIntent().getExtras().getLong(KEY_GROUP_ID);
         groupName = new NewsgroupQueries(ShowMessagesActivity.this).getNewsgroupName(groupId);
         setTitle(groupName);
+        setContentView(R.layout.activity_show_messages);
         lvMessages = (ListView)findViewById(R.id.show_messages_list);
-        mMessageAdapter = new MessageCursorAdapter(this, null);
+        readViewModeFromSettings();
+        mMessageAdapter = new MessageCursorAdapter(this, null, showOnlyTopItems);
         lvMessages.setAdapter(mMessageAdapter);
         lvMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,26 +87,35 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, MessageSettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        readViewModeFromSettings();
+        Log.d(TAG, "show only top items ? " + showOnlyTopItems);
         // Starts a new or restarts an existing Loader
         getLoaderManager().restartLoader(0, null, this);
     }
 
+    private void readViewModeFromSettings() {
+        String viewMode = sharedPreferences.getString("pref_message_view", "f");
+        if (viewMode != null) {
+            showOnlyTopItems = viewMode.equals("h");
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new MessageQueries(this).getMessagesInCursorLoader(groupId);
+        return new MessageQueries(this).getMessagesInCursorLoader(groupId, showOnlyTopItems);
     }
 
     @Override
@@ -106,7 +125,7 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mMessageAdapter.swapCursor(null);
+        mMessageAdapter.changeCursor(null);
     }
 
     private void setListActions () {

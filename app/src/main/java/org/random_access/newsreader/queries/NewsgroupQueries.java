@@ -4,11 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -17,6 +19,8 @@ import java.io.IOException;
  * <b>E-Mail:</b> software@random-access.org <br>
  */
 public class NewsgroupQueries {
+
+    private static final String TAG = NewsgroupQueries.class.getSimpleName();
 
     private final Context context;
 
@@ -73,8 +77,27 @@ public class NewsgroupQueries {
      * @return number of deleted entries.
      */
     public int deleteNewsgroup(long newsgroupId) {
-        context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[]{newsgroupId + ""});
+        new MessageQueries(context).deleteMessagesFromNewsgroup(newsgroupId);
         return context.getContentResolver().delete(Uri.parse(NewsgroupContract.CONTENT_URI + "/" + newsgroupId), null, null);
+    }
+
+    /**
+     * Deletes all newsgroups from server with id serverId
+     * @param serverId id of a given server
+     * @return number of newsgroups deleted
+     */
+    public void deleteNewsgroupsFromServer(long serverId) {
+        MessageQueries messageQueries = new MessageQueries(context);
+        Cursor cursor = getNewsgroupsOfServer(serverId);
+        if (cursor.moveToFirst()) {
+            while(!cursor.isAfterLast()) {
+                messageQueries.deleteMessagesFromNewsgroup(cursor.getLong(COL_ID));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        int delCount =  context.getContentResolver().delete(NewsgroupContract.CONTENT_URI, NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ? ", new String[]{serverId + ""});
+        Log.i(TAG, delCount + " rows deleted");
     }
 
     /**

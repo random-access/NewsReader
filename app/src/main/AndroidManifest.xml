@@ -71,6 +71,13 @@
             android:name=".ShowSingleArticleActivity"
             android:label="@string/title_activity_show_single_article" >
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity android:name=".MessageSettingsActivity"
+            android:label=".MessageSettings">
+        </activity>
     </application>
 
 </manifest>

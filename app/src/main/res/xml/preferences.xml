@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_sync_title"
+        android:key="pref_key_sync_settings">
+        <ListPreference
+            android:key="pref_sync_interval"
+            android:title="@string/pref_sync_interval_text"
+            android:dialogTitle="@string/pref_sync_interval_text"
+            android:entries="@array/pref_sync_interval_entries"
+            android:entryValues="@array/pref_sync_interval_values"
+            android:defaultValue="@string/pref_sync_interval_default"
+            android:positiveButtonText="@string/ok" />
+        <CheckBoxPreference
+            android:key="pref_wlan_only"
+            android:title="@string/pref_wlan_only_text"
+            android:summary="@string/pref_wlan_only_summary"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+</PreferenceScreen>

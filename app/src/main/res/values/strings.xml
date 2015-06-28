@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_show_newsgroups">ShowNewsgroupsActivity</string>
+    <string name="title_activity_show_newsgroups">Newsgroups</string>
 
     <string name="server_add">Add News Server</string>
     <string name="servertitle">Title</string>
@@ -29,19 +29,19 @@
 
     <string name="server_settings">Server Settings</string>
     <string name="name">Name</string>
-    <string name="name_hint">John Doe</string>
+    <string name="name_hint">User</string>
     <string name="email">E-Mail</string>
-    <string name="email_hint">john-doe@example.com</string>
+    <string name="email_hint">user@example.com</string>
     <string name="signature">Signature</string>
     <string name="signature_hint">Optional</string>
-    <string name="msg_keep">Days to keep messageBody headers</string>
+    <string name="msg_keep">Days to keep messages</string>
     <string name="msg_keep_hint">Default: 30</string>
 
     <string name="server_delete">Delete server</string>
     <string name="select_newsgroups">Select newsgroups</string>
 
     <string name="subscriptions">Subscriptions</string>
-    <string name="search_subscription">Type to search newsgroup&#8230;</string>
+    <string name="search_subscription">Type to search&#8230;</string>
 
     <string name="discard">Discard</string>
     <string name="ok">OK</string>
@@ -54,8 +54,18 @@
 
     <string name="delete">Delete</string>
 
-    <string name="cmd_selected">:selected</string>
+    <string name="cmd_selected" translatable="false">:selected</string>
 
+    <string name="title_activity_show_messages">Messages</string>
+    <string name="title_activity_show_single_article">Message</string>
+
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_as_unread">Mark as unread</string>
+    <string name="select_all">Select all</string>
+
+    <string name="title_msg_header">Message header</string>
+
+    <!-- Plurals -->
     <plurals name="really_delete_server">
         <item quantity="one">Really delete news server?</item> ,
         <item quantity="other">Really delete %d news server?</item>
@@ -74,13 +84,42 @@
         <item quantity="one">unsubscribed from %d newsgroup.</item>
         <item quantity="other">unsubscribed from %d newsgroups.</item>
     </plurals>
-    <string name="title_activity_show_messages">ShowMessagesActivity</string>
-    <string name="title_activity_show_single_article">ShowSingleArticleActivity</string>
 
-    <string name="mark_as_read">Mark as read</string>
-    <string name="mark_as_unread">Mark as unread</string>
-    <string name="select_all">Select all</string>
+    <!-- Preferences -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_sync_title">Synchronization settings</string>
+    <string name="pref_sync_interval_text">Synchronization interval</string>
+    <string name="pref_sync_interval_default" translatable="false">30</string>
+    <string-array name="pref_sync_interval_entries">
+        <item>2 minutes (DEBUG ONLY)</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+    <string-array name="pref_sync_interval_values">
+        <item>2</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
 
-    <string name="title_msg_header">Message header</string>
+    <string name="pref_wlan_only_text">Sync only via WIFI</string>
+    <string name="pref_wlan_only_summary">Syncing only via WIFI prevents you from additional costs</string>
 
+    <!-- Preferences Messages -->
+    <string name="pref_message_title">Message settings</string>
+    <string name="pref_message_view_text">View options</string>
+    <string name="pref_message_view_default" translatable="false">f</string>
+    <string-array name="pref_message_view_entries">
+        <item>Flat</item>
+        <item>Hierarchial (DEBUG ONLY)</item>
+    </string-array>
+    <string-array name="pref_message_view_values">
+        <item>f</item>
+        <item>h</item>
+    </string-array>
 </resources>

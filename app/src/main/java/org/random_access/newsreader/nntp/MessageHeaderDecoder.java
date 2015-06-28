@@ -81,7 +81,7 @@ class MessageHeaderDecoder {
 
     private String quotedPrintableDecode (String str, String encoding) throws DecoderException {
         try {
-            return new String(quotedPrintableDecode(str.getBytes(encoding)), encoding);
+            return new String(quotedPrintableDecode(str.getBytes(encoding)), encoding).replace('_', ' ');
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported encoding");
             return str;

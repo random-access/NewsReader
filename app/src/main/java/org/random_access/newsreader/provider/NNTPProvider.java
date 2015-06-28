@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import org.apache.http.auth.AUTH;
 import org.random_access.newsreader.provider.contracts.MessageContract;
+import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.provider.contracts.SettingsContract;
@@ -39,17 +41,20 @@ public class NNTPProvider extends ContentProvider {
     private static final int SERVER_TABLE = 1001;
     private static final int NEWSGROUP_TABLE = 1002;
     private static final int MESSAGE_TABLE = 1003;
+    private static final int MESSAGE_HIERARCHY_TABLE = 1004;
 
     // ROWS starting with 2000
     private static final int SETTINGS_ROW = 2000;
     private static final int SERVER_ROW = 2001;
     private static final int NEWSGROUP_ROW = 2002;
     private static final int MESSAGE_ROW = 2003;
+    private static final int MESSAGE_HIERARCHY_ROW = 2004;
 
     private static final HashMap<String, String> PROJECTION_MAP_SETTINGS;
     private static final HashMap<String, String> PROJECTION_MAP_SERVER;
     private static final HashMap<String, String> PROJECTION_MAP_NEWSGROUP;
     private static final HashMap<String, String> PROJECTION_MAP_MESSAGE;
+    private static final HashMap<String, String> PROJECTION_MAP_MESSAGE_HIERARCHY;
 
     static {
         PROJECTION_MAP_SETTINGS = new HashMap<>();
@@ -86,10 +91,14 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_SUBJECT, MessageContract.MessageEntry.COL_SUBJECT_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_DATE, MessageContract.MessageEntry.COL_DATE_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_NEW, MessageContract.MessageEntry.COL_NEW_FULLNAME);
-        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_IN_REPLY_TO, MessageContract.MessageEntry.COL_IN_REPLY_TO_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_FK_N_ID_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_HEADER, MessageContract.MessageEntry.COL_HEADER_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_BODY, MessageContract.MessageEntry.COLL_BODY_FULLNAME);
+
+        PROJECTION_MAP_MESSAGE_HIERARCHY = new HashMap<>();
+        PROJECTION_MAP_MESSAGE_HIERARCHY.put(MessageHierarchyContract.MessageHierarchyEntry._ID, MessageHierarchyContract.MessageHierarchyEntry.COL_ID_FULLNAME);
+        PROJECTION_MAP_MESSAGE_HIERARCHY.put(MessageHierarchyContract.MessageHierarchyEntry.COL_MSG_DB_ID, MessageHierarchyContract.MessageHierarchyEntry.COL_MSG_DB_ID_FULLNAME);
+        PROJECTION_MAP_MESSAGE_HIERARCHY.put(MessageHierarchyContract.MessageHierarchyEntry.COL_IN_REPLY_TO, MessageHierarchyContract.MessageHierarchyEntry.COL_IN_REPLY_TO_FULLNAME);
     }
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -99,11 +108,13 @@ public class NNTPProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, ServerContract.TABLE_NAME, SERVER_TABLE);
         uriMatcher.addURI(AUTHORITY, NewsgroupContract.TABLE_NAME, NEWSGROUP_TABLE);
         uriMatcher.addURI(AUTHORITY, MessageContract.TABLE_NAME, MESSAGE_TABLE);
+        uriMatcher.addURI(AUTHORITY, MessageHierarchyContract.TABLE_NAME, MESSAGE_HIERARCHY_TABLE);
 
         uriMatcher.addURI(AUTHORITY, SettingsContract.TABLE_NAME + "/#", SETTINGS_ROW);
         uriMatcher.addURI(AUTHORITY, ServerContract.TABLE_NAME + "/#", SERVER_ROW);
         uriMatcher.addURI(AUTHORITY, NewsgroupContract.TABLE_NAME + "/#", NEWSGROUP_ROW);
         uriMatcher.addURI(AUTHORITY, MessageContract.TABLE_NAME + "/#", MESSAGE_ROW);
+        uriMatcher.addURI(AUTHORITY, MessageHierarchyContract.TABLE_NAME + "/#", MESSAGE_HIERARCHY_ROW);
     }
 
     @Override
@@ -132,6 +143,10 @@ public class NNTPProvider extends ContentProvider {
                 return MIME_BASETYPE_ROW + "/" + MessageContract.TABLE_NAME;
             case MESSAGE_TABLE:
                 return MIME_BASETYPE_TABLE + "/" + MessageContract.TABLE_NAME;
+            case MESSAGE_HIERARCHY_ROW:
+                return MIME_BASETYPE_ROW + "/" + MessageHierarchyContract.TABLE_NAME;
+            case MESSAGE_HIERARCHY_TABLE:
+                return MIME_BASETYPE_TABLE + "/" + MessageHierarchyContract.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uriCode);
         }
@@ -248,6 +263,9 @@ public class NNTPProvider extends ContentProvider {
             case MESSAGE_TABLE:
             case MESSAGE_ROW:
                 return MessageContract.TABLE_NAME;
+            case MESSAGE_HIERARCHY_TABLE:
+            case MESSAGE_HIERARCHY_ROW:
+                return MessageHierarchyContract.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uriCode);
         }
@@ -269,6 +287,8 @@ public class NNTPProvider extends ContentProvider {
                 return NewsgroupContract.NewsgroupEntry._ID;
             case MESSAGE_ROW:
                 return MessageContract.MessageEntry._ID;
+            case MESSAGE_HIERARCHY_ROW:
+                return MessageHierarchyContract.MessageHierarchyEntry._ID;
             default:
                 return null;
         }
@@ -294,6 +314,9 @@ public class NNTPProvider extends ContentProvider {
             case MESSAGE_TABLE:
             case MESSAGE_ROW:
                 return PROJECTION_MAP_MESSAGE;
+            case MESSAGE_HIERARCHY_TABLE:
+            case MESSAGE_HIERARCHY_ROW:
+                return PROJECTION_MAP_MESSAGE_HIERARCHY;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uriCode);
         }

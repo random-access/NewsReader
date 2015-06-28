@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import org.random_access.newsreader.provider.contracts.SettingsContract;
 
@@ -16,6 +17,8 @@ import java.io.IOException;
  * <b>E-Mail:</b> software@random-access.org <br>
  */
 public class SettingsQueries {
+
+    private static final String TAG = SettingsQueries.class.getSimpleName();
 
     private final Context context;
 
@@ -84,7 +87,7 @@ public class SettingsQueries {
     /**
      * Helper method for getting the number of days to keep message headers in memory
      * @param serverId database _ID field identifying a Server entry
-     * @return int - number of days to keep messages
+     * @return number of days to keep messages
      * @throws IOException
      */
     public int getNumberOfDaysForKeepingMessages(long serverId) throws IOException{
@@ -100,7 +103,14 @@ public class SettingsQueries {
         }
     }
 
-
+    /**
+     * Deletes settings with a given ID
+     * @param settingsId database _ID field identifying a Settings entry
+     */
+    public void deleteSettingsWitId(long settingsId) {
+        int delCount =  context.getContentResolver().delete(SettingsContract.CONTENT_URI, SettingsContract.SettingsEntry._ID + " = ?", new String[]{settingsId + ""});
+        Log.i(TAG, delCount + " rows deleted");
+    }
 
 
 }

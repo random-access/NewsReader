@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 class NNTPFromFieldFormatter {
 
-    private static final String decodePatternMail = "([<]{0,1}[A-Za-zäöüÄÖÜ0-9.!#$%&'*+-\\/=?^_`{|}~]*@[A-Za-zäöüÄÖÜ0-9-]{1,}+\\.[A-Za-z]{2,}[>]{0,1})";
+    private static final String decodePatternMail = "([<]{0,1}[A-Za-zäöüÄÖÜ0-9.!#$%&'*+\\-\\/=?^_`{|}~]*@[A-Za-zäöüÄÖÜ\\.0-9\\-]+\\.[A-Za-z]{2,}[>]{0,1})";
     private String fullName = "";
     private String email = "";
 

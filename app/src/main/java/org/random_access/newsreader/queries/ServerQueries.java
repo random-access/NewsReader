@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
+import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.provider.contracts.SettingsContract;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -24,7 +26,8 @@ public class ServerQueries {
 
     private static final String[] PROJECTION_SERVER = new String[] {ServerContract.ServerEntry._ID,
             ServerContract.ServerEntry.COL_SERVERNAME, ServerContract.ServerEntry.COL_SERVERPORT,
-            ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_AUTH, ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_PASSWORD};
+            ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_AUTH, ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_PASSWORD,
+            ServerContract.ServerEntry.COL_FK_SET_ID};
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
@@ -33,6 +36,7 @@ public class ServerQueries {
     public static final int COL_AUTH = 4;
     public static final int COL_USER = 5;
     public static final int COL_PASSWORD = 6;
+    public static final int COL_SETTINGS_ID = 7;
 
 
     public ServerQueries(Context context) {
@@ -94,33 +98,28 @@ public class ServerQueries {
      * @return number of server deletions (should be 1 if deletion was correct & successful)
      */
     public int deleteServerWithId(long serverId) {
-        Cursor newsgroupCursor = context.getContentResolver().query(NewsgroupContract.CONTENT_URI, new String[]{NewsgroupContract.NewsgroupEntry._ID,
-                        NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID},
-                NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, null);
-        if (newsgroupCursor.moveToFirst()) {
-            while (!newsgroupCursor.isAfterLast()) {
-                long newsgroupId = newsgroupCursor.getLong(0);
-                context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {newsgroupId + ""});
-                newsgroupCursor.moveToNext();
-            }
-        }
-        newsgroupCursor.close();
+        // delete all newsgroups
+        new NewsgroupQueries(context).deleteNewsgroupsFromServer(serverId);
+        long settingsId = getServerSettingsId(serverId);
 
-        long settingsId = 0;
-        Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, new String[]{ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_FK_SET_ID},
-                ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}, null);
-        if (!serverCursor.moveToFirst()) {
-            // we just have 1 setting entry for 1 project
-            settingsId = serverCursor.getLong(1);
-        }
-        serverCursor.close();
-        context.getContentResolver().delete(NewsgroupContract.CONTENT_URI, NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""});
-
+        // delete all server entries
         int noOfServerRows =  context.getContentResolver().delete(ServerContract.CONTENT_URI, ServerContract.ServerEntry._ID + " = ?", new String[] {serverId + ""});
 
-        context.getContentResolver().delete(SettingsContract.CONTENT_URI, SettingsContract.SettingsEntry._ID + "= ?", new String[]{settingsId + ""});
-
+        // delete all settings entries
+        new SettingsQueries(context).deleteSettingsWitId(settingsId);
         return noOfServerRows;
+    }
+
+    private long getServerSettingsId(long serverId) {
+        long settingsId = 0;
+        Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, PROJECTION_SERVER,
+                ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}, null);
+        if (serverCursor.moveToFirst()) {
+            // we just have 1 setting entry for 1 project
+            settingsId = serverCursor.getLong(COL_SETTINGS_ID);
+        }
+        serverCursor.close();
+        return settingsId;
     }
 
 

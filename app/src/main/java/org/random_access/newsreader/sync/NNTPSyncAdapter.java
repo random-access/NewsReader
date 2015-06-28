@@ -5,11 +5,11 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.commons.net.nntp.ArticleInfo;
@@ -17,8 +17,8 @@ import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
-import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
+import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
@@ -102,7 +102,11 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
      // TODO Put the data transfer code here.
-        if (extras.getBoolean(SYNC_REQUEST_TAG) && NetworkStateHelper.isOnline(context)) {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
+        Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
+        if (extras.getBoolean(SYNC_REQUEST_TAG) && NetworkStateHelper.isOnline(context) && !wifiOnly) {
             Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " from " + extras.getString(SYNC_REQUEST_ORIGIN) + " *****************");
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();
@@ -235,7 +239,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // save message to database
         MessageQueries messageQueries = new MessageQueries(context);
         messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
-                msgDate, 1, 0, groupId, headerData.getHeaderSource(), sbMessageBody.toString());
+                msgDate, 1, groupId, headerData.getHeaderSource(), sbMessageBody.toString(), headerData.getRefIds());
         currentMessageDate = msgDate;
         Log.d(TAG, "Added message " +  articleId);
     }

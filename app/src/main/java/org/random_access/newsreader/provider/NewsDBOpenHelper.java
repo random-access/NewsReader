@@ -35,6 +35,7 @@ class NewsDBOpenHelper extends SQLiteOpenHelper{
         ServerContract.onCreate(db);
         NewsgroupContract.onCreate(db);
         MessageContract.onCreate(db);
+        MessageHierarchyContract.onCreate(db);
         Log.d(TAG, "Finished onCreate in NewsDBOpenHelper");
     }
 
@@ -50,6 +51,7 @@ class NewsDBOpenHelper extends SQLiteOpenHelper{
         ServerContract.onUpdate(db, oldVersion, newVersion);
         NewsgroupContract.onUpdate(db, oldVersion, newVersion);
         MessageContract.onUpdate(db, oldVersion, newVersion);
+        MessageHierarchyContract.onUpdate(db, oldVersion, newVersion);
         Log.d(TAG, "Finished onUpdate in NewsDBOpenHelper");
     }
 }

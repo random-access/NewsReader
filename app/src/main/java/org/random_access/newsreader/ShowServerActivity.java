@@ -6,10 +6,13 @@ import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.SyncInfo;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -45,9 +48,8 @@ public class ShowServerActivity extends AppCompatActivity implements
     public static Account ACCOUNT;
 
     // Sync interval constants
-    private static final long SECONDS_PER_MINUTE = 60L;
-    private static final long SYNC_INTERVAL_IN_MINUTES = 15L; //15L;
-    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+    public static final long SECONDS_PER_MINUTE = 60L;
+    private static long SYNC_INTERVAL;
 
     private final String[] serverProjection = { ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
             ServerContract.ServerEntry.COL_SERVERNAME };
@@ -64,12 +66,16 @@ public class ShowServerActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_server);
-        // Create the dummy account
         ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SYNC_INTERVAL = Long.parseLong(sharedPreferences.getString("pref_sync_interval", "30")) * SECONDS_PER_MINUTE;
+        Log.i(TAG, "Periodic sync set to " + (SYNC_INTERVAL/SECONDS_PER_MINUTE));
         Bundle extras = new Bundle();
         extras.putString(NNTPSyncAdapter.SYNC_REQUEST_ORIGIN, TAG);
         extras.putBoolean(NNTPSyncAdapter.SYNC_REQUEST_TAG, true);
         ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, extras, SYNC_INTERVAL);
+
         NewsgroupObserver newsgroupObserver = new NewsgroupObserver();
         getContentResolver().registerContentObserver(NewsgroupContract.CONTENT_URI, false, newsgroupObserver);
         mServerListView = (ListView)findViewById(R.id.server_list);
@@ -95,6 +101,8 @@ public class ShowServerActivity extends AppCompatActivity implements
         int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.action_add_project:
                 DialogServerConnection addServerFragment = DialogServerConnection.newInstance();
