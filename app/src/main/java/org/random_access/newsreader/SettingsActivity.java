@@ -37,11 +37,12 @@ public class SettingsActivity extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     long newSyncInterval = Long.parseLong((String)newValue) * ShowServerActivity.SECONDS_PER_MINUTE;
-                    Bundle extras = new Bundle();
+                    /*Bundle extras = new Bundle();
                     extras.putString(NNTPSyncAdapter.SYNC_REQUEST_ORIGIN, TAG);
                     extras.putBoolean(NNTPSyncAdapter.SYNC_REQUEST_TAG, true);
-                    ContentResolver.addPeriodicSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, extras, newSyncInterval);
-                    Log.i(TAG, "Periodic sync changed to " + (newSyncInterval / ShowServerActivity.SECONDS_PER_MINUTE));
+                    ContentResolver.removePeriodicSync(null, null);
+                    ContentResolver.addPeriodicSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, Bundle.EMPTY, newSyncInterval);
+                    Log.i(TAG, "Periodic sync changed to " + (newSyncInterval / ShowServerActivity.SECONDS_PER_MINUTE));*/
                     return true;
                 }
             });

@@ -4,6 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.random_access.org.newsreader.ShowMessagesActivity">
 
+    <item android:title="@string/select_all"
+        android:id="@+id/action_select_all"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_selectall_white"
+        app:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource" />
+
     <item
         android:title="@string/mark_as_read"
         android:id="@+id/action_mark_read"
@@ -20,10 +28,5 @@
         app:showAsAction="never"
         tools:ignore="AppCompatResource" />
 
-    <item android:title="@string/select_all"
-        android:id="@+id/action_select_all"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        app:showAsAction="never"
-        tools:ignore="AppCompatResource" />
+
 </menu>

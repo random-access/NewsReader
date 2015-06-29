@@ -25,6 +25,7 @@ import org.random_access.newsreader.queries.ServerQueries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -106,8 +107,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
-        if (extras.getBoolean(SYNC_REQUEST_TAG) && NetworkStateHelper.isOnline(context) && !wifiOnly) {
-            Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " from " + extras.getString(SYNC_REQUEST_ORIGIN) + " *****************");
+        if (NetworkStateHelper.isOnline(context) && !wifiOnly) {
+            Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " *****************");
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();
             if (c.moveToFirst()) {
@@ -172,7 +173,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         GregorianCalendar calendar = new GregorianCalendar();
         if (lastSyncDate != -1) {
             calendar.setTimeInMillis(lastSyncDate);
-            Log.d(TAG, "Last synced: " + lastSyncDate);
+            Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate, context));
         } else {
             calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
             Log.d(TAG, "Time in millis: " + calendar.getTimeInMillis());
@@ -182,7 +183,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(calendar, true);
         query.addNewsgroup(groupName);
         String[] messages = client.listNewNews(query);
-        long currentSyncDate = System.currentTimeMillis();
+
+        long currentSyncDate = lastSyncDate;
         if (messages == null) {
             messages = applyNextCommand(client, groupName); // workaround for servers not listing news
         }
@@ -190,8 +192,11 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // get messages and add them to database
         for (String s : messages) {
             fetchMessage(serverId, groupId, s);
+            if (currentSyncDate < currentMessageDate) {
+                currentSyncDate = currentMessageDate;
+            }
         }
-        newsgroupQueries.setLastSyncDate(groupId,currentSyncDate);
+        newsgroupQueries.setLastSyncDate(groupId,currentSyncDate+1);  // current sync date of newsgroup date of youngest message
         currentNewsgroupId = -1;
         currentMessageDate = -1;
     }

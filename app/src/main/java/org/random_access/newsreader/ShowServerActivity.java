@@ -1,6 +1,7 @@
 package org.random_access.newsreader;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
@@ -69,15 +70,11 @@ public class ShowServerActivity extends AppCompatActivity implements
         ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SYNC_INTERVAL = Long.parseLong(sharedPreferences.getString("pref_sync_interval", "30")) * SECONDS_PER_MINUTE;
-        Log.i(TAG, "Periodic sync set to " + (SYNC_INTERVAL/SECONDS_PER_MINUTE));
-        Bundle extras = new Bundle();
-        extras.putString(NNTPSyncAdapter.SYNC_REQUEST_ORIGIN, TAG);
-        extras.putBoolean(NNTPSyncAdapter.SYNC_REQUEST_TAG, true);
-        ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, extras, SYNC_INTERVAL);
+        long syncIntervalInMinutes = Long.parseLong(sharedPreferences.getString("pref_sync_interval", "30"));
+        SYNC_INTERVAL = syncIntervalInMinutes  * SECONDS_PER_MINUTE;
+        Log.i(TAG, "Periodic sync set to " + syncIntervalInMinutes);
+        ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
 
-        NewsgroupObserver newsgroupObserver = new NewsgroupObserver();
-        getContentResolver().registerContentObserver(NewsgroupContract.CONTENT_URI, false, newsgroupObserver);
         mServerListView = (ListView)findViewById(R.id.server_list);
         mServerListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mServerAdapter = new ServerCursorAdapter(this, null);

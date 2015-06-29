@@ -167,6 +167,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         protected void onPostExecute(Integer[] count) {
             Toast.makeText(EditSubscriptionsActivity.this, getResources().getQuantityString(R.plurals.success_add_groups, count[0], count[0])
                     + ", " + getResources().getQuantityString(R.plurals.delete_groups, count[1], count[1]), Toast.LENGTH_SHORT).show();
+            ContentResolver.requestSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, Bundle.EMPTY);
             finish();
         }
     }
