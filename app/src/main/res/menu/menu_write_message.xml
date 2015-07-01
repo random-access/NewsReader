@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.random_access.newsreader.WriteMessageActivity">
+
+    <item android:id="@+id/action_send"
+        android:title="@string/send"
+        android:icon="@drawable/ic_send_white"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource" />
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+</menu>

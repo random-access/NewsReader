@@ -18,6 +18,7 @@ import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
+import org.random_access.newsreader.nntp.NNTPMessageBody;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
@@ -47,14 +48,10 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String SYNC_REQUEST_TAG = "Sync-Request";
     public static final String SYNC_REQUEST_ORIGIN = "Sync-Origin";
 
-    private static boolean isSyncStopped= false;
     private static int syncNumber = 0;
 
     private final ContentResolver mContentResolver;
     private final Context context;
-
-    private static final String DATABASE_DATE_PATTERN = "yyyyMMddhhmmss Z";
-    private static final String NNTPHEADER_DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss Z";
 
     private long currentNewsgroupId = -1;
     private long currentMessageDate = -1;
@@ -107,7 +104,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
-        if (NetworkStateHelper.isOnline(context) && !wifiOnly) {
+        if (!wifiOnly) {
             Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " *****************");
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();
@@ -159,8 +156,6 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         c.close();
         Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
-
-
     }
 
 
@@ -177,6 +172,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         } else {
             calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
             Log.d(TAG, "Time in millis: " + calendar.getTimeInMillis());
+            // if we are not in the same time zone as the server, or if system time is incorrect, we won't get exactly the messages out of the
+            // requested interval
         }
 
         // get news list from server
@@ -226,25 +223,21 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         NNTPMessageHeader headerData = new NNTPMessageHeader();
         boolean decodingOk = headerData.parseHeaderData(reader, articleId, context);
         String charset = headerData.getCharset();
+        Log.d(TAG, charset);
+        String transferEncoding = headerData.getTransferEncoding();
         long msgDate = new NNTPDateFormatter().getDateInMillis(headerData.getDate());
         client.disconnect();
 
         // fetch body
         client = new NNTPConnector(context).connectToNewsServer(serverId, charset, auth);
-        String line;
-
-        StringBuilder sbMessageBody = new StringBuilder();
         reader = new BufferedReader(client.retrieveArticleBody(articleId));
-        while((line=reader.readLine()) != null) {
-            sbMessageBody.append(line).append("\n");
-        }
-        reader.close();
+        String messageBody = new NNTPMessageBody().parseBodyData(reader,charset, transferEncoding);
         client.disconnect();
 
         // save message to database
         MessageQueries messageQueries = new MessageQueries(context);
-        messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
-                msgDate, 1, groupId, headerData.getHeaderSource(), sbMessageBody.toString(), headerData.getRefIds());
+        messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), charset,
+                msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds());
         currentMessageDate = msgDate;
         Log.d(TAG, "Added message " +  articleId);
     }

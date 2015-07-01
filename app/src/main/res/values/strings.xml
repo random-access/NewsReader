@@ -33,7 +33,7 @@
     <string name="email">E-Mail</string>
     <string name="email_hint">user@example.com</string>
     <string name="signature">Signature</string>
-    <string name="signature_hint">Optional</string>
+    <string name="signature_hint">>> Newsreader for Android \nhttp://random-access.org/newsreader/</string>
     <string name="msg_keep">Days to keep messages</string>
     <string name="msg_keep_hint">Default: 30</string>
 
@@ -64,6 +64,15 @@
     <string name="select_all">Select all</string>
 
     <string name="title_msg_header">Message header</string>
+
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+    <string name="subject">Subject:</string>
+    <string name="enter_subject">Enter subject</string>
+    <string name="enter_message">Enter message</string>
+    <string name="send">Send message</string>
+    <string name="reply">Re:</string>
+    <string name="sent_from">On %1$s at %2$s %3$s wrote: </string> -->
 
     <!-- Plurals -->
     <plurals name="really_delete_server">
@@ -122,4 +131,5 @@
         <item>f</item>
         <item>h</item>
     </string-array>
+    <string name="title_activity_write_message">Write message</string>
 </resources>

@@ -62,6 +62,7 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_NAME, SettingsContract.SettingsEntry.COL_NAME_FULLNAME);
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_EMAIL, SettingsContract.SettingsEntry.COL_EMAIL_FULLNAME);
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_SIGNATURE, SettingsContract.SettingsEntry.COL_SIGNATURE_FULLNAME);
+        PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS, SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS_FULLNAME);
         PROJECTION_MAP_SETTINGS.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, SettingsContract.SettingsEntry.COL_MSG_KEEP_NO_FULLNAME);
 
         PROJECTION_MAP_SERVER = new HashMap<>();

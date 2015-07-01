@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.w3c.dom.Text;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -125,7 +126,8 @@ public class DialogServerSettings extends DialogFragment{
                     getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);
                     String name = mNameText.getText().toString();
                     String email = mEmailText.getText().toString();
-                    String signature = mSignatureText.getText().toString();
+                    String signature = mSignatureText.getText().toString().isEmpty() ?
+                            getResources().getString(R.string.signature_hint) : mSignatureText.getText().toString();
                     String msgKeep = mMsgKeepText.getText().toString();
                     handleDialogInput(name, email, signature, msgKeep);
                 }
@@ -136,6 +138,8 @@ public class DialogServerSettings extends DialogFragment{
             if (TextUtils.isEmpty(email)) {
                 mEmailText.setError(res.getString(R.string.error_empty_field));
                 mEmailText.requestFocus();
+                getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             } else {
                 int msgKeepAsInt = TextUtils.isEmpty(msgKeep) ? 30 : Integer.parseInt(msgKeep);
                 SettingsQueries settingsQueries = new SettingsQueries(getActivity());

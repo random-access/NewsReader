@@ -110,7 +110,7 @@ public class ServerQueries {
         return noOfServerRows;
     }
 
-    private long getServerSettingsId(long serverId) {
+    public long getServerSettingsId(long serverId) {
         long settingsId = 0;
         Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, PROJECTION_SERVER,
                 ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}, null);
@@ -121,6 +121,7 @@ public class ServerQueries {
         serverCursor.close();
         return settingsId;
     }
+
 
 
     /**

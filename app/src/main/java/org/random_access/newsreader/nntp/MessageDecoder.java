@@ -17,19 +17,19 @@ import java.util.regex.Pattern;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-class MessageHeaderDecoder {
+class MessageDecoder {
 
-    private static final String TAG = MessageHeaderDecoder.class.getSimpleName();
+    private static final String TAG = MessageDecoder.class.getSimpleName();
 
-    private static final String BASE_64 = "B";
-    private static final String QUOTED_PRINTABLE = "Q";
+    private static final String BASE_64_SHORT = "B";
+    private static final String QUOTED_PRINTABLE_SHORT = "Q";
 
 
 
     private final String decodePattern = "=\\?(.*?)\\?([bBqQ])\\?(.*?)\\?=";
 
     //=?UTF-8?B?w6TDtsO8?=
-    public String decode(String text) throws DecoderException {
+    public String decodeHeader(String text) throws DecoderException {
         StringBuilder sb = new StringBuilder();
         Pattern pattern = Pattern.compile(decodePattern);
         Matcher matcher = pattern.matcher(text);
@@ -40,16 +40,16 @@ class MessageHeaderDecoder {
                 sb.append(text.substring(startUnencoded, matcher.start()));
             }
             String encoding = null;
-            Iterator<String> it = SupportedEncodings.getEncodings().values().iterator();
+            Iterator<String> it = SupportedHeaderEncodings.getEncodings().values().iterator();
             while(it.hasNext() && encoding == null) {
                 String currentTry = it.next();
                 if (currentTry.equalsIgnoreCase(matcher.group(1))) {
                     encoding = currentTry;
-                    if (matcher.group(2).toUpperCase().equalsIgnoreCase(BASE_64)) {
+                    if (matcher.group(2).toUpperCase().equalsIgnoreCase(BASE_64_SHORT)) {
                         // decode matcher.group(3) with encoding, base64
                         // & append it to sb
                         sb.append(base64Decode(matcher.group(3), encoding));
-                    } else if (matcher.group(2).toUpperCase().equalsIgnoreCase(QUOTED_PRINTABLE)){
+                    } else if (matcher.group(2).toUpperCase().equalsIgnoreCase(QUOTED_PRINTABLE_SHORT)){
                         // decode matcher.group(3) with encoding, quotedP
                         // & append it to sb
                         sb.append(quotedPrintableDecode(matcher.group(3), encoding));
@@ -64,12 +64,29 @@ class MessageHeaderDecoder {
         return sb.toString();
     }
 
+    public String decodeBody (String text, String charset, String encoding) {
+        switch(encoding) {
+            case SupportedBodyEncodings.BASE_64:
+                return base64Decode(text, charset);
+            case SupportedBodyEncodings.QUOTED_PRINTABLE:
+                try {
+                    return quotedPrintableDecode(text, charset);
+                } catch (DecoderException e) {
+                    Log.e(TAG, "Unsupported charset: [" + charset + "] - encoding: " + encoding);
+                    return text;
+                }
 
-    private String base64Decode(String str, String encoding) {
+            default:
+                return text;
+        }
+    }
+
+
+    private String base64Decode(String str, String charset) {
         try {
-            return new String(base64Decode(str.getBytes(encoding)), encoding); // get rid of suffix
+            return new String(base64Decode(str.getBytes(charset)), charset);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Unsupported encoding");
+            Log.e(TAG, "Unsupported charset: " + charset);
             return str;
         }
     }
@@ -79,11 +96,13 @@ class MessageHeaderDecoder {
     }
 
 
-    private String quotedPrintableDecode (String str, String encoding) throws DecoderException {
+    private String quotedPrintableDecode (String str, String charset) throws DecoderException {
         try {
-            return new String(quotedPrintableDecode(str.getBytes(encoding)), encoding).replace('_', ' ');
+            return new String(quotedPrintableDecode(str.getBytes(charset)), charset).replace('_', ' ');
+            // replace all "_" with " " -> header encoding often contains "_" for spaces.
+            // maybe should find a way to distinguish between space replacement and real "_"
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Unsupported encoding");
+            Log.e(TAG, "Unsupported charset: " + charset);
             return str;
         }
     }

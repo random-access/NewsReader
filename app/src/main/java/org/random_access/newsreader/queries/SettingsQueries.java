@@ -42,8 +42,9 @@ public class SettingsQueries {
      * @param serverId server _ID field in database
      * @return a cursor pointing before the first entry of the "table"
      */
-    private Cursor getSettingsForServer(long serverId) {
-        return context.getContentResolver().query(Uri.parse(SettingsContract.CONTENT_URI + "/" + serverId), PROJECTION_SETTINGS, null, null, null);
+    public Cursor getSettingsForServer(long serverId) {
+        long settingsId = new ServerQueries(context).getServerSettingsId(serverId);
+        return context.getContentResolver().query(Uri.parse(SettingsContract.CONTENT_URI + "/" + settingsId), PROJECTION_SETTINGS, null, null, null);
     }
 
     /**
@@ -64,12 +65,12 @@ public class SettingsQueries {
         return context.getContentResolver().insert(SettingsContract.CONTENT_URI, values);
     }
 
-    /**
+    /*
      * Helper method for getting the nummber of messages to keep in memory
      * @param serverId database _ID field identifying a Server entry
      * @return int - number of messages to keep
      * @throws IOException
-     */
+
     public int getNumberOfMessagesToKeep(long serverId) throws IOException{
         SettingsQueries sQueries = new SettingsQueries(context);
         Cursor c = sQueries.getSettingsForServer(serverId);
@@ -82,14 +83,14 @@ public class SettingsQueries {
             c.close();
             throw new IOException("No settings for server with ID " + serverId + " found!");
         }
-    }
+    }*/
 
-    /**
+    /*
      * Helper method for getting the number of days to keep message headers in memory
      * @param serverId database _ID field identifying a Server entry
      * @return number of days to keep messages
      * @throws IOException
-     */
+
     public int getNumberOfDaysForKeepingMessages(long serverId) throws IOException{
         SettingsQueries sQueries = new SettingsQueries(context);
         Cursor c =  sQueries.getSettingsForServer(serverId);
@@ -102,6 +103,7 @@ public class SettingsQueries {
             return i;
         }
     }
+    */
 
     /**
      * Deletes settings with a given ID

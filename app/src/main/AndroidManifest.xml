@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,7 +23,9 @@
             android:syncable="true" >
         </provider>
 
-        <service android:name=".sync.NNTPAuthenticatorService" android:exported="false" >
+        <service
+            android:name=".sync.NNTPAuthenticatorService"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -75,8 +76,13 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
-        <activity android:name=".MessageSettingsActivity"
-            android:label=".MessageSettings">
+        <activity
+            android:name=".MessageSettingsActivity"
+            android:label=".MessageSettings" >
+        </activity>
+        <activity
+            android:name=".WriteMessageActivity"
+            android:label="@string/title_activity_write_message" >
         </activity>
     </application>
 

@@ -8,7 +8,7 @@ import java.util.HashMap;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-class SupportedEncodings {
+class SupportedHeaderEncodings {
 
     private static final HashMap<Integer, String> encodings;
     public static final String UTF_8 = "UTF-8";

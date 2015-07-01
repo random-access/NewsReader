@@ -4,6 +4,6 @@
     android:contentAuthority="org.random_access.newsreader.provider"
     android:accountType="org.random_access.newsreader.datasync"
     android:userVisible="false"
-    android:supportsUploading="true"
+    android:supportsUploading="false"
     android:allowParallelSyncs="false"
     android:isAlwaysSyncable="true"/>

@@ -41,7 +41,6 @@
     <string name="servertitle_hint">Standard: gleich wie Server</string>
     <string name="show">Anzeigen</string>
     <string name="signature">Signatur</string>
-    <string name="signature_hint">Optional</string>
     <string name="subscriptions">Abonnements</string>
     <string name="success_adding_server">News-Server erfolgreich hinzugefügt! Viel Spaß beim Posten ;)</string>
     <string name="success_connect_server">Strike! Verbindungstest erfolgreich ;)</string>
@@ -96,4 +95,14 @@
         <item>Hierarchisch (NUR ZU TESTZWECKEN)</item>
     </string-array>
     <string name="title_activity_settings">Einstellungen</string>
+    <string name="enter_message">Nachricht eingeben</string>
+    <string name="enter_subject">Betreff eingeben</string>
+    <string name="from">Von: </string>
+    <string name="subject">Betreff:</string>
+    <string name="title_activity_write_message">Nachricht schreiben</string>
+    <string name="to">An: </string>
+    <string name="sent_from">Am %1$s um %2$s schrieb %3$s:</string>
+    <string name="send">Nachricht senden</string>
+    <string name="reply">Re:</string>
+    <string name="signature_hint">>> Newsreader für Android \nhttp://random-access.org/newsreader/</string>
 </resources>

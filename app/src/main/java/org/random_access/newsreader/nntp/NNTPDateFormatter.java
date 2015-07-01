@@ -51,11 +51,12 @@ public class NNTPDateFormatter {
                 lastParsedDate = date.getTime();
                 return lastParsedDate;
             } catch (ParseException e) {
-                Log.d(TAG, "Date " + dateString + " not parsable with pattern " + pattern);
+                Log.e(TAG, "Date " + dateString + " not parsable with pattern " + pattern);
             }
         }
-        Log.e(TAG, "Date " + dateString + " was not parsed correctly!");
-        return lastParsedDate;
+        return lastParsedDate+1;
+        // cheat to return a more or less valid date, so the message is at least at the right position
+        // if the date cannot be parsed at all
     }
 
     public String getPrettyDateString(String rawDate, Context context) {
@@ -78,13 +79,31 @@ public class NNTPDateFormatter {
 
     }
 
+    public static String getRawDateString(long dateInMillis) {
+        // TODO
+        return null;
+    }
+
     public static String getPrettyDateString(long dateInMillis, Context context) {
-        DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
+        /*DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
         DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         Date date = new Date(dateInMillis);
         String formattedDate = dateFormat.format(date);
         String formattedTime = timeFormat.format(date);
-        return formattedDate + " " + formattedTime;
+        return formattedDate + " " + formattedTime; */
+        return getPrettyDateStringDate(dateInMillis, context) + " " + getPrettyDateStringTime(dateInMillis, context);
+    }
+
+    public static String getPrettyDateStringDate(long dateInMillis, Context context) {
+        DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
+        Date date = new Date(dateInMillis);
+        return dateFormat.format(date);
+    }
+
+    public static String getPrettyDateStringTime(long dateInMillis, Context context) {
+        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
+        Date date = new Date(dateInMillis);
+        return timeFormat.format(date);
     }
 
 }

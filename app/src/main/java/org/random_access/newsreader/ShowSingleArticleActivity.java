@@ -1,6 +1,7 @@
 package org.random_access.newsreader;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -170,7 +171,13 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         btnReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ShowSingleArticleActivity.this, WriteMessageActivity.class);
+                intent.putExtra(WriteMessageActivity.KEY_SERVER_ID, serverId);
+                intent.putExtra(WriteMessageActivity.KEY_NEWSGROUP_ID, groupId);
+                intent.putExtra(WriteMessageActivity.KEY_MESSAGE_ID, messageId);
+                startActivity(intent);
+
             }
         });
         btnFullHeader.setOnClickListener(new View.OnClickListener() {
