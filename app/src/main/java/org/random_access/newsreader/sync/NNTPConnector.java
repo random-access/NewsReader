@@ -14,7 +14,7 @@ import javax.security.auth.login.LoginException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -82,7 +82,7 @@ public class NNTPConnector {
      * @return NNTPClient object to communicate with
      * @throws IOException
      */
-    public CustomNNTPClient connectToNewsServer(long serverId, String charset, boolean auth) throws IOException, LoginException {
+    public CustomNNTPClient connectToNewsServer(long serverId, String charset) throws IOException, LoginException {
         ServerQueries sQueries = new ServerQueries(context);
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
@@ -90,7 +90,7 @@ public class NNTPConnector {
             Log.d(TAG, "Found no server with the given ID in database");
             throw new IOException("Found no server with the given ID in database");
         }
-        CustomNNTPClient nntpClient = connectToNewsServer(context, charset, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT),auth,
+        CustomNNTPClient nntpClient = connectToNewsServer(context, charset, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT), c.getInt(ServerQueries.COL_AUTH) == 1,
                 c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
         c.close();
         return nntpClient;

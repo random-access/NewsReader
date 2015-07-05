@@ -10,14 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -59,13 +55,13 @@ public class NNTPDateFormatter {
         // if the date cannot be parsed at all
     }
 
-    public String getPrettyDateString(String rawDate, Context context) {
+    public String getPrettyDateString(String rawDateString, Context context) {
         SimpleDateFormat rawFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
         Date date = null;
         try {
-            date = rawFormat.parse(rawDate);
+            date = rawFormat.parse(rawDateString);
         } catch (ParseException e) {
-            Log.e(TAG, "Error parsing date from " + rawDate);
+            Log.e(TAG, "Error parsing date from " + rawDateString);
         }
         DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
         DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
@@ -74,14 +70,14 @@ public class NNTPDateFormatter {
             String formattedTime = timeFormat.format(date);
             return formattedDate + " " + formattedTime;
         } else {
-            return rawDate;
+            return rawDateString;
         }
 
     }
 
     public static String getRawDateString(long dateInMillis) {
-        // TODO
-        return null;
+        DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
+        return dateFormat.format(new Date(dateInMillis));
     }
 
     public static String getPrettyDateString(long dateInMillis, Context context) {

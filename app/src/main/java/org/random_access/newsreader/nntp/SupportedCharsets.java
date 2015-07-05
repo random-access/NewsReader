@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-class SupportedHeaderEncodings {
+public class SupportedCharsets {
 
     private static final HashMap<Integer, String> encodings;
     public static final String UTF_8 = "UTF-8";

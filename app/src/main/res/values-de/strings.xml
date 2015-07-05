@@ -63,13 +63,13 @@
     </plurals>
 
     <plurals name="success_add_groups">
-        <item quantity="one"> %d Newsgroup erfolgreich abonniert.</item>
-        <item quantity="other">%d Newsgroups erfolgreich abonniert.</item>
+        <item quantity="one"> %d Newsgroup erfolgreich abonniert</item>
+        <item quantity="other">%d Newsgroups erfolgreich abonniert</item>
     </plurals>
 
     <plurals name="delete_groups">
-        <item quantity="one">%d Newsgroup erfolgreich abbestellt.</item>
-        <item quantity="other">%d Newsgroups erfolgreich abbestellt.</item>
+        <item quantity="one">%d Newsgroup erfolgreich abbestellt</item>
+        <item quantity="other">%d Newsgroups erfolgreich abbestellt</item>
     </plurals>
 
     <!-- Preferences -->
@@ -85,7 +85,7 @@
     </string-array>
 
     <string name="pref_wlan_only_text">Synchronisiere nur über WLAN</string>
-    <string name="pref_wlan_only_summary">Wenn nur über WLAN synchronisiert wird, werden Zusatzkosten vermieden</string>
+    <string name="pref_wlan_only_summary">Wenn nur über WLAN synchronisiert wird, werden ungewollte Kosten vermieden</string>
 
     <!-- Preferences Messages -->
     <string name="pref_message_title">Nachrichten-Einstellungen</string>
@@ -104,5 +104,6 @@
     <string name="sent_from">Am %1$s um %2$s schrieb %3$s:</string>
     <string name="send">Nachricht senden</string>
     <string name="reply">Re:</string>
-    <string name="signature_hint">>> Newsreader für Android \nhttp://random-access.org/newsreader/</string>
+    <string name="signature_hint"> Newsreader für Android (Alpha) http://random-access.org/newsreader/</string>
+    <string name="new_message">Neue Nachricht</string>
 </resources>

@@ -19,7 +19,7 @@ import org.random_access.newsreader.queries.MessageQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -72,6 +72,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override
@@ -112,6 +113,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
             MessageQueries mQueries = new MessageQueries(ShowSingleArticleActivity.this);
             Cursor c = mQueries.getMessageWithId(messageId);
             if (c.moveToFirst()) {
+                articleFragment.setExtended(true);
                 articleFragment.setFromName(c.getString(MessageQueries.COL_FROM_NAME));
                 articleFragment.setSubject(c.getString(MessageQueries.COL_SUBJECT));
                 articleFragment.setPrettyDate(NNTPDateFormatter.getPrettyDateString(c.getLong(MessageQueries.COL_DATE), ShowSingleArticleActivity.this));
@@ -171,7 +173,6 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
         btnReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Toast.makeText(ShowSingleArticleActivity.this, "Not yet implemented, but coming soon!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowSingleArticleActivity.this, WriteMessageActivity.class);
                 intent.putExtra(WriteMessageActivity.KEY_SERVER_ID, serverId);
                 intent.putExtra(WriteMessageActivity.KEY_NEWSGROUP_ID, groupId);
@@ -184,7 +185,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 InfoFragment df = InfoFragment.getInstance(getResources().getString(R.string.title_msg_header), articleFragment.getMessageHeader());
-                df.show(getFragmentManager(), "FullHeaderFragmen");
+                df.show(getFragmentManager(), "FullHeaderFragment");
             }
         });
     }

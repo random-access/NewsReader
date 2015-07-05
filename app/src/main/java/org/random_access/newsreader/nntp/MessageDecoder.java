@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -40,7 +40,7 @@ class MessageDecoder {
                 sb.append(text.substring(startUnencoded, matcher.start()));
             }
             String encoding = null;
-            Iterator<String> it = SupportedHeaderEncodings.getEncodings().values().iterator();
+            Iterator<String> it = SupportedCharsets.getEncodings().values().iterator();
             while(it.hasNext() && encoding == null) {
                 String currentTry = it.next();
                 if (currentTry.equalsIgnoreCase(matcher.group(1))) {
@@ -66,9 +66,9 @@ class MessageDecoder {
 
     public String decodeBody (String text, String charset, String encoding) {
         switch(encoding) {
-            case SupportedBodyEncodings.BASE_64:
+            case SupportedEncodings.BASE_64:
                 return base64Decode(text, charset);
-            case SupportedBodyEncodings.QUOTED_PRINTABLE:
+            case SupportedEncodings.QUOTED_PRINTABLE:
                 try {
                     return quotedPrintableDecode(text, charset);
                 } catch (DecoderException e) {
@@ -98,9 +98,9 @@ class MessageDecoder {
 
     private String quotedPrintableDecode (String str, String charset) throws DecoderException {
         try {
-            return new String(quotedPrintableDecode(str.getBytes(charset)), charset).replace('_', ' ');
             // replace all "_" with " " -> header encoding often contains "_" for spaces.
             // maybe should find a way to distinguish between space replacement and real "_"
+            return new String(quotedPrintableDecode(str.getBytes(charset)), charset).replace('_', ' ');
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported charset: " + charset);
             return str;

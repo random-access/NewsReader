@@ -7,7 +7,7 @@ import android.util.Log;
 import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 28.06.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -44,7 +44,7 @@ public class MessageHierarchyQueries {
 
     public Cursor getChildrenOfId(long msgId) {
         return context.getContentResolver().query(MessageHierarchyContract.CONTENT_URI, MSG_HIERARCHY_PROJECTION,
-                MessageHierarchyContract.MessageHierarchyEntry.COL_IN_REPLY_TO + " = ?", new String[]{msgId + ""},
+                MessageHierarchyContract.MessageHierarchyEntry.COL_MSG_DB_ID + " = ?", new String[]{msgId + ""},
                 null);
     }
 

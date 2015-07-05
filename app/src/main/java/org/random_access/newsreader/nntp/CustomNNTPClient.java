@@ -2,16 +2,18 @@ package org.random_access.newsreader.nntp;
 
 import org.apache.commons.net.MalformedServerReplyException;
 import org.apache.commons.net.io.DotTerminatedMessageReader;
+import org.apache.commons.net.io.DotTerminatedMessageWriter;
 import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPReply;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  *
@@ -81,8 +83,15 @@ public class CustomNNTPClient extends CustomNNTP {
     }
 
     public Reader retrieveArticleHeader(String articleId) throws IOException {
-        return this.retrieveArticleHeader(articleId, (ArticleInfo)null);
+        return this.retrieveArticleHeader(articleId, (ArticleInfo) null);
     }
 
 
+    public Writer postArticle() throws IOException {
+        return !NNTPReply.isPositiveIntermediate(this.post())?null:new DotTerminatedMessageWriter(this._writer_);
+    }
+
+    public boolean completePendingCommand() throws IOException {
+        return NNTPReply.isPositiveCompletion(this.getReply());
+    }
 }

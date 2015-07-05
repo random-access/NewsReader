@@ -24,7 +24,7 @@ import org.random_access.newsreader.queries.NewsgroupQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -89,8 +89,15 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent intent = new Intent(this, MessageSettingsActivity.class);
-                startActivity(intent);
+                Intent settingsIntent = new Intent(this, MessageSettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.action_new_message:
+                Intent sendIntent = new Intent(ShowMessagesActivity.this, WriteMessageActivity.class);
+                sendIntent.putExtra(WriteMessageActivity.KEY_SERVER_ID, serverId);
+                sendIntent.putExtra(WriteMessageActivity.KEY_NEWSGROUP_ID, groupId);
+                sendIntent.putExtra(WriteMessageActivity.KEY_MESSAGE_ID, WriteMessageActivity.NEW_MESSAGE);
+                startActivity(sendIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

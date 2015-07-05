@@ -3,12 +3,12 @@ package org.random_access.newsreader.nntp;
 import java.util.HashMap;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 30.06.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
-public class SupportedBodyEncodings {
+public class SupportedEncodings {
 
     private static final HashMap<Integer, String> encodings;
     public static final String _7BIT = "7bit";

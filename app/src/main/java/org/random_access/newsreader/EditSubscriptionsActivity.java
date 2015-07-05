@@ -31,7 +31,7 @@ import javax.security.auth.login.LoginException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -112,8 +112,8 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         super.onDestroy();
         if (subscriptionsFragment != null) {
             subscriptionsFragment.setNewsGroupItems(items);
-            subscriptionsFragment.setCheckedSelection(selection.getCheckedRadioButtonId());
-            subscriptionsFragment.setCurrentDetailView(adapter.getCurrentDetailView());
+            subscriptionsFragment.setCheckedSelection(selection == null ? R.id.groups_all : selection.getCheckedRadioButtonId());
+            subscriptionsFragment.setCurrentDetailView(adapter == null ? -1 : adapter.getCurrentDetailView());
             Log.d(TAG, "Save selection: only selected = " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
         }
     }

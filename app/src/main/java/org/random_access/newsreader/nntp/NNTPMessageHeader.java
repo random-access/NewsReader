@@ -5,15 +5,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.net.nntp.SimpleNNTPHeader;
 import org.random_access.newsreader.queries.MessageQueries;
-import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 26.06.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -26,23 +26,30 @@ public class NNTPMessageHeader {
     private String sender;
     private String fullName;
     private String email;
-    private String contentType;
-    private String charset;
+    private String contentType = DEFAULT_CONTENT_TYPE;
+    private String charset = DEFAULT_CHARSET;
     private String date;
     private String subject;
-    private String transferEncoding;
+    private String transferEncoding = DEFAULT_TRANSFER_ENCODING;
     private String references;
     private long[] refIds;
     private String headerSource;
 
+    private static final String DEFAULT_CONTENT_TYPE = "text/plain";
+    private static final String DEFAULT_USER_AGENT = "NewsReader for Android/1.0 http://www.random-access.org/newsreader";
+    private static final String DEFAULT_CHARSET = SupportedCharsets.ISO_8859_1;
+    private static final String DEFAULT_TRANSFER_ENCODING = SupportedEncodings._8BIT;
+
     public static final String KEY_FROM = "From";
     public static final String KEY_NEWSGROUPS = "Newsgroups";
-    public static final String KEY_CONTENT_TYPE = "Content-Type"; // for now assuming text/plain
-    public static final String KEY_CHARSET = "Charset";
+    public static final String KEY_CONTENT_TYPE = "Content-Type";
+    public static final String KEY_CHARSET = "charset";
     public static final String KEY_DATE = "Date";
     public static final String KEY_SUBJECT = "Subject";
     public static final String KEY_TRANSFER_ENCODING = "Content-Transfer-Encoding";
     public static final String KEY_REFERENCES = "References";
+    public static final String KEY_IN_REPLY_TO = "In-Reply-To";
+    public static final String KEY_USER_AGENT = "User-Agent";
 
     private String lastKey = "";
 
@@ -71,18 +78,20 @@ public class NNTPMessageHeader {
         return success;
     }
 
-    private String buildHeader(String fullName, String email, String[] newsgroups, String charset, String date, String subject, String transferEncoding,long[] refIds) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(KEY_FROM).append(": \"").append(fullName).append("\" ").append("<").append(email).append(">\n")
-                .append(KEY_NEWSGROUPS).append(": ").append(concatNewsgroups(newsgroups)).append("\n")
-                .append(KEY_SUBJECT).append(": ").append(subject).append("\n")
-                .append(KEY_DATE).append(": ");
-                // TODO
-
-        return null;
+    public SimpleNNTPHeader buildHeader(String fullName, String email, String newsgroup, long date, long[] replyIds, String subject, Context context) {
+        SimpleNNTPHeader header = new SimpleNNTPHeader(fullName + " <" + email + ">", subject);
+        header.addNewsgroup(newsgroup);
+        header.addHeaderField(KEY_USER_AGENT, DEFAULT_USER_AGENT);
+        header.addHeaderField(KEY_REFERENCES, getReferencesAsString(replyIds, context));
+        header.addHeaderField(KEY_IN_REPLY_TO, getInReplyToString(replyIds, context));
+        header.addHeaderField(KEY_TRANSFER_ENCODING, DEFAULT_TRANSFER_ENCODING);
+        header.addHeaderField(KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE + "; " + KEY_CHARSET + "=" + DEFAULT_CHARSET);
+        Log.d(TAG, header.toString());
+        // TODO add reply message fields
+        return header;
     }
 
-    private String concatNewsgroups (String[] newsgroups) {
+   /* private String concatNewsgroups (String[] newsgroups) {
         if (newsgroups == null || newsgroups.length == 0) {
             return "";
         } else if (newsgroups.length == 1) {
@@ -93,6 +102,32 @@ public class NNTPMessageHeader {
                 sb.append(s).append(", ");
             }
             sb.replace(sb.length()-2, sb.length()-1, "");
+            return sb.toString();
+        }
+    } */
+
+    private String getInReplyToString(long[] refIds, Context context) {
+        MessageQueries messageQueries = new MessageQueries(context);
+        if (refIds == null || refIds.length == 0) {
+            return "";
+        } else {
+            return messageQueries.getMessageIdFromId(refIds[refIds.length-1]);
+        }
+    }
+
+     private String getReferencesAsString(long[] refIds, Context context) {
+        MessageQueries messageQueries = new MessageQueries(context);
+        if (refIds == null || refIds.length == 0) {
+            return "";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (long l : refIds) {
+                String msgId = messageQueries.getMessageIdFromId(l);
+                if (!TextUtils.isEmpty(msgId)) {
+                    sb.append(msgId).append(" ");
+                }
+            }
+            sb.replace(sb.length()-1, sb.length()-1, "");
             return sb.toString();
         }
     }
@@ -153,10 +188,10 @@ public class NNTPMessageHeader {
     }
 
     private String parseContentTypeAndCharset(String s) {
-        if (s.toUpperCase().contains(SupportedHeaderEncodings.UTF_8)) {
-            this.charset = SupportedHeaderEncodings.UTF_8;
+        if (s.toUpperCase().contains(SupportedCharsets.UTF_8)) {
+            this.charset = SupportedCharsets.UTF_8;
         } else {
-            this.charset = SupportedHeaderEncodings.ISO_8859_15;
+            this.charset = SupportedCharsets.ISO_8859_15;
             //For now we keep these 2 formats because they work for sure
         }
         return s.substring(0,s.indexOf(";")).replace(KEY_CONTENT_TYPE + ": ", "");
@@ -166,17 +201,17 @@ public class NNTPMessageHeader {
         String enc = s.replace(KEY_TRANSFER_ENCODING + ": ", "").toLowerCase();
         String result = "";
         switch (enc) {
-            case SupportedBodyEncodings._7BIT:
-                result = SupportedBodyEncodings._7BIT;
+            case SupportedEncodings._7BIT:
+                result = SupportedEncodings._7BIT;
                 break;
-            case SupportedBodyEncodings._8BIT:
-                result = SupportedBodyEncodings._8BIT;
+            case SupportedEncodings._8BIT:
+                result = SupportedEncodings._8BIT;
                 break;
-            case SupportedBodyEncodings.QUOTED_PRINTABLE:
-                result = SupportedBodyEncodings.QUOTED_PRINTABLE;
+            case SupportedEncodings.QUOTED_PRINTABLE:
+                result = SupportedEncodings.QUOTED_PRINTABLE;
                 break;
-            case SupportedBodyEncodings.BASE_64:
-                result = SupportedBodyEncodings.BASE_64;
+            case SupportedEncodings.BASE_64:
+                result = SupportedEncodings.BASE_64;
                 break;
             default:
                 Log.e(TAG, "Unsupported transfer encoding: [" + enc + "]");
@@ -189,29 +224,15 @@ public class NNTPMessageHeader {
         return messageId;
     }
 
-    public void setMessageId() {
-        // TODO create message ID
-    }
-
     public String getFullName() {
         return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) { this.email = email; }
-
     public String getCharset() { return charset; }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
 
     public String getDate() {
         return date;
@@ -223,19 +244,13 @@ public class NNTPMessageHeader {
         return subject;
     }
 
-    public void  setSubject(String subject) { this.subject = subject; }
-
     public String getTransferEncoding() {
         return transferEncoding;
     }
 
-    public void setTransferEncoding(String transferEncoding) { this.transferEncoding = transferEncoding; }
-
     public long[] getRefIds() {
         return refIds;
     }
-
-    public void setRefIds(long[] refIds) { this.refIds = refIds; }
 
     public String getHeaderSource() {
         return headerSource;

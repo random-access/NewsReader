@@ -29,13 +29,14 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -99,8 +100,6 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
-     // TODO Put the data transfer code here.
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
@@ -116,15 +115,21 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                                 c.getString(ServerQueries.COL_PASSWORD));
                     } catch (IOException | LoginException e) {
                         e.printStackTrace();
+                    } finally {
+                        // if we get interrupted during syncing a newsgroup, store date of last message that was fetched in order
+                        // to start the sync next time at the right time
                         if (currentNewsgroupId != -1 && currentMessageDate != -1) {
-                            Log.d(TAG, "Sync date in group " + currentNewsgroupId + " is " + currentMessageDate);
+                            Log.d(TAG, "-----> Sync interrupted! Last sync date in group " + currentNewsgroupId + " is " + currentMessageDate);
                             NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
                             newsgroupQueries.setLastSyncDate(currentNewsgroupId, currentMessageDate);
+                            currentMessageDate = -1;
+                            currentNewsgroupId = -1;
                         }
                     }
                     c.moveToNext();
                 }
                 c.close();
+                Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
             }
         }
     }
@@ -132,11 +137,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onSyncCanceled() {
         super.onSyncCanceled();
-        Log.d(TAG, "-----> Sync cancelled!");
-        if (currentNewsgroupId != -1 && currentMessageDate != -1) {
-            Log.d(TAG, "Sync date in group " + currentNewsgroupId + " is " + currentMessageDate);
-            NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
-            newsgroupQueries.setLastSyncDate(currentNewsgroupId, currentMessageDate);
+        // TODO make sure that the next lines are not necessary -> MessageDate & NewsgroupId should be -1
+        if (currentMessageDate == -1 || currentNewsgroupId == -1) {
+            Log.d(TAG, "Bad state in onSyncCancelled: " + "currentMessageDate: " + currentMessageDate + ", currentNewsgroupId: " + currentNewsgroupId);
         }
     }
 
@@ -155,56 +158,59 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
         c.close();
-        Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
     }
 
 
     private void  getNewNewsForNewsgroup(long serverId, NNTPClient client, long groupId, String groupName) throws IOException, LoginException{
         currentNewsgroupId = groupId;
 
-        // Create a GregorianCalendar instance with date of last sync
+        // Create a GregorianCalendar instance with date of last sync.
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
         long lastSyncDate = newsgroupQueries.getLastSyncDate(groupId);
         GregorianCalendar calendar = new GregorianCalendar();
         if (lastSyncDate != -1) {
-            calendar.setTimeInMillis(lastSyncDate);
-            Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate, context));
+            calendar.setTimeInMillis(lastSyncDate+1000); // TODO compare mails that arrived in this second with database entries to not lose messages.
+            Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate+1000, context));
         } else {
+            // Set sync interval. If we are not in the same time zone as the server, or if system time is incorrect,
+            // we won't get exactly the messages out of the requested interval, better solution possible?
             calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
             Log.d(TAG, "Time in millis: " + calendar.getTimeInMillis());
-            // if we are not in the same time zone as the server, or if system time is incorrect, we won't get exactly the messages out of the
-            // requested interval
         }
+        long currentSyncDate = lastSyncDate;
 
-        // get news list from server
-        NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(calendar, true);
+        // get list of message id's from server
+        NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(calendar, false);
+        Log.d(TAG, "Query date: " + query.getDate() + " " + query.getTime());
         query.addNewsgroup(groupName);
         String[] messages = client.listNewNews(query);
-
-        long currentSyncDate = lastSyncDate;
         if (messages == null) {
-            messages = applyNextCommand(client, groupName); // workaround for servers not listing news
+            messages = applyNextCommand(client, groupName);
         }
 
-        // get messages and add them to database
+        // Get messages and add them to database.
         for (String s : messages) {
             fetchMessage(serverId, groupId, s);
             if (currentSyncDate < currentMessageDate) {
                 currentSyncDate = currentMessageDate;
             }
         }
-        newsgroupQueries.setLastSyncDate(groupId,currentSyncDate+1);  // current sync date of newsgroup date of youngest message
+
+        // Store date of last message that we fetched in newsgroup table and reset values.
+        newsgroupQueries.setLastSyncDate(groupId, currentSyncDate);
+
         currentNewsgroupId = -1;
         currentMessageDate = -1;
     }
 
-
+    //Fallback method if news server doesnt' support listNewNews -> this is much slower
+    // but at least we get the messages
     private String[] applyNextCommand (NNTPClient client, String group) throws  IOException{
         ArrayList<String> articleList = new ArrayList<>();
         client.selectNewsgroup(group);
         ArticleInfo pointer = new ArticleInfo();
         int i = 0;
-        while (client.selectNextArticle(pointer) && i < 100){
+        while (client.selectNextArticle(pointer) && i < 100){ // TODO while date > sync start date
             // client.selectArticle(pointer.articleNumber, pointer);
             Log.d(TAG, "pointer.articleNumber = " + pointer.articleNumber + ", pointer.articleId = " + pointer.articleId);
             articleList.add(pointer.articleId);
@@ -215,13 +221,12 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException{
-        boolean auth = new ServerQueries(context).hasServerAuth(serverId);
 
         // fetch header
-        CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null, auth);
+        CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null);
         BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
         NNTPMessageHeader headerData = new NNTPMessageHeader();
-        boolean decodingOk = headerData.parseHeaderData(reader, articleId, context);
+        headerData.parseHeaderData(reader, articleId, context);
         String charset = headerData.getCharset();
         Log.d(TAG, charset);
         String transferEncoding = headerData.getTransferEncoding();
@@ -229,7 +234,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         client.disconnect();
 
         // fetch body
-        client = new NNTPConnector(context).connectToNewsServer(serverId, charset, auth);
+        client = new NNTPConnector(context).connectToNewsServer(serverId, charset);
         reader = new BufferedReader(client.retrieveArticleBody(articleId));
         String messageBody = new NNTPMessageBody().parseBodyData(reader,charset, transferEncoding);
         client.disconnect();
@@ -238,7 +243,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         MessageQueries messageQueries = new MessageQueries(context);
         messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), charset,
                 msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds());
-        currentMessageDate = msgDate;
+        currentMessageDate = msgDate; // TODO simplify this...
+        Log.d(TAG, "Current messageDate " +  NNTPDateFormatter.getPrettyDateString(msgDate, context));
         Log.d(TAG, "Added message " +  articleId);
     }
 }

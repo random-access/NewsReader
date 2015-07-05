@@ -7,12 +7,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import org.random_access.newsreader.provider.contracts.DBJoins;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
 
+import java.util.Arrays;
+
 /**
  * <b>Project:</b> Newsreader for Android <br>
- * <b>Date:</b> 25.07.2015 <br>
+ * <b>Date:</b> 25.06.2015 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
@@ -75,6 +78,16 @@ public class MessageQueries {
                 null);
     }
 
+    public String getMessageIdFromId(long id) {
+        String messageId = null;
+        Cursor c = getMessageWithId(id);
+        if (c.moveToFirst()) {
+            messageId = c.getString(COL_MSG_ID);
+        }
+        c.close();
+        return messageId;
+    }
+
     public int getNewMessagesCount(long newsgroupId) {
         return QueryHelper.count(context, MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND " + MessageContract.MessageEntry.COL_NEW + " = ?",
                 new String[]{newsgroupId + "", "1"});
@@ -132,4 +145,30 @@ public class MessageQueries {
         int delCount = context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
         Log.i(TAG, delCount + " rows deleted");
     }
+
+     /* public String getReplyMessageIdString(long[] refIds) {
+        StringBuilder sb = new StringBuilder();
+        String refIdString = Arrays.toString(refIds).replace('[', '(').replace(']', ')');
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry._ID + " in " + refIdString, null,
+                MessageContract.MessageEntry.COL_DATE + " ASC");
+        if (c.moveToFirst()){
+            while(!c.isAfterLast()) {
+                sb.append(c.getString(COL_MSG_ID)).append(" ");
+            }
+            sb.replace(sb.length()-1, sb.length(), "");
+        }
+        c.close();
+        return sb.toString();
+       Cursor cursor = context.getContentResolver().query(DBJoins.CONTENT_URI_MESSAGE_JOIN_MESSAGEHIERARCHY_ROOT, new String[] {MessageContract.MessageEntry.COL_MSG_ID},
+                MessageContract.MessageEntry.COL_MSG_ID + " = ? ", new String[]{messageId + ""}, MessageContract.MessageEntry.COL_DATE + " ASC");
+        StringBuilder sb = new StringBuilder();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                sb.append(cursor.getString(0)).append(" ");
+            }
+            sb.replace(sb.length()-1, sb.length(), "");
+        }
+        cursor.close();
+        return sb.toString();
+    } */
 }

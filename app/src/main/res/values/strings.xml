@@ -22,7 +22,7 @@
     <string name="cancel">Cancel</string>
     <string name="error_empty_field">Empty not allowed here</string>
     <string name="error_connection">Sorry for that &#8230; network or server error!</string>
-    <string name="error_password">Sorry for that &#8230; wrong user or password!</string>
+    <string name="error_password">Couldn\'t connect to news server -  wrong user or password!</string>
     <string name="error_offline">You are offline! Please connect to the internet and try again!</string>
     <string name="success_connect_server">Strike! Connection test successful ;)</string>
     <string name="success_adding_server">Successfully added news server! Happy posting ;)</string>
@@ -33,7 +33,7 @@
     <string name="email">E-Mail</string>
     <string name="email_hint">user@example.com</string>
     <string name="signature">Signature</string>
-    <string name="signature_hint">>> Newsreader for Android \nhttp://random-access.org/newsreader/</string>
+    <string name="signature_hint"> Newsreader for Android (Alpha) http://random-access.org/newsreader/</string>
     <string name="msg_keep">Days to keep messages</string>
     <string name="msg_keep_hint">Default: 30</string>
 
@@ -64,6 +64,7 @@
     <string name="select_all">Select all</string>
 
     <string name="title_msg_header">Message header</string>
+    <string name="new_message">New message</string>
 
     <string name="from">From:</string>
     <string name="to">To:</string>
@@ -90,8 +91,8 @@
     </plurals>
 
     <plurals name="delete_groups">
-        <item quantity="one">unsubscribed from %d newsgroup.</item>
-        <item quantity="other">unsubscribed from %d newsgroups.</item>
+        <item quantity="one">unsubscribed from %d newsgroup</item>
+        <item quantity="other">unsubscribed from %d newsgroups</item>
     </plurals>
 
     <!-- Preferences -->

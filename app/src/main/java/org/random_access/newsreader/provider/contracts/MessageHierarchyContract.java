@@ -8,7 +8,7 @@ import android.util.Log;
 import org.random_access.newsreader.provider.NNTPProvider;
 
 /**
- * <b>Project:</b> FlashCards Manager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 28.06.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
@@ -36,7 +36,7 @@ public class MessageHierarchyContract {
      */
     public static abstract class MessageHierarchyEntry implements BaseColumns {
 
-        public static final String COL_MSG_DB_ID = "_MSG_ID";
+        public static final String COL_MSG_DB_ID = "_MSG_DB_ID";
         public static final String COL_IN_REPLY_TO = "_IN_REPLY_TO";
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
