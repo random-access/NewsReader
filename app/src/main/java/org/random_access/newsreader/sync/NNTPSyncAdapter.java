@@ -26,10 +26,8 @@ import org.random_access.newsreader.queries.ServerQueries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
@@ -103,7 +101,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
-        if (!wifiOnly) {
+        boolean hasWifiConnection = NetworkStateHelper.hasWifiConnection(context);
+        Log.d(TAG, "Has WIFI connection?" + hasWifiConnection);
+        if (!wifiOnly || hasWifiConnection) {
             Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " *****************");
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();
@@ -128,9 +128,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                     c.moveToNext();
                 }
-                c.close();
                 Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
             }
+            c.close();
         }
     }
 
@@ -142,9 +142,10 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         Cursor c = newsgroupQueries.getNewsgroupsOfServer(serverId);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
+                Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME));
                 // TODO cleanup old news -> use number of messages to keep / number of days to keep messages
-                Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME));
+                Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();
             }
         }
@@ -165,9 +166,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         } else {
             // Set sync interval; TODO get sync interval from settings
             calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
-            Log.d(TAG, "Complete sync from: " + NNTPDateFormatter.getPrettyDateString(calendar.getTimeInMillis(), context));
+            Log.d(TAG, "Complete sync: " + NNTPDateFormatter.getPrettyDateString(calendar.getTimeInMillis(), context));
         }
-        long currentSyncDate = lastSyncDate;
 
         // get list of message id's from server
         NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(calendar, false);
@@ -180,13 +180,12 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // Get messages and add them to database.
         for (String s : messages) {
             fetchMessage(serverId, groupId, s);
-            if (currentSyncDate < currentMessageDate) {
-                currentSyncDate = currentMessageDate;
-            }
         }
 
         // Store date of last message that we fetched in newsgroup table and reset values.
-        newsgroupQueries.setLastSyncDate(groupId, currentSyncDate);
+        if (currentNewsgroupId != -1 && currentMessageDate != -1) {
+            newsgroupQueries.setLastSyncDate(groupId, currentMessageDate);
+        }
 
         currentNewsgroupId = -1;
         currentMessageDate = -1;
@@ -210,6 +209,10 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException{
+
+        if (new MessageQueries(context).isMessageInDatabase(articleId)) {
+            return;
+        }
 
         NNTPMessageHeader headerData = null;
         long msgDate = -1;
@@ -246,8 +249,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
                     msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds());
             currentMessageDate = msgDate;
-            Log.d(TAG, "Current messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
-            Log.d(TAG, "Added message " + articleId);
+            Log.d(TAG, "Added message " + articleId + "; messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
         }
     }
 }

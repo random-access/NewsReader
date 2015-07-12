@@ -19,4 +19,11 @@ public class NetworkStateHelper {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    public static boolean hasWifiConnection(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+        return  netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
 }

@@ -78,6 +78,13 @@ public class MessageQueries {
                 null);
     }
 
+    public boolean isMessageInDatabase(String messageId) {
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ?", new String[]{messageId + ""}, null);
+        boolean result = c.moveToFirst();
+        c.close();
+        return result;
+    }
+
     public String getMessageIdFromId(long id) {
         String messageId = null;
         Cursor c = getMessageWithId(id);

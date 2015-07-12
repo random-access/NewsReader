@@ -155,7 +155,7 @@ public class NewsgroupQueries {
     public boolean setLastSyncDate(long newsGroupId, long date) {
         ContentValues values = new ContentValues();
         values.put(NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE, date);
-        return context.getContentResolver().update(Uri.parse(NewsgroupContract.CONTENT_URI + "/" + newsGroupId), values, null, null) > 0;
+        return context.getContentResolver().update(NewsgroupContract.CONTENT_URI, values, NewsgroupContract.NewsgroupEntry._ID + " = ?", new String[]{newsGroupId + ""}) > 0;
     }
 
 }
