@@ -108,7 +108,7 @@
         <item>12 hours</item>
         <item>1 day</item>
     </string-array>
-    <string-array name="pref_sync_interval_values">
+    <string-array name="pref_sync_interval_values" translatable="false">
         <item>2</item>
         <item>15</item>
         <item>30</item>
@@ -128,7 +128,7 @@
         <item>Flat</item>
         <item>Hierarchial (DEBUG ONLY)</item>
     </string-array>
-    <string-array name="pref_message_view_values">
+    <string-array name="pref_message_view_values" translatable="false">
         <item>f</item>
         <item>h</item>
     </string-array>

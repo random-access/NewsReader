@@ -134,15 +134,6 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    @Override
-    public void onSyncCanceled() {
-        super.onSyncCanceled();
-        // TODO make sure that the next lines are not necessary -> MessageDate & NewsgroupId should be -1
-        if (currentMessageDate == -1 || currentNewsgroupId == -1) {
-            Log.d(TAG, "Bad state in onSyncCancelled: " + "currentMessageDate: " + currentMessageDate + ", currentNewsgroupId: " + currentNewsgroupId);
-        }
-    }
-
     private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
 
@@ -169,19 +160,17 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         long lastSyncDate = newsgroupQueries.getLastSyncDate(groupId);
         GregorianCalendar calendar = new GregorianCalendar();
         if (lastSyncDate != -1) {
-            calendar.setTimeInMillis(lastSyncDate+1000); // TODO compare mails that arrived in this second with database entries to not lose messages.
-            Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate+1000, context));
+            calendar.setTimeInMillis(lastSyncDate); // TODO compare mails that arrived in this second with database entries to not lose messages.
+            Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate, context));
         } else {
-            // Set sync interval. If we are not in the same time zone as the server, or if system time is incorrect,
-            // we won't get exactly the messages out of the requested interval, better solution possible?
+            // Set sync interval; TODO get sync interval from settings
             calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
-            Log.d(TAG, "Time in millis: " + calendar.getTimeInMillis());
+            Log.d(TAG, "Complete sync from: " + NNTPDateFormatter.getPrettyDateString(calendar.getTimeInMillis(), context));
         }
         long currentSyncDate = lastSyncDate;
 
         // get list of message id's from server
         NewGroupsOrNewsQuery query = new NewGroupsOrNewsQuery(calendar, false);
-        Log.d(TAG, "Query date: " + query.getDate() + " " + query.getTime());
         query.addNewsgroup(groupName);
         String[] messages = client.listNewNews(query);
         if (messages == null) {
@@ -222,29 +211,43 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException{
 
-        // fetch header
-        CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null);
-        BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
-        NNTPMessageHeader headerData = new NNTPMessageHeader();
-        headerData.parseHeaderData(reader, articleId, context);
-        String charset = headerData.getCharset();
-        Log.d(TAG, charset);
-        String transferEncoding = headerData.getTransferEncoding();
-        long msgDate = new NNTPDateFormatter().getDateInMillis(headerData.getDate());
-        client.disconnect();
+        NNTPMessageHeader headerData = null;
+        long msgDate = -1;
+        String messageBody = null;
 
-        // fetch body
-        client = new NNTPConnector(context).connectToNewsServer(serverId, charset);
-        reader = new BufferedReader(client.retrieveArticleBody(articleId));
-        String messageBody = new NNTPMessageBody().parseBodyData(reader,charset, transferEncoding);
-        client.disconnect();
+        try {
+            // fetch header
+            CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null);
+            BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
+            headerData = new NNTPMessageHeader();
+            headerData.parseHeaderData(reader, articleId, context);
+            String charset = headerData.getCharset();
+            Log.d(TAG, charset);
+            String transferEncoding = headerData.getTransferEncoding();
+            msgDate = new NNTPDateFormatter().getDateInMillis(headerData.getDate());
+            client.disconnect();
 
-        // save message to database
-        MessageQueries messageQueries = new MessageQueries(context);
-        messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), charset,
-                msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds());
-        currentMessageDate = msgDate; // TODO simplify this...
-        Log.d(TAG, "Current messageDate " +  NNTPDateFormatter.getPrettyDateString(msgDate, context));
-        Log.d(TAG, "Added message " +  articleId);
+            // fetch body
+            client = new NNTPConnector(context).connectToNewsServer(serverId, charset);
+            reader = new BufferedReader(client.retrieveArticleBody(articleId));
+            messageBody = new NNTPMessageBody().parseBodyData(reader, charset, transferEncoding);
+            client.disconnect();
+
+        } catch (IOException e) {
+            Log.e(TAG, "Error during fetchMessage - connection got interrupted");
+            throw  new IOException();
+        } catch(LoginException e) {
+            Log.e(TAG, "Error during fetchMessage - login failed");
+            throw new LoginException();
+        }
+        if (msgDate != -1 && messageBody != null) {
+            // save message to database
+            MessageQueries messageQueries = new MessageQueries(context);
+            messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
+                    msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds());
+            currentMessageDate = msgDate;
+            Log.d(TAG, "Current messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
+            Log.d(TAG, "Added message " + articleId);
+        }
     }
 }

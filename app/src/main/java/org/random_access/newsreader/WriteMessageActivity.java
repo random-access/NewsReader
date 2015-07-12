@@ -221,7 +221,9 @@ public class WriteMessageActivity extends AppCompatActivity {
             } else { // get subject, message and refIds if reply message
                 Cursor messageCursor = new MessageQueries(ctxt).getMessageWithId(messageId);
                 if (messageCursor.moveToFirst()) {
-                    msgFragment.setFromSubject(getResources().getString(R.string.reply) + " " + messageCursor.getString(MessageQueries.COL_SUBJECT));
+                    String subject = messageCursor.getString(MessageQueries.COL_SUBJECT);
+                    String re = getResources().getString(R.string.reply);
+                    msgFragment.setFromSubject(subject.startsWith(re) ? subject : re + " " + subject);
                     String date = NNTPDateFormatter.getPrettyDateStringDate(messageCursor.getLong(MessageQueries.COL_DATE), ctxt);
                     String time = NNTPDateFormatter.getPrettyDateStringTime(messageCursor.getLong(MessageQueries.COL_DATE), ctxt);
                     String name = messageCursor.getString(MessageQueries.COL_FROM_NAME);
