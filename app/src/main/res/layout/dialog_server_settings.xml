@@ -69,14 +69,23 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000"/>
 
-    <EditText
+    <Spinner
+        android:id="@+id/sp_msgkeep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sync_period_entries"
+        android:prompt="@string/sync_period_prompt" />
+
+    <!-- <EditText
         android:id="@+id/txt_msgkeep"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:lines="1"
         android:inputType="number"
-        android:hint="@string/msg_keep_hint"/>
+        android:hint="@string/msg_keep_hint"/> -->
+
+
 
     </LinearLayout>
 

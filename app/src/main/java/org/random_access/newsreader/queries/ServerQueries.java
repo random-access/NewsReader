@@ -24,19 +24,20 @@ public class ServerQueries {
 
     private final Context context;
 
-    private static final String[] PROJECTION_SERVER = new String[] {ServerContract.ServerEntry._ID,
+    private static final String[] PROJECTION_SERVER = new String[] {ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
             ServerContract.ServerEntry.COL_SERVERNAME, ServerContract.ServerEntry.COL_SERVERPORT,
             ServerContract.ServerEntry.COL_ENCRYPTION, ServerContract.ServerEntry.COL_AUTH, ServerContract.ServerEntry.COL_USER, ServerContract.ServerEntry.COL_PASSWORD,
             ServerContract.ServerEntry.COL_FK_SET_ID};
 
     public static final int COL_ID = 0;
-    public static final int COL_NAME = 1;
-    public static final int COL_PORT = 2;
-    public static final int COL_ENCRYPTION = 3;
-    public static final int COL_AUTH = 4;
-    public static final int COL_USER = 5;
-    public static final int COL_PASSWORD = 6;
-    public static final int COL_SETTINGS_ID = 7;
+    public static final int COL_TITLE = 1;
+    public static final int COL_NAME = 2;
+    public static final int COL_PORT = 3;
+    public static final int COL_ENCRYPTION = 4;
+    public static final int COL_AUTH = 5;
+    public static final int COL_USER = 6;
+    public static final int COL_PASSWORD = 7;
+    public static final int COL_SETTINGS_ID = 8;
 
 
     public ServerQueries(Context context) {

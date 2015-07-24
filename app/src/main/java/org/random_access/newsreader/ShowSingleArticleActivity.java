@@ -101,7 +101,6 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
             fragmentManager.beginTransaction().add(articleFragment, TAG_ARTICLE_FRAGMENT).commit();
             new LoadMessageTask().execute();
         } else{
-            extended = articleFragment.isExtended();
             prepareGUI();
         }
     }
@@ -134,6 +133,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
 
 
     private void prepareGUI() {
+        extended = articleFragment.isExtended();
         setContentView(R.layout.activity_show_single_article);
 
         tvSubject = (TextView) findViewById(R.id.article_subject);

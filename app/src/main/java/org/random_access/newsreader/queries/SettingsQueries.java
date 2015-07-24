@@ -85,12 +85,12 @@ public class SettingsQueries {
         }
     }*/
 
-    /*
+    /**
      * Helper method for getting the number of days to keep message headers in memory
      * @param serverId database _ID field identifying a Server entry
      * @return number of days to keep messages
      * @throws IOException
-
+     */
     public int getNumberOfDaysForKeepingMessages(long serverId) throws IOException{
         SettingsQueries sQueries = new SettingsQueries(context);
         Cursor c =  sQueries.getSettingsForServer(serverId);
@@ -103,7 +103,7 @@ public class SettingsQueries {
             return i;
         }
     }
-    */
+
 
     /**
      * Deletes settings with a given ID

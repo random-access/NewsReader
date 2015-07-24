@@ -84,6 +84,10 @@
             android:name=".WriteMessageActivity"
             android:label="@string/title_activity_write_message" >
         </activity>
+        <activity
+            android:name=".ServerSettingsActivity"
+            android:label="@string/title_activity_server_settings" >
+        </activity>
     </application>
 
 </manifest>

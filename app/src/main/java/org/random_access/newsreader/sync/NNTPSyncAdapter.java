@@ -23,6 +23,7 @@ import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.queries.SettingsQueries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -99,7 +100,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only",false);
+        boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only", false);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
         boolean hasWifiConnection = NetworkStateHelper.hasWifiConnection(context);
         Log.d(TAG, "Has WIFI connection?" + hasWifiConnection);
@@ -110,9 +111,10 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             if (c.moveToFirst()) {
                 while (!c.isAfterLast()) {
                     try {
+                        int syncTime = new SettingsQueries(context).getNumberOfDaysForKeepingMessages(c.getLong(ServerQueries.COL_ID));
                         getNewNewsForServer(c.getLong(ServerQueries.COL_ID), c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT),
                                 c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
-                                c.getString(ServerQueries.COL_PASSWORD));
+                                c.getString(ServerQueries.COL_PASSWORD), syncTime);
                     } catch (IOException | LoginException e) {
                         e.printStackTrace();
                     } finally {
@@ -134,7 +136,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
+    private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password, int syncTime) throws IOException, LoginException {
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
 
         NNTPConnector nntpConnector = new NNTPConnector(context);
@@ -143,7 +145,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
-                getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME));
+                getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), syncTime);
                 // TODO cleanup old news -> use number of messages to keep / number of days to keep messages
                 Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();
@@ -153,7 +155,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
 
-    private void  getNewNewsForNewsgroup(long serverId, NNTPClient client, long groupId, String groupName) throws IOException, LoginException{
+    private void  getNewNewsForNewsgroup(long serverId, NNTPClient client, long groupId, String groupName, int syncTime) throws IOException, LoginException{
         currentNewsgroupId = groupId;
 
         // Create a GregorianCalendar instance with date of last sync.
@@ -165,7 +167,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d(TAG, "Last synced: " + NNTPDateFormatter.getPrettyDateString(lastSyncDate, context));
         } else {
             // Set sync interval; TODO get sync interval from settings
-            calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(30L, TimeUnit.DAYS));
+            calendar.setTimeInMillis(System.currentTimeMillis() -  TimeUnit.MILLISECONDS.convert(syncTime, TimeUnit.DAYS));
             Log.d(TAG, "Complete sync: " + NNTPDateFormatter.getPrettyDateString(calendar.getTimeInMillis(), context));
         }
 

@@ -17,7 +17,7 @@
     <string name="hello_world">Hallo Welt</string>
     <string name="mark_as_read">Als gelesen markieren</string>
     <string name="mark_as_unread">Als ungelesen markieren</string>
-    <string name="msg_keep">Aufbewahrungszeitraum in Tagen</string>
+    <string name="msg_keep">Nachrichten behalten</string>
     <string name="msg_keep_hint">Standard: 30</string>
     <string name="name">Name</string>
     <string name="name_hint">User</string>
@@ -71,6 +71,27 @@
         <item quantity="one">%d Newsgroup erfolgreich abbestellt</item>
         <item quantity="other">%d Newsgroups erfolgreich abbestellt</item>
     </plurals>
+
+    <!-- StringArrays -->
+    <string name="sync_period_prompt">Sync-Periode wählen</string>
+    <string-array name="sync_period_entries">
+        <item>2 Wochen</item>
+        <item>1 Monat</item>
+        <item>3 Monate</item>
+        <item>6 Monate</item>
+        <item>1 Jahr</item>
+        <item>3 Jahre</item>
+        <item>Alle</item>
+    </string-array>
+    <integer-array name="sync_period_values">
+        <item>14</item>
+        <item>30</item>
+        <item>90</item>
+        <item>180</item>
+        <item>360</item>
+        <item>1080</item>
+        <item>-1</item>
+    </integer-array>
 
     <!-- Preferences -->
     <string name="pref_sync_title">Synchronisationseinstellungen</string>

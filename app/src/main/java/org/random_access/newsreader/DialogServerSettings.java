@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
@@ -54,7 +55,8 @@ public class DialogServerSettings extends DialogFragment{
     private EditText mNameText;
     private EditText mEmailText;
     private EditText mSignatureText;
-    private EditText mMsgKeepText;
+    private Spinner spKeepInterval;
+   //  private EditText mMsgKeepText;
 
     public static DialogServerSettings newInstance(String servertitle, String server, int port, boolean encryption, boolean auth, String user, String password) {
         Bundle bundle = new Bundle();
@@ -86,7 +88,8 @@ public class DialogServerSettings extends DialogFragment{
         mNameText = (EditText)dialogView.findViewById(R.id.txt_name);
         mEmailText = (EditText)dialogView.findViewById(R.id.txt_email);
         mSignatureText = (EditText)dialogView.findViewById(R.id.txt_signature);
-        mMsgKeepText= (EditText) dialogView.findViewById(R.id.txt_msgkeep);
+        spKeepInterval = (Spinner)dialogView.findViewById(R.id.sp_msgkeep);
+       //  mMsgKeepText= (EditText) dialogView.findViewById(R.id.txt_msgkeep);
         mNameText.requestFocus();
         // d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return new MyAlertDialog(getActivity(), getResources().getString(R.string.server_settings), dialogView);
@@ -128,22 +131,24 @@ public class DialogServerSettings extends DialogFragment{
                     String email = mEmailText.getText().toString();
                     String signature = mSignatureText.getText().toString().isEmpty() ?
                             getResources().getString(R.string.signature_hint) : mSignatureText.getText().toString();
-                    String msgKeep = mMsgKeepText.getText().toString();
-                    handleDialogInput(name, email, signature, msgKeep);
+                    //  String msgKeep = mMsgKeepText.getText().toString();
+                    int msgKeepTime = getResources().getIntArray(R.array.sync_period_values)[spKeepInterval.getSelectedItemPosition()];
+                    spKeepInterval.getSelectedItem();
+                    handleDialogInput(name, email, signature, msgKeepTime);
                 }
             });
         }
 
-        private void handleDialogInput(String name, String email, String signature, String msgKeep) {
+        private void handleDialogInput(String name, String email, String signature, int msgKeepTime) {
             if (TextUtils.isEmpty(email)) {
                 mEmailText.setError(res.getString(R.string.error_empty_field));
                 mEmailText.requestFocus();
                 getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-            } else {
-                int msgKeepAsInt = TextUtils.isEmpty(msgKeep) ? 30 : Integer.parseInt(msgKeep);
+            } else {;
                 SettingsQueries settingsQueries = new SettingsQueries(getActivity());
-                Uri uri = settingsQueries.addSettingsEntry(name, email, signature, msgKeepAsInt);
+                Uri uri = settingsQueries.addSettingsEntry(name, email, signature, msgKeepTime);
+                Log.d(TAG, "Get message for the last " + msgKeepTime + " days.");
                 long settingsId = Integer.parseInt(uri.getLastPathSegment());
                 Log.i(TAG, uri.getPath());
                 ServerQueries serverQueries = new ServerQueries(getActivity());
