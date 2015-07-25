@@ -123,6 +123,10 @@ public class MessageQueries {
         contentValues.put(MessageContract.MessageEntry.COL_FK_N_ID, newsgroupId);
         contentValues.put(MessageContract.MessageEntry.COL_HEADER, header);
         contentValues.put(MessageContract.MessageEntry.COL_BODY, body);
+        contentValues.put(MessageContract.MessageEntry.COL_LEFT_VALUE, 0); // TODO
+        contentValues.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, 0); // TODO
+        contentValues.put(MessageContract.MessageEntry.COL_PARENT_MSG, 0); // TODO
+        contentValues.put(MessageContract.MessageEntry.COL_ROOT_MSG, 0); // TODO
         Uri msgUri = Uri.parse(context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues).getLastPathSegment());
         long msgId = Long.parseLong(msgUri.getLastPathSegment());
         // insert message relations

@@ -37,7 +37,7 @@ public class NNTPMessageHeader {
 
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_USER_AGENT = "NewsReader for Android/1.0 http://www.random-access.org/newsreader";
-    private static final String DEFAULT_CHARSET = SupportedCharsets.ISO_8859_1;
+    private static final String DEFAULT_CHARSET = SupportedCharsets.UTF_8;
     private static final String DEFAULT_TRANSFER_ENCODING = SupportedEncodings._8BIT;
 
     public static final String KEY_FROM = "From";
@@ -188,11 +188,13 @@ public class NNTPMessageHeader {
     }
 
     private String parseContentTypeAndCharset(String s) {
-        if (s.toUpperCase().contains(SupportedCharsets.UTF_8)) {
-            this.charset = SupportedCharsets.UTF_8;
-        } else {
+        if (s.toUpperCase().contains(SupportedCharsets.ISO_8859_1)) {
             this.charset = SupportedCharsets.ISO_8859_15;
-            //For now we keep these 2 formats because they work for sure
+        } else if (s.toUpperCase().contains(SupportedCharsets.WINDOWS_1252)) {
+            this.charset = SupportedCharsets.WINDOWS_1252;
+        } else {
+            this.charset = SupportedCharsets.UTF_8;
+            //For now we keep these 3 formats because they work for sure
         }
         return s.substring(0,s.indexOf(";")).replace(KEY_CONTENT_TYPE + ": ", "");
     }

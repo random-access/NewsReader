@@ -138,7 +138,7 @@ public class WriteMessageActivity extends AppCompatActivity {
                 Cursor c = new ServerQueries(ctxt).getServerWithId(serverId);
                 if (c.moveToFirst()) {
                     NNTPConnector nntpConnector = new NNTPConnector(ctxt);
-                    CustomNNTPClient client = nntpConnector.connectToNewsServer(serverId, SupportedCharsets.ISO_8859_1);
+                    CustomNNTPClient client = nntpConnector.connectToNewsServer(serverId, SupportedCharsets.UTF_8);
                     Writer writer = client.postArticle();
                     if(writer != null) {
                         writer.write(header);

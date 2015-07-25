@@ -106,6 +106,10 @@ public class NNTPProvider extends ContentProvider {
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_FK_N_ID_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_HEADER, MessageContract.MessageEntry.COL_HEADER_FULLNAME);
         PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_BODY, MessageContract.MessageEntry.COLL_BODY_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_LEFT_VALUE, MessageContract.MessageEntry.COL_LEFT_VALUE_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_RIGHT_VALUE_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_PARENT_MSG, MessageContract.MessageEntry.COL_PARENT_MSG_FULLNAME);
+        PROJECTION_MAP_MESSAGE.put(MessageContract.MessageEntry.COL_ROOT_MSG, MessageContract.MessageEntry.COL_ROOT_MSG_FULLNAME);
 
         PROJECTION_MAP_MESSAGE_HIERARCHY = new HashMap<>();
         PROJECTION_MAP_MESSAGE_HIERARCHY.put(MessageHierarchyContract.MessageHierarchyEntry._ID, MessageHierarchyContract.MessageHierarchyEntry.COL_ID_FULLNAME);

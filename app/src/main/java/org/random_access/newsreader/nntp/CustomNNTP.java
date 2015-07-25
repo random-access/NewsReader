@@ -36,7 +36,7 @@ import org.apache.commons.net.nntp.NNTPConnectionClosedException;
 @SuppressWarnings("ALL")
 public class CustomNNTP extends SocketClient {
     public static final int DEFAULT_PORT = 119;
-    private static String __DEFAULT_ENCODING = "ISO-8859-1";
+    private static String __DEFAULT_ENCODING = "UTF-8";
     boolean _isAllowedToPost;
     int _replyCode;
     private String _replyString;

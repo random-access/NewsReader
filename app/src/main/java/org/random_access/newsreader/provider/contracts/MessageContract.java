@@ -48,9 +48,12 @@ public class MessageContract {
         public static final String COL_DATE = "_DATE";
         public static final String COL_NEW = "_NEW";
         public static final String COL_FK_N_ID = "_FK_N_ID";
-        // for offline use:
         public static final String COL_HEADER = "_HEADER";
         public static final String COL_BODY = "_BODY";
+        public static final String COL_LEFT_VALUE = "_LEFT_VALUE";
+        public static final String COL_RIGHT_VALUE = "_RIGHT_VALUE";
+        public static final String COL_PARENT_MSG = "_PARENT_MSG";
+        public static final String COL_ROOT_MSG = "_ROOT_MSG";
 
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
@@ -62,9 +65,12 @@ public class MessageContract {
         public static final String COL_DATE_FULLNAME = TABLE_NAME + "." + COL_DATE;
         public static final String COL_NEW_FULLNAME = TABLE_NAME + "." + COL_NEW;
         public static final String COL_FK_N_ID_FULLNAME = TABLE_NAME + "." + COL_FK_N_ID;
-        // for offline use:
         public static final String COL_HEADER_FULLNAME = TABLE_NAME + "." + COL_HEADER;
         public static final String COLL_BODY_FULLNAME = TABLE_NAME + "." + COL_BODY;
+        public static final String COL_LEFT_VALUE_FULLNAME = TABLE_NAME + "." + COL_LEFT_VALUE;
+        public static final String COL_RIGHT_VALUE_FULLNAME = TABLE_NAME + "." + COL_RIGHT_VALUE;
+        public static final String COL_PARENT_MSG_FULLNAME = TABLE_NAME + "." + COL_PARENT_MSG;
+        public static final String COL_ROOT_MSG_FULLNAME = TABLE_NAME + "." + COL_ROOT_MSG;
     }
 
     private static final String DATABASE_CREATE = "create table if not exists "
@@ -81,6 +87,10 @@ public class MessageContract {
             + MessageEntry.COL_FK_N_ID + " integer, "
             + MessageEntry.COL_HEADER + " text not null, "
             + MessageEntry.COL_BODY + " text, "
+            + MessageEntry.COL_LEFT_VALUE + " integer not null, "
+            + MessageEntry.COL_RIGHT_VALUE + " integer not null, "
+            + MessageEntry.COL_PARENT_MSG + " integer not null, "
+            + MessageEntry.COL_ROOT_MSG + " integer not null, "
             + "foreign key (" + MessageEntry.COL_FK_N_ID + ") references "
             +  NewsgroupContract.TABLE_NAME + " (" + NewsgroupContract.NewsgroupEntry._ID + ")"
             + ");";
