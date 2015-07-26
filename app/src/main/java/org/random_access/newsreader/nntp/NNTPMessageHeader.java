@@ -33,6 +33,9 @@ public class NNTPMessageHeader {
     private String transferEncoding = DEFAULT_TRANSFER_ENCODING;
     private String references;
     private long[] refIds;
+    private long parentMsg = -1;
+    private long rootMsg = -1;
+    private int level = 0;
     private String headerSource;
 
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
@@ -111,7 +114,7 @@ public class NNTPMessageHeader {
         if (refIds == null || refIds.length == 0) {
             return "";
         } else {
-            return messageQueries.getMessageIdFromId(refIds[refIds.length-1]);
+            return messageQueries.getMessageIdFromId(refIds[refIds.length - 1]);
         }
     }
 
@@ -181,6 +184,9 @@ public class NNTPMessageHeader {
                     currentIndex++;
                 }
             }
+            rootMsg = currentIndex > 0 ? refIds[0] : -1;
+            parentMsg = currentIndex > 0 ? refIds[currentIndex - 1] : -1;
+            level = currentIndex;
             refIds = Arrays.copyOf(refIds, currentIndex);
         } else {
             refIds = new long[0];
@@ -252,6 +258,18 @@ public class NNTPMessageHeader {
 
     public long[] getRefIds() {
         return refIds;
+    }
+
+    public long getParentMsg() {
+        return parentMsg;
+    }
+
+    public long getRootMsg() {
+        return rootMsg;
+    }
+
+    public int getLevel () {
+        return level;
     }
 
     public String getHeaderSource() {
