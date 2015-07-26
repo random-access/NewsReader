@@ -29,7 +29,7 @@ public class MessageHierarchyQueries {
         this.context = context;
     }
 
-    public boolean hasMessageChildren(long messageId) {
+    /* public boolean hasMessageChildren(long messageId) {
         boolean hasChildren = false;
 
         Cursor cursor = context.getContentResolver().query(MessageHierarchyContract.CONTENT_URI, MSG_HIERARCHY_PROJECTION, MessageHierarchyContract.MessageHierarchyEntry.COL_IN_REPLY_TO + " = ? ",
@@ -40,7 +40,7 @@ public class MessageHierarchyQueries {
         cursor.close();
         Log.d(TAG, "Message " + messageId + " has children: " + hasChildren);
         return hasChildren;
-    }
+    } */
 
     public Cursor getChildrenOfId(long msgId) {
         return context.getContentResolver().query(MessageHierarchyContract.CONTENT_URI, MSG_HIERARCHY_PROJECTION,

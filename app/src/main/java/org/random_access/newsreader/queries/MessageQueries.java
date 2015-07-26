@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.util.Log;
 
+import org.random_access.newsreader.ShowMessagesActivity;
 import org.random_access.newsreader.provider.contracts.DBJoins;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
@@ -50,17 +51,27 @@ public class MessageQueries {
         this.context = context;
     }
 
-    public CursorLoader getMessagesInCursorLoader(long newsgroupId, boolean onlyTopItems) {
-        if (onlyTopItems) {
-            String childString = new MessageHierarchyQueries(context).getChildrenListAsString();
-            Log.d(TAG, childString);
-            return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND "
-                    + MessageContract.MessageEntry._ID + " NOT IN " + childString, new String[]{newsgroupId + ""}, MessageContract.MessageEntry.COL_DATE + " DESC");
-        } else {
-            return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[]{newsgroupId + ""},
-                    MessageContract.MessageEntry.COL_DATE + " DESC");
-        }
+    public CursorLoader getAllMessagesInCursorLoader(long newsgroupId) {
+        return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[]{newsgroupId + ""},
+                MessageContract.MessageEntry.COL_DATE + " DESC");
     }
+
+    public CursorLoader getRootMessagesInCursorLoader(long newsgroupId) {
+        return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND "
+                + MessageContract.MessageEntry.COL_LEVEL + " = ? ", new String[]{newsgroupId + "", "0"}, MessageContract.MessageEntry.COL_DATE + " DESC");
+    }
+
+    /**
+     * Get all children of a message with messageId sorted by their LEFT value (correct order to display them in a list)
+     * @param messageId ID of the given message
+     * @return a cursor with all children of a given message in the correct order to display
+     */
+    public CursorLoader getRootMessageWithChildren(long messageId) {
+        return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? OR "
+                + MessageContract.MessageEntry._ID + " = ? ", new String[]{messageId + "", messageId + ""}, MessageContract.MessageEntry.COL_LEFT_VALUE + " ASC");
+    }
+
+
 
     public Cursor getMessagesOfNewsgroup(long newsgroupId) {
         return context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {newsgroupId + ""},
@@ -239,6 +250,23 @@ public class MessageQueries {
         }
         c.close();
     }
+
+    /**
+     * Tests if a message with messageId has any children
+     * @param messageId ID of the given message
+     * @return true if there are any messages with rootId = messageId, else false
+     */
+    public boolean hasMessageChildren (long messageId) {
+        boolean hasChildren = false;
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
+                new String[]{messageId + ""}, null);
+        if (c.moveToFirst()) {
+            hasChildren = true;
+        }
+        c.close();
+        return  hasChildren;
+    }
+
 
     /**
      * Deletes all messages with COL_FK_N_ID = newsgroupId

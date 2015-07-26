@@ -17,4 +17,16 @@
             android:summary="@string/pref_wlan_only_summary"
             android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_message_title"
+        android:key="pref_key_message_settings">
+        <ListPreference
+            android:key="pref_message_view"
+            android:title="@string/pref_message_view_text"
+            android:dialogTitle="@string/pref_message_view_text"
+            android:entries="@array/pref_message_view_entries"
+            android:entryValues="@array/pref_message_view_values"
+            android:defaultValue="@string/pref_message_view_default"
+            android:positiveButtonText="@string/ok" />
+    </PreferenceCategory>
 </PreferenceScreen>

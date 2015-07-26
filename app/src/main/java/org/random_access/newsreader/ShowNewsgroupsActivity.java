@@ -55,6 +55,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(ShowNewsgroupsActivity.this, ShowMessagesActivity.class);
+                intent.putExtra(ShowMessagesActivity.KEY_ROOT_MESSAGE_ID, -1L);
                 intent.putExtra(ShowMessagesActivity.KEY_SERVER_ID, serverId);
                 intent.putExtra(ShowMessagesActivity.KEY_GROUP_ID, id);
                 startActivity(intent);

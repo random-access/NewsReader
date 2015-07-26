@@ -16,9 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import org.random_access.newsreader.adapter.MessageCursorAdapter;
+import org.random_access.newsreader.adapter.MessageChildrenCursorAdapter;
+import org.random_access.newsreader.adapter.MessageFlatCursorAdapter;
+import org.random_access.newsreader.adapter.MessageHierarchyCursorAdapter;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 
@@ -32,47 +36,72 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
 
     private static final String TAG = ShowMessagesActivity.class.getSimpleName();
 
-    public static final int RESULT_DATA_CHANGE = 1001;
-
+    public static final String KEY_ROOT_MESSAGE_ID = "root-msg-id";
     public static final String KEY_SERVER_ID = "server-id";
     public static final String KEY_GROUP_ID = "group-id";
 
+    private long rootMessageId;
     private long serverId;
     private long groupId;
     private String groupName;
 
-    private MessageCursorAdapter mMessageAdapter;
+    private CursorAdapter mMessageAdapter;
     private ListView lvMessages;
 
     private SharedPreferences sharedPreferences;
-    private Boolean showOnlyTopItems;
+    private ViewStatus viewStatus;
+
+    public enum ViewStatus {
+        HIERARCHIAL, FLAT, CHILDREN;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        rootMessageId = getIntent().getExtras().getLong(KEY_ROOT_MESSAGE_ID);
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         groupId = getIntent().getExtras().getLong(KEY_GROUP_ID);
         groupName = new NewsgroupQueries(ShowMessagesActivity.this).getNewsgroupName(groupId);
         setTitle(groupName);
         setContentView(R.layout.activity_show_messages);
         lvMessages = (ListView)findViewById(R.id.show_messages_list);
-        readViewModeFromSettings();
-        mMessageAdapter = new MessageCursorAdapter(this, null, showOnlyTopItems);
+        setViewMode();
+        mMessageAdapter = setMessageAdapter();
         lvMessages.setAdapter(mMessageAdapter);
         lvMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ShowMessagesActivity.this, ShowSingleArticleActivity.class);
-                intent.putExtra(ShowSingleArticleActivity.KEY_SERVER_ID, serverId);
-                intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_ID, groupId);
-                intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_NAME, groupName);
-                intent.putExtra(ShowSingleArticleActivity.KEY_MESSAGE_ID, id);
-                startActivity(intent);
+                if (viewStatus == ViewStatus.HIERARCHIAL && new MessageQueries(ShowMessagesActivity.this).hasMessageChildren(id)) {
+                   //  Toast.makeText(ShowMessagesActivity.this, "Show children...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ShowMessagesActivity.this, ShowMessagesActivity.class);
+                    intent.putExtra(ShowMessagesActivity.KEY_ROOT_MESSAGE_ID, id);
+                    intent.putExtra(ShowMessagesActivity.KEY_SERVER_ID, serverId);
+                    intent.putExtra(ShowMessagesActivity.KEY_GROUP_ID, groupId);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(ShowMessagesActivity.this, ShowSingleArticleActivity.class);
+                    intent.putExtra(ShowSingleArticleActivity.KEY_SERVER_ID, serverId);
+                    intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_ID, groupId);
+                    intent.putExtra(ShowSingleArticleActivity.KEY_GROUP_NAME, groupName);
+                    intent.putExtra(ShowSingleArticleActivity.KEY_MESSAGE_ID, id);
+                    startActivity(intent);
+                }
             }
         });
         setListActions();
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    private  CursorAdapter setMessageAdapter() {
+        switch (viewStatus) {
+            case HIERARCHIAL:
+                return new MessageHierarchyCursorAdapter(this, null);
+            case CHILDREN:
+                return new MessageChildrenCursorAdapter(this, null);
+            default:
+                return new MessageFlatCursorAdapter(this, null);
+        }
     }
 
     @Override
@@ -88,10 +117,6 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(this, MessageSettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
             case R.id.action_new_message:
                 Intent sendIntent = new Intent(ShowMessagesActivity.this, WriteMessageActivity.class);
                 sendIntent.putExtra(WriteMessageActivity.KEY_SERVER_ID, serverId);
@@ -107,22 +132,34 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
     @Override
     protected void onResume() {
         super.onResume();
-        readViewModeFromSettings();
-        Log.d(TAG, "show only top items ? " + showOnlyTopItems);
+        Log.d(TAG, "ViewStatus: " + viewStatus.toString());
         // Starts a new or restarts an existing Loader
         getLoaderManager().restartLoader(0, null, this);
     }
 
-    private void readViewModeFromSettings() {
-        String viewMode = sharedPreferences.getString("pref_message_view", "f");
-        if (viewMode != null) {
-            showOnlyTopItems = viewMode.equals("h");
+    private void setViewMode() {
+        if (rootMessageId != -1) {
+            viewStatus = ViewStatus.CHILDREN;
+        } else {
+            String viewMode = sharedPreferences.getString("pref_message_view", "f");
+            if (viewMode == null || viewMode.equals("f")) {
+                viewStatus = ViewStatus.FLAT;
+            } else {
+                viewStatus = ViewStatus.HIERARCHIAL;
+            }
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new MessageQueries(this).getMessagesInCursorLoader(groupId, showOnlyTopItems);
+        switch (viewStatus) {
+            case HIERARCHIAL:
+                return new MessageQueries(this).getRootMessagesInCursorLoader(groupId);
+            case CHILDREN:
+                return new MessageQueries(this).getRootMessageWithChildren(rootMessageId);
+            default:
+                return new MessageQueries(this).getAllMessagesInCursorLoader(groupId);
+        }
     }
 
     @Override

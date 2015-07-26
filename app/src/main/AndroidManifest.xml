@@ -77,10 +77,6 @@
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".MessageSettingsActivity"
-            android:label=".MessageSettings" >
-        </activity>
-        <activity
             android:name=".WriteMessageActivity"
             android:label="@string/title_activity_write_message" >
         </activity>

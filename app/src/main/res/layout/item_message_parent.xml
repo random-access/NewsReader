@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="wrap_content"
     android:background="@drawable/colorselector_list_item"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/item_msg_parent">
 
-    <ImageButton
-        android:id="@+id/btn_show_children"
+    <ImageView
+        android:id="@+id/img_children"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -17,7 +18,7 @@
         android:id="@+id/message_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/btn_show_children"
+        android:layout_toLeftOf="@id/img_children"
         android:text="Das ist ein sehr sehr sehr langer Betreff als Test ob das Ellipsize-Verhalten passt"
         android:textColor="@color/black"
         android:lines="2"
@@ -36,7 +37,7 @@
         android:text="05.05.2015, 10:04"
         android:textColor="@color/light_blue"
         android:layout_below="@id/message_title"
-        android:layout_toLeftOf="@id/btn_show_children"
+        android:layout_toLeftOf="@id/img_children"
         android:lines="1"
         android:ellipsize="none"
         android:textStyle="bold"
