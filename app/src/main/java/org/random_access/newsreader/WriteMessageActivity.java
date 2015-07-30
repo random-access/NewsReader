@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.style.BulletSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +19,6 @@ import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.nntp.SupportedCharsets;
-import org.random_access.newsreader.queries.MessageHierarchyQueries;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
@@ -81,7 +79,6 @@ public class WriteMessageActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_write_message, menu);
         return true;
     }
@@ -97,11 +94,7 @@ public class WriteMessageActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         switch(item.getItemId()) {
             case R.id.action_settings:
                 return true;
@@ -110,10 +103,12 @@ public class WriteMessageActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
+    /**
+     * construct header lines and write message via NNTPClient
+     */
     class SendMessageTask extends AsyncTask<Void, Void,Void> {
 
         private Exception exception;
@@ -123,7 +118,8 @@ public class WriteMessageActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // construct header & body
-            SimpleNNTPHeader nntpHeader = new NNTPMessageHeader().buildHeader(msgFragment.getFromName(), msgFragment.getFromEmail(), msgFragment.getFromNewsgroup(), 0, msgFragment.getRefIds(), txtSubject.getText().toString(),
+            SimpleNNTPHeader nntpHeader = new NNTPMessageHeader().buildHeader(msgFragment.getFromName(), msgFragment.getFromEmail(),
+                    msgFragment.getFromNewsgroup(), 0, msgFragment.getReferences(), txtSubject.getText().toString(),
                     WriteMessageActivity.this);
             header = nntpHeader.toString();
             Log.d(TAG, header);
@@ -164,9 +160,10 @@ public class WriteMessageActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             if (exception != null) {
-                Toast.makeText(WriteMessageActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WriteMessageActivity.this, getResources().getString(R.string.send_error), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, exception.getMessage());
             } else {
-                Toast.makeText(WriteMessageActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WriteMessageActivity.this, getResources().getString(R.string.send_success), Toast.LENGTH_SHORT).show();
                 finish();
                 new Thread(new Runnable() {
                     @Override
@@ -174,17 +171,20 @@ public class WriteMessageActivity extends AppCompatActivity {
                         try {
                             Thread.sleep(10000);
                         } catch (InterruptedException e) {
-                            Log.d(TAG, "Thread.sleep got interrupted");
+                            Log.e(TAG, e.getMessage());
                         }
                         Log.d(TAG, "Starting sync...");
                         ContentResolver.requestSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, Bundle.EMPTY);
                     }
                 }).start();
-
             }
         }
     }
 
+    /**
+     * Distinguish between a fresh activity start (load parameters from database) and
+     * a restart because of a config change (load parameters from a WriteMessageFragment instance)
+     */
     private void fillMessageFields() {
         FragmentManager fragmentManager = getFragmentManager();
         msgFragment = (WriteMessageFragment)fragmentManager.findFragmentByTag(WRITE_MSG_TAG);
@@ -197,6 +197,7 @@ public class WriteMessageActivity extends AppCompatActivity {
         }
     }
 
+    
     class PrepareMessageTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -217,7 +218,7 @@ public class WriteMessageActivity extends AppCompatActivity {
             if (messageId == NEW_MESSAGE) {
                 msgFragment.setFromMessage("");
                 msgFragment.setFromSubject("");
-                msgFragment.setRefIds(new long[0]);
+                msgFragment.setReferences("");
             } else { // get subject, message and refIds if reply message
                 Cursor messageCursor = new MessageQueries(ctxt).getMessageWithId(messageId);
                 if (messageCursor.moveToFirst()) {
@@ -229,22 +230,11 @@ public class WriteMessageActivity extends AppCompatActivity {
                     String name = messageCursor.getString(MessageQueries.COL_FROM_NAME);
                     String replyIntro = getResources().getString(R.string.sent_from, date, time, name);
                     msgFragment.setFromMessage((replyIntro + "\n" + messageCursor.getString(MessageQueries.COL_BODY)).replace("\n", "\n> "));
+                    String references = messageCursor.getString(MessageQueries.COL_REFERENCES);
+                    msgFragment.setReferences(references + " " + messageCursor.getString(MessageQueries.COL_MSG_ID));
                 }
                 messageCursor.close();
-                Cursor messageRelCursor = new MessageHierarchyQueries(ctxt).getChildrenOfId(messageId);
-                msgFragment.setRefIds(new long[messageRelCursor.getCount() + 1]);
-                int refIndex = 0;
-                if (messageRelCursor.moveToFirst()) {
-                    while (!messageRelCursor.isAfterLast()) {
-                        msgFragment.getRefIds()[refIndex] = messageRelCursor.getLong(MessageHierarchyQueries.COL_IN_REPLY_TO);
-                        messageRelCursor.moveToNext();
-                        refIndex++;
-                    }
-                }
-                messageRelCursor.close();
-                msgFragment.getRefIds()[refIndex] = messageId; // add current message to reply messages
             }
-
             return null;
         }
 

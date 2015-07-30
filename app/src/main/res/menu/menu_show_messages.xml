@@ -10,8 +10,8 @@
         app:showAsAction= "ifRoom"
         tools:ignore="AppCompatResource" />
 
-    <item android:id="@+id/action_settings"
+    <!-- <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="never" /> -->
 </menu>

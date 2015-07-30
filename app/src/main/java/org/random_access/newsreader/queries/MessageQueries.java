@@ -30,7 +30,8 @@ public class MessageQueries {
             MessageContract.MessageEntry.COL_FROM_EMAIL, MessageContract.MessageEntry.COL_FROM_NAME, MessageContract.MessageEntry.COL_SUBJECT,
             MessageContract.MessageEntry.COL_CHARSET, MessageContract.MessageEntry.COL_DATE,MessageContract.MessageEntry.COL_NEW,
             MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_HEADER, MessageContract.MessageEntry.COL_BODY,
-            MessageContract.MessageEntry.COL_LEFT_VALUE, MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_LEVEL};
+            MessageContract.MessageEntry.COL_LEFT_VALUE, MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_LEVEL,
+            MessageContract.MessageEntry.COL_ROOT_MSG, MessageContract.MessageEntry.COL_REFERENCES};
 
     public static final int COL_ID = 0;
     public static final int COL_MSG_ID = 1;
@@ -46,6 +47,8 @@ public class MessageQueries {
     public static final int COL_LEFT_VALUE = 11;
     public static final int COL_RIGHT_VALUE = 12;
     public static final int COL_LEVEL = 13;
+    public static final int COL_ROOT_MESSAGE = 14;
+    public static final int COL_REFERENCES = 15;
 
     public MessageQueries(Context context) {
         this.context = context;
@@ -116,17 +119,81 @@ public class MessageQueries {
                 new String[]{newsgroupId + "", "1"});
     }
 
-    public boolean setMessageUnread(long messageId, boolean isNew) {
+
+    public boolean setMessageReadStatusThroughTheHierarchy (long messageId, boolean isNew) {
         int value = isNew ? 1 : 0;
+        // update the NEW value of the given message
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
-        return context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
-                new String[] {messageId + ""}) > 0;
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
+                new String[] {messageId + ""});
+        if (isRootMessage(messageId)) { // all children get the sam status as their root message
+            context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
+                    new String[]{messageId + ""});
+        }
+        return true;
+    }
+
+    public boolean setMessageReadStatus(long messageId, boolean isNew) {
+        int value = 1; // assume new message
+        boolean isRootMessage = isRootMessage(messageId); // test if this message is a root message
+        if (!isNew)  {
+            if (isRootMessage && hasUnreadChildren(messageId)){ // not new & root message & unreadChildren
+                value = -1;
+            } else { // not new & no root message or no unread children -> 0
+                value = 0;
+            }
+        }
+        // update the NEW value of the given message
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
+                new String[] {messageId + ""});
+
+        if (!isRootMessage) {
+            adjustRootMessagesReadValue(messageId);
+        }
+
+        return true;
+    }
+
+    public boolean hasUnreadChildren (long messageId) {
+        boolean hasUnreadChildren = false;
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_NEW}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
+                new String[]{messageId + ""}, null);
+        if (c.moveToFirst()) {
+            while(!c.isAfterLast() && !hasUnreadChildren) {
+                hasUnreadChildren = c.getInt(1) == 1;
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return hasUnreadChildren;
+    }
+
+    /**
+     * Readjusts the status of a given messages' root message
+     * @param messageId ID of the given message
+     */
+    public void adjustRootMessagesReadValue(long messageId) {
+        long rootMessageId = -1;
+        boolean rootMessageStatus = false;
+        Cursor c = getMessageWithId(messageId);
+        if (c.moveToFirst()) {
+            rootMessageId = c.getLong(COL_ROOT_MESSAGE);
+        }
+        c.close();
+        Cursor c1 = getMessageWithId(rootMessageId);
+        if (c1.moveToFirst()) {
+            rootMessageStatus = c1.getInt(COL_NEW) == 1;
+        }
+        c1.close();
+        setMessageReadStatus(rootMessageId, rootMessageStatus);
     }
 
 
     public boolean addMessage(String messageId, String fromEmail, String fromName, String subject, String charset, long date, int isNew,
-                              long newsgroupId, String header, String body, long[] refIds, long parentMsg, long rootMsg, int level) {
+                              long newsgroupId, String header, String body, long parentMsg, long rootMsg, int level, String references) {
         // insert message
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_MSG_ID, messageId);
@@ -142,6 +209,7 @@ public class MessageQueries {
         contentValues.put(MessageContract.MessageEntry.COL_PARENT_MSG, parentMsg);
         contentValues.put(MessageContract.MessageEntry.COL_ROOT_MSG, rootMsg);
         contentValues.put(MessageContract.MessageEntry.COL_LEVEL, level);
+        contentValues.put(MessageContract.MessageEntry.COL_REFERENCES, references);
         Point rootLeftRightValues = getLeftRightValue(rootMsg);
         Point parentLeftRightValues = getLeftRightValue(parentMsg);
         Point currentNodeLeftRightValues = calculateLeftRightValues(parentMsg, parentLeftRightValues);
@@ -265,6 +333,21 @@ public class MessageQueries {
         }
         c.close();
         return  hasChildren;
+    }
+
+    /**
+     * Test if a message is the root of a conversation
+     * @param messageId ID of the given message
+     * @return true if the message's level = 0, else false
+     */
+    public boolean isRootMessage(long messageId) {
+        boolean isRootMessage = false;
+        Cursor c = getMessageWithId(messageId);
+        if (c.moveToFirst() && c.getInt(COL_LEVEL) == 0) {
+            isRootMessage = true;
+        }
+        c.close();
+        return isRootMessage;
     }
 
 

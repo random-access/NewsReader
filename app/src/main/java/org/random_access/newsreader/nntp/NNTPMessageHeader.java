@@ -31,7 +31,7 @@ public class NNTPMessageHeader {
     private String date;
     private String subject;
     private String transferEncoding = DEFAULT_TRANSFER_ENCODING;
-    private String references;
+    private String references = "";
     private long[] refIds;
     private long parentMsg = -1;
     private long rootMsg = -1;
@@ -81,16 +81,16 @@ public class NNTPMessageHeader {
         return success;
     }
 
-    public SimpleNNTPHeader buildHeader(String fullName, String email, String newsgroup, long date, long[] replyIds, String subject, Context context) {
+    public SimpleNNTPHeader buildHeader(String fullName, String email, String newsgroup, long date, String replyIds, String subject, Context context) {
         SimpleNNTPHeader header = new SimpleNNTPHeader(fullName + " <" + email + ">", subject);
         header.addNewsgroup(newsgroup);
         header.addHeaderField(KEY_USER_AGENT, DEFAULT_USER_AGENT);
-        header.addHeaderField(KEY_REFERENCES, getReferencesAsString(replyIds, context));
-        header.addHeaderField(KEY_IN_REPLY_TO, getInReplyToString(replyIds, context));
+        header.addHeaderField(KEY_REFERENCES, replyIds);
+        // header.addHeaderField(KEY_DATE, date); TODO
+        header.addHeaderField(KEY_IN_REPLY_TO, replyIds.substring(replyIds.lastIndexOf("<"), replyIds.length()));
         header.addHeaderField(KEY_TRANSFER_ENCODING, DEFAULT_TRANSFER_ENCODING);
         header.addHeaderField(KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE + "; " + KEY_CHARSET + "=" + DEFAULT_CHARSET);
         Log.d(TAG, header.toString());
-        // TODO add reply message fields
         return header;
     }
 
@@ -107,7 +107,7 @@ public class NNTPMessageHeader {
             sb.replace(sb.length()-2, sb.length()-1, "");
             return sb.toString();
         }
-    } */
+    }
 
     private String getInReplyToString(long[] refIds, Context context) {
         MessageQueries messageQueries = new MessageQueries(context);
@@ -133,7 +133,7 @@ public class NNTPMessageHeader {
             sb.replace(sb.length()-1, sb.length()-1, "");
             return sb.toString();
         }
-    }
+    } */
 
     private void extractLine(String s) {
         if (s.startsWith(KEY_FROM)) {
@@ -271,6 +271,8 @@ public class NNTPMessageHeader {
     public int getLevel () {
         return level;
     }
+
+    public String getReferences() {return  references; }
 
     public String getHeaderSource() {
         return headerSource;

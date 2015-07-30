@@ -34,7 +34,8 @@ public class MessageHierarchyCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        boolean isNew = cursor.getInt(MessageQueries.COL_NEW) == 1;
+        boolean isNew = cursor.getInt(MessageQueries.COL_NEW) == 1 || cursor.getInt(MessageQueries.COL_NEW) == -1;
+            // -1: root messages which have unread children -> should be shown as new
 
         TextView title = (TextView) view.findViewById(R.id.message_title);
         TextView date = (TextView) view.findViewById(R.id.message_date);

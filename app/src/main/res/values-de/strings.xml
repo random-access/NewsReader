@@ -113,7 +113,7 @@
     <string name="pref_message_view_text">Anzeigeoptionen</string>
     <string-array name="pref_message_view_entries">
         <item>Flach</item>
-        <item>Hierarchisch (NUR ZU TESTZWECKEN)</item>
+        <item>Hierarchisch</item>
     </string-array>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="enter_message">Nachricht eingeben</string>
@@ -127,4 +127,6 @@
     <string name="reply">Re:</string>
     <string name="signature_hint"> Newsreader für Android (Alpha) http://random-access.org/newsreader/</string>
     <string name="new_message">Neue Nachricht</string>
+    <string name="send_success">Nachricht gesendet.</string>
+    <string name="send_error">Fehler beim Senden.</string>
 </resources>

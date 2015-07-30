@@ -18,7 +18,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.random_access.newsreader.adapter.MessageChildrenCursorAdapter;
 import org.random_access.newsreader.adapter.MessageFlatCursorAdapter;
@@ -73,7 +72,6 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (viewStatus == ViewStatus.HIERARCHIAL && new MessageQueries(ShowMessagesActivity.this).hasMessageChildren(id)) {
-                   //  Toast.makeText(ShowMessagesActivity.this, "Show children...", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ShowMessagesActivity.this, ShowMessagesActivity.class);
                     intent.putExtra(ShowMessagesActivity.KEY_ROOT_MESSAGE_ID, id);
                     intent.putExtra(ShowMessagesActivity.KEY_SERVER_ID, serverId);
@@ -217,11 +215,17 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
     }
 
     private void markMessagesNew(boolean isNew) {
-        long[] ids = lvMessages.getCheckedItemIds();
-        MessageQueries queries = new MessageQueries(this);
-        for (long l : ids) {
-            queries.setMessageUnread(l, isNew);
-        }
+            Log.d(TAG, "Started thread");
+            long[] ids = lvMessages.getCheckedItemIds();
+            MessageQueries queries = new MessageQueries(ShowMessagesActivity.this);
+            for (long l : ids) {
+                if (viewStatus == ViewStatus.HIERARCHIAL) {
+                    queries.setMessageReadStatusThroughTheHierarchy(l, isNew);
+                } else {
+                    queries.setMessageReadStatus(l, isNew);
+                }
+            }
+            Log.d(TAG, "Finished thread!");
     }
 
     private void setAllItemsChecked() {

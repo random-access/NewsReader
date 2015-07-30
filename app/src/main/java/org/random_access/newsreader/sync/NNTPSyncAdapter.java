@@ -249,7 +249,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             // save message to database
             MessageQueries messageQueries = new MessageQueries(context);
             messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
-                    msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getRefIds(), headerData.getParentMsg(), headerData.getRootMsg(), headerData.getLevel());
+                    msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getParentMsg(), headerData.getRootMsg(), headerData.getLevel(),
+                    headerData.getReferences());
             currentMessageDate = msgDate;
             Log.d(TAG, "Added message " + articleId + "; messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
         }

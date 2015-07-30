@@ -19,7 +19,8 @@ public class WriteMessageFragment extends Fragment {
     private String fromMessage;
 
     private String fromNewsgroup;
-    private long[] refIds;
+    private String references;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,11 +76,11 @@ public class WriteMessageFragment extends Fragment {
         this.fromNewsgroup = fromNewsgroup;
     }
 
-    public long[] getRefIds() {
-        return refIds;
+    public String getReferences() {
+        return references;
     }
 
-    public void setRefIds(long[] refIds) {
-        this.refIds = refIds;
+    public void setReferences(String refIds) {
+        this.references = refIds;
     }
 }

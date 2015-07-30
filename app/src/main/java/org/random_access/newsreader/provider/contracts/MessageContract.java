@@ -55,7 +55,7 @@ public class MessageContract {
         public static final String COL_PARENT_MSG = "_PARENT_MSG";
         public static final String COL_ROOT_MSG = "_ROOT_MSG";
         public static final String COL_LEVEL = "_LEVEL";
-
+        public static final String COL_REFERENCES = "_REFERENCES";
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
         public static final String COL_MSG_ID_FULLNAME = TABLE_NAME + "." + COL_MSG_ID;
@@ -73,6 +73,7 @@ public class MessageContract {
         public static final String COL_PARENT_MSG_FULLNAME = TABLE_NAME + "." + COL_PARENT_MSG;
         public static final String COL_ROOT_MSG_FULLNAME = TABLE_NAME + "." + COL_ROOT_MSG;
         public static final String COL_LEVEL_FULLNAME = TABLE_NAME + "." + COL_LEVEL;
+        public static final String COL_REFERENCES_FULLNAME = TABLE_NAME + "." + COL_REFERENCES;
     }
 
     private static final String DATABASE_CREATE = "create table if not exists "
@@ -94,6 +95,7 @@ public class MessageContract {
             + MessageEntry.COL_PARENT_MSG + " integer not null, "
             + MessageEntry.COL_ROOT_MSG + " integer not null, "
             + MessageEntry.COL_LEVEL + " integer not null, "
+            + MessageEntry.COL_REFERENCES + " text not null, "
             + "foreign key (" + MessageEntry.COL_FK_N_ID + ") references "
             +  NewsgroupContract.TABLE_NAME + " (" + NewsgroupContract.NewsgroupEntry._ID + ")"
             + ");";

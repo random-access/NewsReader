@@ -147,7 +147,7 @@
     <string name="pref_message_view_default" translatable="false">f</string>
     <string-array name="pref_message_view_entries">
         <item>Flat</item>
-        <item>Hierarchial (DEBUG ONLY)</item>
+        <item>Hierarchial</item>
     </string-array>
     <string-array name="pref_message_view_values" translatable="false">
         <item>f</item>
@@ -155,4 +155,6 @@
     </string-array>
     <string name="title_activity_write_message">Write message</string>
     <string name="title_activity_server_settings">ServerSettingsActivity</string>
+    <string name="send_success">Message sent.</string>
+    <string name="send_error">Error while sending message!</string>
 </resources>

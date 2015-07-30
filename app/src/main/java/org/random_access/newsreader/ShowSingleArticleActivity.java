@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.queries.MessageQueries;
@@ -120,7 +119,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 articleFragment.setMessageHeader(c.getString(MessageQueries.COL_HEADER));
             }
             c.close();
-            mQueries.setMessageUnread(messageId, false);
+            mQueries.setMessageReadStatus(messageId, false);
             return null;
         }
 
