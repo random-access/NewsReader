@@ -216,7 +216,9 @@ public class MessageQueries {
         contentValues.put(MessageContract.MessageEntry.COL_LEFT_VALUE, currentNodeLeftRightValues.x);
         contentValues.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, currentNodeLeftRightValues.y);
         adjustLeftRightValues(currentNodeLeftRightValues, newsgroupId, rootMsg, rootLeftRightValues);
-        context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues);
+        Uri message = context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues);
+        Long msgId = Long.parseLong(message.getLastPathSegment());
+        setMessageReadStatus(msgId, isNew == 1);
 
         /*Uri msgUri = Uri.parse(.getLastPathSegment());
         long msgId = Long.parseLong(msgUri.getLastPathSegment());
