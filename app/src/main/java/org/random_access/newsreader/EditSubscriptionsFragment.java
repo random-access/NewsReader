@@ -16,6 +16,7 @@ public class EditSubscriptionsFragment extends Fragment{
     private ArrayList<EditSubscriptionsActivity.NewsGroupItem> newsGroupItems;
     private int checkedSelection;
     private int currentDetailView;
+    private long msgLoadDefaultInterval;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,5 +46,13 @@ public class EditSubscriptionsFragment extends Fragment{
 
     public void setCurrentDetailView(int currentDetailView) {
         this.currentDetailView = currentDetailView;
+    }
+
+    public long getMsgLoadDefaultInterval() {
+        return msgLoadDefaultInterval;
+    }
+
+    public void setMsgLoadDefaultInterval(long msgLoadDefaultInterval) {
+        this.msgLoadDefaultInterval = msgLoadDefaultInterval;
     }
 }

@@ -38,12 +38,16 @@ public class NewsgroupContract {
         public static final String COL_NAME = "_NAME";
         public static final String COL_TITLE = "_TITLE";
         public static final String COL_LAST_SYNC_DATE = "_LAST_SYNC_DATE";
+        public static final String COL_MSG_LOAD_INTERVAL = "_MSG_LOAD_INTERVAL";
+        public static final String COL_MSG_KEEP_INTERVAL = "_MSG_KEEP_INTERVAL";
         public static final String COL_FK_SERV_ID= "_FK_SERV_ID";
 
         public static final String COL_ID_FULLNAME = TABLE_NAME + "." + _ID;
         public static final String COL_NAME_FULLNAME = TABLE_NAME + "." + COL_NAME;
         public static final String COL_TITLE_FULLNAME = TABLE_NAME + "." + COL_TITLE;
         public static final String COL_LAST_SYNC_DATE_FULLNAME = TABLE_NAME + "." + COL_LAST_SYNC_DATE;
+        public static final String COL_MSG_LOAD_INTERVAL_FULLNAME = TABLE_NAME + "." + COL_MSG_LOAD_INTERVAL;
+        public static final String COL_MSG_KEEP_INTERVAL_FULLNAME = TABLE_NAME + "." + COL_MSG_KEEP_INTERVAL;
         public static final String COL_FK_SERV_ID_FULLNAME = TABLE_NAME + "." + COL_FK_SERV_ID;
     }
 
@@ -54,6 +58,8 @@ public class NewsgroupContract {
             + NewsgroupEntry.COL_NAME + " text not null, "
             + NewsgroupEntry.COL_TITLE + " text, "
             + NewsgroupEntry.COL_LAST_SYNC_DATE + " integer not null, "
+            + NewsgroupEntry.COL_MSG_LOAD_INTERVAL + " integer not null, "
+            + NewsgroupEntry.COL_MSG_KEEP_INTERVAL + " integer not null, "
             + NewsgroupEntry.COL_FK_SERV_ID + " integer not null, "
             + "foreign key (" + NewsgroupEntry.COL_FK_SERV_ID + ") references "
             +  ServerContract.TABLE_NAME+ " (" + ServerContract.ServerEntry._ID + ")"

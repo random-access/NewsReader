@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
-import org.w3c.dom.Text;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

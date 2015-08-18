@@ -24,14 +24,13 @@ public class SettingsQueries {
 
     private static final String[] PROJECTION_SETTINGS = new String[] {SettingsContract.SettingsEntry._ID,
             SettingsContract.SettingsEntry.COL_NAME, SettingsContract.SettingsEntry.COL_EMAIL, SettingsContract.SettingsEntry.COL_SIGNATURE,
-    SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS, SettingsContract.SettingsEntry.COL_MSG_KEEP_NO};
+    SettingsContract.SettingsEntry.COL_MSG_LOAD_DEFAULT};
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
     public static final int COL_EMAIL = 2;
     public static final int COL_SIGNATURE = 3;
-    public static final int COL_MSG_KEEP_DAYS = 4;
-    public static final int COL_MSG_KEEP_NO = 5;
+    public static final int COL_MSG_LOAD_DEFAULT = 4;
 
     public SettingsQueries(Context context) {
         this.context = context;
@@ -60,9 +59,17 @@ public class SettingsQueries {
         values.put(SettingsContract.SettingsEntry.COL_NAME, name);
         values.put(SettingsContract.SettingsEntry.COL_EMAIL, email);
         values.put(SettingsContract.SettingsEntry.COL_SIGNATURE, signature);
-        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_DAYS, msgKeepDays);
-        values.put(SettingsContract.SettingsEntry.COL_MSG_KEEP_NO, -1); // TODO handle this
+        values.put(SettingsContract.SettingsEntry.COL_MSG_LOAD_DEFAULT, msgKeepDays);
         return context.getContentResolver().insert(SettingsContract.CONTENT_URI, values);
+    }
+
+    public boolean modifySettingsEntry(long serverSettingsId, String name, String email, String signature, int msgKeepDays) {
+        ContentValues values = new ContentValues();
+        values.put(SettingsContract.SettingsEntry.COL_NAME, name);
+        values.put(SettingsContract.SettingsEntry.COL_EMAIL, email);
+        values.put(SettingsContract.SettingsEntry.COL_SIGNATURE, signature);
+        values.put(SettingsContract.SettingsEntry.COL_MSG_LOAD_DEFAULT, msgKeepDays);
+        return context.getContentResolver().update(SettingsContract.CONTENT_URI, values, SettingsContract.SettingsEntry._ID + " = ? ", new String[] {serverSettingsId + ""}) > 0;
     }
 
     /*
@@ -98,7 +105,7 @@ public class SettingsQueries {
             c.close();
             throw new IOException("No settings for the given newsgroup!");
         } else {
-            int i =  c.getInt(SettingsQueries.COL_MSG_KEEP_DAYS);
+            int i =  c.getInt(SettingsQueries.COL_MSG_LOAD_DEFAULT);
             c.close();
             return i;
         }

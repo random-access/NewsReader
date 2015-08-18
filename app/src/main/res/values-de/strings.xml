@@ -18,7 +18,7 @@
     <string name="mark_as_read">Als gelesen markieren</string>
     <string name="mark_as_unread">Als ungelesen markieren</string>
     <string name="msg_keep">Nachrichten behalten</string>
-    <string name="msg_keep_hint">Standard: 30</string>
+    <string name="msg_keepload_hint">Standard: 30</string>
     <string name="name">Name</string>
     <string name="name_hint">User</string>
     <string name="no">Nein</string>
@@ -73,7 +73,7 @@
     </plurals>
 
     <!-- StringArrays -->
-    <string name="sync_period_prompt">Sync-Periode wählen</string>
+    <string name="sync_prompt_initial">Standard-Downloadzeitraum</string>
     <string-array name="sync_period_entries">
         <item>2 Wochen</item>
         <item>1 Monat</item>
@@ -129,4 +129,9 @@
     <string name="new_message">Neue Nachricht</string>
     <string name="send_success">Nachricht gesendet.</string>
     <string name="send_error">Fehler beim Senden.</string>
+    <string name="title_activity_server_settings">ServerSettingsActivity</string>
+    <string name="msg_load">Nachrichten laden</string>
+    <string name="sync_prompt_keep">Nachrichten behalten</string>
+    <string name="sync_prompt_period">Download-Zeitraum</string>
+    <string name="success_modifying_server">News-Server erfolgreich bearbeitet!</string>
 </resources>

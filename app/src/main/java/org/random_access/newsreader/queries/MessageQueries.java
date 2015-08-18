@@ -8,12 +8,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.util.Log;
 
-import org.random_access.newsreader.ShowMessagesActivity;
-import org.random_access.newsreader.provider.contracts.DBJoins;
 import org.random_access.newsreader.provider.contracts.MessageContract;
-import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
-
-import java.util.Arrays;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -219,16 +214,6 @@ public class MessageQueries {
         Uri message = context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues);
         Long msgId = Long.parseLong(message.getLastPathSegment());
         setMessageReadStatus(msgId, isNew == 1);
-
-        /*Uri msgUri = Uri.parse(.getLastPathSegment());
-        long msgId = Long.parseLong(msgUri.getLastPathSegment());
-        // insert message relations
-        for (long l : refIds) {
-            ContentValues cvMsgHierarchy = new ContentValues();
-            cvMsgHierarchy.put(MessageHierarchyContract.MessageHierarchyEntry.COL_MSG_DB_ID, msgId);
-            cvMsgHierarchy.put(MessageHierarchyContract.MessageHierarchyEntry.COL_IN_REPLY_TO, l);
-            context.getContentResolver().insert(MessageHierarchyContract.CONTENT_URI, cvMsgHierarchy);
-        } */
         return true;
     }
 
@@ -358,42 +343,8 @@ public class MessageQueries {
      * @param newsgroupId ID of a newsgroup
      */
     public  void deleteMessagesFromNewsgroup(long newsgroupId) {
-        MessageHierarchyQueries messageHierarchyQueries = new MessageHierarchyQueries(context);
-        Cursor cursor = getMessagesOfNewsgroup(newsgroupId);
-        if (cursor.moveToFirst()) {
-            while(!cursor.isAfterLast()) {
-                messageHierarchyQueries.deleteEntriesFromMessageIds(cursor.getLong(COL_ID));
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
         int delCount = context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
         Log.i(TAG, delCount + " rows deleted");
     }
 
-     /* public String getReplyMessageIdString(long[] refIds) {
-        StringBuilder sb = new StringBuilder();
-        String refIdString = Arrays.toString(refIds).replace('[', '(').replace(']', ')');
-        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry._ID + " in " + refIdString, null,
-                MessageContract.MessageEntry.COL_DATE + " ASC");
-        if (c.moveToFirst()){
-            while(!c.isAfterLast()) {
-                sb.append(c.getString(COL_MSG_ID)).append(" ");
-            }
-            sb.replace(sb.length()-1, sb.length(), "");
-        }
-        c.close();
-        return sb.toString();
-       Cursor cursor = context.getContentResolver().query(DBJoins.CONTENT_URI_MESSAGE_JOIN_MESSAGEHIERARCHY_ROOT, new String[] {MessageContract.MessageEntry.COL_MSG_ID},
-                MessageContract.MessageEntry.COL_MSG_ID + " = ? ", new String[]{messageId + ""}, MessageContract.MessageEntry.COL_DATE + " ASC");
-        StringBuilder sb = new StringBuilder();
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                sb.append(cursor.getString(0)).append(" ");
-            }
-            sb.replace(sb.length()-1, sb.length(), "");
-        }
-        cursor.close();
-        return sb.toString();
-    } */
 }

@@ -26,6 +26,7 @@
     <string name="error_offline">You are offline! Please connect to the internet and try again!</string>
     <string name="success_connect_server">Strike! Connection test successful ;)</string>
     <string name="success_adding_server">Successfully added news server! Happy posting ;)</string>
+    <string name="success_modifying_server">Successfully modified news server!</string>
 
     <string name="server_settings">Server Settings</string>
     <string name="name">Name</string>
@@ -35,7 +36,8 @@
     <string name="signature">Signature</string>
     <string name="signature_hint"> Newsreader for Android (Alpha) http://random-access.org/newsreader/</string>
     <string name="msg_keep">Keep messages</string>
-    <string name="msg_keep_hint">Default: 30</string>
+    <string name="msg_keepload_hint">Default: 30</string>
+    <string name="msg_load">Load messages</string>
 
     <string name="server_delete">Delete server</string>
     <string name="select_newsgroups">Select newsgroups</string>
@@ -96,7 +98,9 @@
     </plurals>
 
     <!-- StringArrays -->
-    <string name="sync_period_prompt">Choose period</string>
+    <string name="sync_prompt_initial">Default period for download</string>
+    <string name="sync_prompt_period">Download period</string>
+    <string name="sync_prompt_keep">Keep messages</string>
     <string-array name="sync_period_entries">
         <item>2 Weeks</item>
         <item>1 Month</item>
@@ -144,7 +148,7 @@
     <!-- Preferences Messages -->
     <string name="pref_message_title">Message settings</string>
     <string name="pref_message_view_text">View options</string>
-    <string name="pref_message_view_default" translatable="false">f</string>
+    <string name="pref_message_view_default" translatable="false">h</string>
     <string-array name="pref_message_view_entries">
         <item>Flat</item>
         <item>Hierarchial</item>

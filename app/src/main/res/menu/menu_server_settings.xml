@@ -4,4 +4,17 @@
     tools:context="org.random_access.newsreader.ServerSettingsActivity">
     <!-- <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" /> -->
+
+    <item android:id="@+id/action_discard"
+        android:title="@string/save"
+        android:icon="@drawable/ic_discard_white"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_save"
+        android:title="@string/save"
+        android:icon="@drawable/ic_check_white"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"/>
+
 </menu>

@@ -50,7 +50,7 @@ public class NNTPMessageHeader {
     public static final String KEY_DATE = "Date";
     public static final String KEY_SUBJECT = "Subject";
     public static final String KEY_TRANSFER_ENCODING = "Content-Transfer-Encoding";
-    public static final String KEY_REFERENCES = "References";
+    public static final String KEY_REFERENCES = "References"; // TODO kick out duplicates
     public static final String KEY_IN_REPLY_TO = "In-Reply-To";
     public static final String KEY_USER_AGENT = "User-Agent";
 

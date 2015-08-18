@@ -26,13 +26,15 @@ public class NewsgroupQueries {
 
     private static final String[] PROJECTION_NEWSGROUP = new String[] {NewsgroupContract.NewsgroupEntry._ID,
             NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_TITLE , NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID,
-            NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE};
+            NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE, NewsgroupContract.NewsgroupEntry.COL_MSG_LOAD_INTERVAL, NewsgroupContract.NewsgroupEntry.COL_MSG_KEEP_INTERVAL};
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
     public static final int COL_TITLE = 2;
     public static final int COL_SERVERID = 3;
     public static final int COL_LAST_SYNC_DATE = 4;
+    public static final int COL_MSG_LOAD_INTERVAL = 5;
+    public static final int COL_MSG_KEEP_INTERVAL = 6;
 
     public NewsgroupQueries(Context context) {
         this.context = context;
@@ -63,11 +65,13 @@ public class NewsgroupQueries {
      * @param serverId _ID field of server the newsgroup is from
      * @return the URI to the created database entry, containing _ID for further use
      */
-    public Uri addNewsgroup(String title, long serverId) {
+    public Uri addNewsgroup(String title, long serverId, long defaultMsgLoadInterval) {
         ContentValues values = new ContentValues();
         values.put(NewsgroupContract.NewsgroupEntry.COL_NAME, title);
         values.put(NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID, serverId);
         values.put(NewsgroupContract.NewsgroupEntry.COL_LAST_SYNC_DATE, -1); // not yet synced
+        values.put(NewsgroupContract.NewsgroupEntry.COL_MSG_LOAD_INTERVAL, defaultMsgLoadInterval);
+        values.put(NewsgroupContract.NewsgroupEntry.COL_MSG_KEEP_INTERVAL, -1); // default: keep all messages
         return context.getContentResolver().insert(NewsgroupContract.CONTENT_URI, values);
     }
 

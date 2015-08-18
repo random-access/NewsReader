@@ -22,6 +22,7 @@ import org.apache.commons.net.nntp.NewsgroupInfo;
 import org.random_access.newsreader.adapter.SubscriptionListAdapter;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.queries.SettingsQueries;
 import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     private String user;
     private String password;
 
+    private long defaultMsgLoadInterval;
     private int checkedSelection;
 
     @Override
@@ -104,6 +106,8 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             throw new IOException("Server ID not found!");
         }
         cursor.close();
+        SettingsQueries settingsQueries = new SettingsQueries(this);
+        defaultMsgLoadInterval = settingsQueries.getNumberOfDaysForKeepingMessages(serverId);
     }
 
 
@@ -114,6 +118,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             subscriptionsFragment.setNewsGroupItems(items);
             subscriptionsFragment.setCheckedSelection(selection == null ? R.id.groups_all : selection.getCheckedRadioButtonId());
             subscriptionsFragment.setCurrentDetailView(adapter == null ? -1 : adapter.getCurrentDetailView());
+            subscriptionsFragment.setMsgLoadDefaultInterval(defaultMsgLoadInterval);
             Log.d(TAG, "Save selection: only selected = " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
         }
     }
@@ -133,6 +138,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         } else{
             items = subscriptionsFragment.getNewsGroupItems();
             checkedSelection = subscriptionsFragment.getCheckedSelection();
+            defaultMsgLoadInterval = subscriptionsFragment.getMsgLoadDefaultInterval();
             Log.d(TAG, "Restore selection: only selected = " + (checkedSelection == R.id.groups_selection));
             prepareGUI();
             adapter.setCurrentDetailView(subscriptionsFragment.getCurrentDetailView());
@@ -152,7 +158,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             for (int i = 0; i < items.size(); i++) {
                 // newsgroup not yet in database, but selected
                 if (items.get(i).isSelected() && items.get(i).getNewsgroupId() == -1) {
-                    queries.addNewsgroup(items.get(i).getNewsgroupInfo().getNewsgroup(), serverId);
+                    queries.addNewsgroup(items.get(i).getNewsgroupInfo().getNewsgroup(), serverId, defaultMsgLoadInterval);
                     addCount++;
                     // newsgroup in database, but deselected
                 } else if (!items.get(i).isSelected() && items.get(i).getNewsgroupId() != -1) {

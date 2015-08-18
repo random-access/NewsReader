@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:text="@string/msg_load"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/black"/>
+
+    <Spinner
+        android:id="@+id/sp_msgload"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sync_period_entries"
+        android:prompt="@string/sync_prompt_initial"
+        />
+
+    <TextView
+        android:text="@string/msg_keep"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/black"/>
+
+    <Spinner
+        android:id="@+id/sp_msgkeep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sync_period_entries"
+        android:prompt="@string/sync_prompt_initial" />
+
+</LinearLayout>

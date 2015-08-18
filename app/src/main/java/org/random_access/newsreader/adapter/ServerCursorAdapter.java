@@ -17,6 +17,7 @@ import android.widget.Toast;
 import org.random_access.newsreader.EditSubscriptionsActivity;
 import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.R;
+import org.random_access.newsreader.ServerSettingsActivity;
 import org.random_access.newsreader.ShowNewsgroupsActivity;
 import org.random_access.newsreader.ShowServerActivity;
 import org.random_access.newsreader.queries.NewsgroupQueries;
@@ -117,7 +118,6 @@ public class ServerCursorAdapter extends CursorAdapter {
 
     private void setListeners(int type, Cursor cursor, final Context context) {
         if (type == EXTENDED) {
-            final Context fContext = context;
             final long id = cursor.getLong(ShowServerActivity.COL_SERVER_ID);
             final String title = cursor.getString(ShowServerActivity.COL_SERVER_TITLE);
             btnEditSubscriptions.setOnClickListener(new View.OnClickListener() {
@@ -127,19 +127,27 @@ public class ServerCursorAdapter extends CursorAdapter {
                         Toast.makeText(context, context.getResources().getString(R.string.error_offline), Toast.LENGTH_SHORT).show();
                     } else {
                         //ContentResolver.cancelSync(null, null);
-                        Intent intent = new Intent(fContext, EditSubscriptionsActivity.class);
+                        Intent intent = new Intent(context, EditSubscriptionsActivity.class);
                         intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
-                        fContext.startActivity(intent);
+                        context.startActivity(intent);
                     }
                 }
             });
             btnShowNewsgroups.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent (fContext, ShowNewsgroupsActivity.class);
+                    Intent intent = new Intent (context, ShowNewsgroupsActivity.class);
                     intent.putExtra(ShowNewsgroupsActivity.KEY_SERVER_ID, id);
                     intent.putExtra(ShowNewsgroupsActivity.KEY_SERVER_TITLE, title);
-                    fContext.startActivity(intent);
+                    context.startActivity(intent);
+                }
+            });
+            btnEditServerSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ServerSettingsActivity.class);
+                    intent.putExtra(ServerSettingsActivity.TAG_SERVER_ID, id);
+                    context.startActivity(intent);
                 }
             });
         }

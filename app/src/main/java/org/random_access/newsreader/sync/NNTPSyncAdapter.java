@@ -111,10 +111,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             if (c.moveToFirst()) {
                 while (!c.isAfterLast()) {
                     try {
-                        int syncTime = new SettingsQueries(context).getNumberOfDaysForKeepingMessages(c.getLong(ServerQueries.COL_ID));
                         getNewNewsForServer(c.getLong(ServerQueries.COL_ID), c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT),
                                 c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
-                                c.getString(ServerQueries.COL_PASSWORD), syncTime);
+                                c.getString(ServerQueries.COL_PASSWORD));
                     } catch (IOException | LoginException e) {
                         e.printStackTrace();
                     } finally {
@@ -136,7 +135,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password, int syncTime) throws IOException, LoginException {
+    private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
 
         NNTPConnector nntpConnector = new NNTPConnector(context);
@@ -145,7 +144,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
-                getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), syncTime);
+                getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), c.getInt(NewsgroupQueries.COL_MSG_LOAD_INTERVAL));
                 // TODO cleanup old news -> use number of messages to keep / number of days to keep messages
                 Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();

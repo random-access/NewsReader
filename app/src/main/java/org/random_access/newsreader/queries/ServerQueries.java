@@ -5,14 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import org.random_access.newsreader.provider.contracts.MessageContract;
-import org.random_access.newsreader.provider.contracts.MessageHierarchyContract;
-import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
-import org.random_access.newsreader.provider.contracts.SettingsContract;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -85,6 +80,18 @@ public class ServerQueries {
         values.put(ServerContract.ServerEntry.COL_PASSWORD, password);
         values.put(ServerContract.ServerEntry.COL_FK_SET_ID, settingsId);
         return context.getContentResolver().insert(ServerContract.CONTENT_URI, values);
+    }
+
+    public boolean modifyServer(long serverId, String serverTitle, String serverName, int serverPort, boolean encryption, boolean auth, String user, String password) {
+        ContentValues values = new ContentValues();
+        values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
+        values.put(ServerContract.ServerEntry.COL_SERVERNAME, serverName);
+        values.put(ServerContract.ServerEntry.COL_SERVERPORT, serverPort);
+        values.put(ServerContract.ServerEntry.COL_ENCRYPTION, 0); // TODO handle encrypted connections
+        values.put(ServerContract.ServerEntry.COL_AUTH, auth ? 1 : 0);
+        values.put(ServerContract.ServerEntry.COL_USER, user);
+        values.put(ServerContract.ServerEntry.COL_PASSWORD, password);
+        return context.getContentResolver().update(ServerContract.CONTENT_URI, values, ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}) > 0;
     }
 
     /**

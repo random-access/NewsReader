@@ -12,7 +12,6 @@ import android.widget.TextView;
 import org.random_access.newsreader.MsgHierarchyView;
 import org.random_access.newsreader.R;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
-import org.random_access.newsreader.queries.MessageHierarchyQueries;
 import org.random_access.newsreader.queries.MessageQueries;
 
 /**

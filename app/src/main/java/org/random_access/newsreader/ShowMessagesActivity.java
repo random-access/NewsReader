@@ -139,11 +139,11 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
         if (rootMessageId != -1) {
             viewStatus = ViewStatus.CHILDREN;
         } else {
-            String viewMode = sharedPreferences.getString("pref_message_view", "f");
-            if (viewMode == null || viewMode.equals("f")) {
-                viewStatus = ViewStatus.FLAT;
-            } else {
+            String viewMode = sharedPreferences.getString("pref_message_view", "h");
+            if (viewMode.equals("h")) {
                 viewStatus = ViewStatus.HIERARCHIAL;
+            } else {
+                viewStatus = ViewStatus.FLAT;
             }
         }
     }

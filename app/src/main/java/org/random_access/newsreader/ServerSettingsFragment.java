@@ -20,7 +20,8 @@ public class ServerSettingsFragment extends Fragment{
     private String userDisplayName;
     private String mailAddress;
     private String signature;
-    private int chooseMsgKeepTimeIndex;
+    private int chooseMsgLoadTimeIndex;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,11 +102,11 @@ public class ServerSettingsFragment extends Fragment{
         this.signature = signature;
     }
 
-    public int getChooseMsgKeepTimeIndex() {
-        return chooseMsgKeepTimeIndex;
+    public int getChooseMsgLoadTimeIndex() {
+        return chooseMsgLoadTimeIndex;
     }
 
-    public void setChooseMsgKeepTimeIndex(int chooseMsgKeepTimeIndex) {
-        this.chooseMsgKeepTimeIndex = chooseMsgKeepTimeIndex;
+    public void setChooseMsgLoadTimeIndex(int chooseMsgLoadTimeIndex) {
+        this.chooseMsgLoadTimeIndex = chooseMsgLoadTimeIndex;
     }
 }
