@@ -1,6 +1,5 @@
 package org.random_access.newsreader;
 
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -20,8 +19,15 @@ import android.widget.Toast;
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
 
-
+/**
+ * <b>Project:</b> Newsreader for Android <br>
+ * <b>Date:</b> 18.08.15 <br>
+ * <b>Author:</b> Monika Schrenk <br>
+ * <b>E-Mail:</b> software@random-access.org <br>
+ */
 public class ServerSettingsActivity extends AppCompatActivity {
+
+    private static final String TAG = ServerSettingsActivity.class.getSimpleName();
 
     public static final String TAG_SERVER_ID = "server-id";
     private long serverId;
@@ -148,7 +154,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
                 serverSettingsFragment.setUserDisplayName(c.getString(SettingsQueries.COL_NAME));
                 serverSettingsFragment.setMailAddress(c.getString(SettingsQueries.COL_EMAIL));
                 serverSettingsFragment.setSignature(c.getString(SettingsQueries.COL_SIGNATURE));
-                // TODO set spinner to value from database
+                serverSettingsFragment.setChooseMsgLoadTimeIndex(findIndexOfValue(c.getInt(SettingsQueries.COL_MSG_LOAD_DEFAULT)));
             }
             c.close();
             return null;
@@ -158,6 +164,16 @@ public class ServerSettingsActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             prepareGui();
         }
+    }
+
+    private int findIndexOfValue(int value) {
+        int[] array = getResources().getIntArray(R.array.sync_period_values);
+        for (int i = 0; i < array.length; i++ ) {
+            if (array[i] == value) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void prepareGui() {
@@ -172,7 +188,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         txtUserDisplayName = (EditText) findViewById(R.id.txt_name);
         txtEmailAddress = (EditText) findViewById(R.id.txt_email);
         txtSignature = (EditText) findViewById(R.id.txt_signature);
-        spMsgLoadPeriod = (Spinner) findViewById(R.id.sp_msgload);
+        spMsgLoadPeriod = (Spinner) findViewById(R.id.rg_msgload);
 
         txtServerTitle.setText(serverSettingsFragment.getServerTitle() == null ? "" : serverSettingsFragment.getServerTitle() );
         txtServer.setText(serverSettingsFragment.getServerName() == null ? "" : serverSettingsFragment.getServerName());

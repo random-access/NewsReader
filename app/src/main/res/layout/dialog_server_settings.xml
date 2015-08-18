@@ -70,7 +70,7 @@
         android:textColor="#000000"/>
 
     <Spinner
-        android:id="@+id/sp_msgkeep"
+        android:id="@+id/rg_msgkeep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/sync_period_entries"

@@ -14,7 +14,7 @@ import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.queries.MessageQueries;
 
 /**
- * <b>Project:</b> FlashcardsManager for Android <br>
+ * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 26.07.15 <br>
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>

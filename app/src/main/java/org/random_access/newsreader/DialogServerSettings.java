@@ -87,7 +87,7 @@ public class DialogServerSettings extends DialogFragment{
         mNameText = (EditText)dialogView.findViewById(R.id.txt_name);
         mEmailText = (EditText)dialogView.findViewById(R.id.txt_email);
         mSignatureText = (EditText)dialogView.findViewById(R.id.txt_signature);
-        spKeepInterval = (Spinner)dialogView.findViewById(R.id.sp_msgkeep);
+        spKeepInterval = (Spinner)dialogView.findViewById(R.id.rg_msgkeep);
        //  mMsgKeepText= (EditText) dialogView.findViewById(R.id.txt_msgkeep);
         mNameText.requestFocus();
         // d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);

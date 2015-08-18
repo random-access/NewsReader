@@ -1,5 +1,6 @@
 package org.random_access.newsreader;
 
+import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
@@ -8,7 +9,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -27,6 +31,8 @@ import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 public class ShowNewsgroupsActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>  {
 
+    private static final String TAG = ShowNewsgroupsActivity.class.getSimpleName();
+
     public static final String KEY_SERVER_ID = "server-id";
     public static final String KEY_SERVER_TITLE = "server-title";
 
@@ -40,6 +46,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     private long serverId;
 
     private NewsgroupCursorAdapter mNewsgroupAdapter;
+    private  ListView mNewsgroupListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         setContentView(R.layout.activity_show_newsgroups);
         setTitle(getIntent().getExtras().getString(KEY_SERVER_TITLE));
-        ListView mNewsgroupListView = (ListView) findViewById(R.id.show_groups_list);
+        mNewsgroupListView = (ListView) findViewById(R.id.show_groups_list);
         mNewsgroupListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mNewsgroupAdapter = new NewsgroupCursorAdapter(this, null);
         mNewsgroupListView.setAdapter(mNewsgroupAdapter);
@@ -61,6 +68,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+        setListActions();
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -108,5 +116,19 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mNewsgroupAdapter.swapCursor(null);
+    }
+
+    private void setListActions () {
+
+        mNewsgroupListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        mNewsgroupListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                DialogFragment dialog = DialogNewsgroupSettings.newInstance(id);
+                Log.d(TAG, "ID: " + id);
+                dialog.show(getFragmentManager(), "Test");
+                return true;
+            }
+        });
     }
 }
