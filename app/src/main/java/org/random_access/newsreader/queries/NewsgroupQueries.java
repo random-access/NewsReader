@@ -162,4 +162,65 @@ public class NewsgroupQueries {
         return context.getContentResolver().update(NewsgroupContract.CONTENT_URI, values, NewsgroupContract.NewsgroupEntry._ID + " = ?", new String[]{newsGroupId + ""}) > 0;
     }
 
+    /**
+     * Returns the column indicating how many days a message in the given newsgroup should be kept on this device
+     * @param newsgroupId database _ID field identifying a newsgroup entry
+     * @return number of days to keep messages, default (if no valid settings are found): 30
+     */
+    public int getMsgKeepDays(long newsgroupId){
+        Cursor c = getNewsgroupForId(newsgroupId);
+        if (c.moveToFirst()) {
+            int i = c.getInt(COL_MSG_KEEP_INTERVAL);
+            c.close();
+            return i;
+        } else {
+            c.close();
+            Log.d(TAG, "No settings for newsgroup with ID " + newsgroupId + " found!");
+            return 30;
+        }
+    }
+
+    /**
+     * Stores how long messages should be kept into the database
+     * @param newsgroupId database _ID field identifying a newsgroup entry
+     * @param value length in days
+     * @return true if value could be saved, otherwise false
+     */
+    public boolean setMsgKeepDays(long newsgroupId, int value) {
+        ContentValues values = new ContentValues();
+        values.put(NewsgroupContract.NewsgroupEntry.COL_MSG_KEEP_INTERVAL, value);
+        return context.getContentResolver().update(NewsgroupContract.CONTENT_URI, values, NewsgroupContract.NewsgroupEntry._ID + " = ?", new String[] {newsgroupId + ""}) > 0;
+    }
+
+    /**
+     *
+     * Returns the column indicating which should be the max timespan to fetch messages.
+     * @param newsgroupId database _ID field identifying a newsgroup entry
+     * @return number of days to fetch messages, default (if no valid settings are found): 30
+     */
+    public int getMsgLoadDays(long newsgroupId){
+        Cursor c = getNewsgroupForId(newsgroupId);
+        if (c.moveToFirst()) {
+            int i = c.getInt(COL_MSG_LOAD_INTERVAL);
+            c.close();
+            return i;
+        } else {
+            c.close();
+            Log.d(TAG, "No settings for newsgroup with ID " + newsgroupId + " found!");
+            return 30;
+        }
+    }
+
+    /**
+     * Stores tht max timespan to fetch messages into the database
+     * @param newsgroupId database _ID field identifying a newsgroup entry
+     * @param value timespan in days
+     * @return true if value could be saved, otherwise false
+     */
+    public boolean setMsgLoadDays(long newsgroupId, int value) {
+        ContentValues values = new ContentValues();
+        values.put(NewsgroupContract.NewsgroupEntry.COL_MSG_LOAD_INTERVAL, value);
+        return context.getContentResolver().update(NewsgroupContract.CONTENT_URI, values, NewsgroupContract.NewsgroupEntry._ID + " = ?", new String[] {newsgroupId + ""}) > 0;
+    }
+
 }

@@ -134,4 +134,5 @@
     <string name="sync_prompt_keep">Nachrichten behalten</string>
     <string name="sync_prompt_period">Download-Zeitraum</string>
     <string name="success_modifying_server">News-Server erfolgreich bearbeitet!</string>
+    <string name="success_modifying_group">Newsgroup erfolgreich bearbeitet!</string>
 </resources>

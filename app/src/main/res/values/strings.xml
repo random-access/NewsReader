@@ -45,6 +45,7 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="search_subscription">Type to search&#8230;</string>
     <string name="newsgroup_settings">Newsgroup Settings</string>
+    <string name="success_modifying_group">Successfully modified newsgroup!</string>
 
     <string name="discard">Discard</string>
     <string name="ok">OK</string>
