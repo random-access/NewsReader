@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,11 @@ import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.random_access.newsreader.sync.NNTPConnector;
+
+import java.io.IOException;
+
+import javax.security.auth.login.LoginException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -84,17 +90,9 @@ public class ServerSettingsActivity extends AppCompatActivity {
             txtEmailAddress.setError(getResources().getString(R.string.error_empty_field));
             txtEmailAddress.requestFocus();
         } else {
-            if (serverSettingsFragment != null) updateSettingsFragment();
-            ServerQueries serverQueries = new ServerQueries(ServerSettingsActivity.this);
-            int serverPort = TextUtils.isEmpty(serverSettingsFragment.getServerPort()) ? 119 : Integer.parseInt(serverSettingsFragment.getServerPort());
-            serverQueries.modifyServer(serverId, serverSettingsFragment.getServerTitle(), serverSettingsFragment.getServerName(),
-                    serverPort, false, serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
-            long settingsId = serverQueries.getServerSettingsId(serverId);
-            int msgKeepTime = getResources().getIntArray(R.array.sync_period_values)[spMsgLoadPeriod.getSelectedItemPosition()];
-            SettingsQueries settingsQueries = new SettingsQueries(ServerSettingsActivity.this);
-            settingsQueries.modifySettingsEntry(settingsId, serverSettingsFragment.getUserDisplayName(), serverSettingsFragment.getMailAddress(), serverSettingsFragment.getSignature(), msgKeepTime);
-            Toast.makeText(this, getResources().getString(R.string.success_modifying_server), Toast.LENGTH_SHORT).show();
-            finish();
+
+            updateSettingsFragment();
+            new ServerConnectTask().execute();
         }
     }
 
@@ -215,5 +213,50 @@ public class ServerSettingsActivity extends AppCompatActivity {
         txtUserName.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         lblPassword.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         txtPassword.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+    }
+
+    class ServerConnectTask extends AsyncTask<String, Void, String[]> {
+        private String msg;
+        private String debugOutput;
+
+        @Override
+        protected String[] doInBackground(String... params) {
+            debugOutput = "SERVERTITLE: " + serverSettingsFragment.getServerTitle() + ", SERVER: " + serverSettingsFragment.getServerName() + ", PORT: " + serverSettingsFragment.getServerPort()
+                    + ", AUTH: " + serverSettingsFragment.isAuth() + ", USER: " + serverSettingsFragment.getUserName() + ", GOT PASSWORD: " + (!TextUtils.isEmpty(serverSettingsFragment.getPassword()));
+
+            if (NetworkStateHelper.isOnline(ServerSettingsActivity.this)) {
+                try {
+                    int port = Integer.parseInt(TextUtils.isEmpty(serverSettingsFragment.getServerPort()) ? "119" : serverSettingsFragment.getServerPort());
+                    NNTPConnector connector = new NNTPConnector(ServerSettingsActivity.this);
+                    connector.connectToNewsServer(ServerSettingsActivity.this, serverSettingsFragment.getServerName(), port,
+                            serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
+                    ServerQueries serverQueries = new ServerQueries(ServerSettingsActivity.this);
+                    serverQueries.modifyServer(serverId, serverSettingsFragment.getServerTitle(), serverSettingsFragment.getServerName(),
+                            port, false, serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
+                    long settingsId = serverQueries.getServerSettingsId(serverId);
+                    SettingsQueries settingsQueries = new SettingsQueries(ServerSettingsActivity.this);
+                    settingsQueries.modifySettingsEntry(settingsId, serverSettingsFragment.getUserDisplayName(), serverSettingsFragment.getMailAddress(),
+                            serverSettingsFragment.getSignature(), serverSettingsFragment.getChooseMsgLoadTimeIndex());
+                } catch (IOException e) {
+                    msg = getResources().getString(R.string.error_connection);
+                } catch (LoginException e) {
+                    msg = getResources().getString(R.string.error_password);
+                }
+            } else {
+                msg = getResources().getString(R.string.error_offline);
+            }
+            return params;
+        }
+
+        @Override
+        protected void onPostExecute(String[] args) {
+            if (TextUtils.isEmpty(msg)) {
+                Toast.makeText(ServerSettingsActivity.this, getResources().getString(R.string.success_modifying_server), Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Log.e(TAG, "Error in ServerConnectTask: " + debugOutput);
+                Toast.makeText(ServerSettingsActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
