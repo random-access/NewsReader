@@ -1,14 +1,10 @@
 package org.random_access.newsreader;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -23,8 +19,8 @@ public class MsgHierarchyView extends View {
     private Paint mPaint;
     private int level = 5;
 
-    private float strokeWidth = 10.0F;
-    private float paddingBetween = 5.0F;
+    private final float strokeWidth = 10.0F;
+    private final float paddingBetween = 5.0F;
 
 
     public MsgHierarchyView(Context context) {
@@ -65,7 +61,7 @@ public class MsgHierarchyView extends View {
 
     private int getMeasurement(int measureSpec, int preferred) {
         int specSize = MeasureSpec.getSize(measureSpec);
-        int measurement = 0;
+        int measurement;
 
         switch (MeasureSpec.getMode(measureSpec)) {
             case MeasureSpec.EXACTLY:

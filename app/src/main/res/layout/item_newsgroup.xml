@@ -5,7 +5,6 @@
     android:padding="10dp">
     <TextView
         android:id="@+id/group_title"
-        android:text="feu.informatik.kurs.1618"
         android:textSize="10pt"
         android:textColor="@color/black"
         android:lines="1"
@@ -18,7 +17,6 @@
 
     <TextView
         android:id="@+id/new_news"
-        android:text="1000"
         android:padding="5dp"
         android:textColor="@color/blue"
         android:textStyle="bold"

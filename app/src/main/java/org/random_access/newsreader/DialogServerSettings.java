@@ -144,7 +144,7 @@ public class DialogServerSettings extends DialogFragment{
                 mEmailText.requestFocus();
                 getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-            } else {;
+            } else {
                 SettingsQueries settingsQueries = new SettingsQueries(getActivity());
                 Uri uri = settingsQueries.addSettingsEntry(name, email, signature, msgKeepTime);
                 Log.d(TAG, "Get message for the last " + msgKeepTime + " days.");

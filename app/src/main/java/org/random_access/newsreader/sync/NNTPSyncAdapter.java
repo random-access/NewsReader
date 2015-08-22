@@ -23,7 +23,6 @@ import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
-import org.random_access.newsreader.queries.SettingsQueries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -215,9 +214,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        NNTPMessageHeader headerData = null;
-        long msgDate = -1;
-        String messageBody = null;
+        NNTPMessageHeader headerData;
+        long msgDate;
+        String messageBody;
 
         try {
             // fetch header

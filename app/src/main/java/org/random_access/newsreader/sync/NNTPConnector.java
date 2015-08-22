@@ -90,13 +90,13 @@ public class NNTPConnector {
             Log.d(TAG, "Found no server with the given ID in database");
             throw new IOException("Found no server with the given ID in database");
         }
-        CustomNNTPClient nntpClient = connectToNewsServer(context, charset, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT), c.getInt(ServerQueries.COL_AUTH) == 1,
+        CustomNNTPClient nntpClient = connectToNewsServer(charset, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT), c.getInt(ServerQueries.COL_AUTH) == 1,
                 c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
         c.close();
         return nntpClient;
     }
 
-    public CustomNNTPClient connectToNewsServer (Context context, String charset, String server, int port, boolean auth, String user, String password)
+    private CustomNNTPClient connectToNewsServer(String charset, String server, int port, boolean auth, String user, String password)
             throws IOException, LoginException {
         CustomNNTPClient nntpClient = new CustomNNTPClient();
         if (charset != null) {

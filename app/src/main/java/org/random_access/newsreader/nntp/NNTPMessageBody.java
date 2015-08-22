@@ -1,14 +1,7 @@
 package org.random_access.newsreader.nntp;
 
-import android.util.Log;
-import android.util.Xml;
-
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.net.QuotedPrintableCodec;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

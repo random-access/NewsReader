@@ -11,7 +11,6 @@
         android:id="@+id/id_server_title_extended"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Newsserver Titel"
         android:textSize="10pt"
         android:textColor="@color/black"
         android:paddingTop="10dp"
@@ -32,7 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/id_server_title_extended"
-        android:text="Server: news.example.com"
         android:textSize="8pt"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
@@ -53,7 +51,6 @@
         android:layout_below="@id/id_server_name_extended"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Abonniert: x Gruppen"
         android:textSize="8pt"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>

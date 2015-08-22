@@ -5,7 +5,7 @@
 
     <!-- <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" /> -->
-    <item android:title="Sync"
+    <item android:title="@string/sync"
         android:id="@+id/action_sync"
         android:visible="true"
         android:orderInCategory="100"

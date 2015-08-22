@@ -15,6 +15,7 @@ import java.io.IOException;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
+@SuppressWarnings("WeakerAccess")
 public class ServerQueries {
 
     private final Context context;

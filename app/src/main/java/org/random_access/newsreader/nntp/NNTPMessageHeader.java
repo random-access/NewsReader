@@ -43,16 +43,16 @@ public class NNTPMessageHeader {
     private static final String DEFAULT_CHARSET = SupportedCharsets.UTF_8;
     private static final String DEFAULT_TRANSFER_ENCODING = SupportedEncodings._8BIT;
 
-    public static final String KEY_FROM = "From";
-    public static final String KEY_NEWSGROUPS = "Newsgroups";
-    public static final String KEY_CONTENT_TYPE = "Content-Type";
-    public static final String KEY_CHARSET = "charset";
-    public static final String KEY_DATE = "Date";
-    public static final String KEY_SUBJECT = "Subject";
-    public static final String KEY_TRANSFER_ENCODING = "Content-Transfer-Encoding";
-    public static final String KEY_REFERENCES = "References"; // TODO kick out duplicates
-    public static final String KEY_IN_REPLY_TO = "In-Reply-To";
-    public static final String KEY_USER_AGENT = "User-Agent";
+    private static final String KEY_FROM = "From";
+    private static final String KEY_NEWSGROUPS = "Newsgroups";
+    private static final String KEY_CONTENT_TYPE = "Content-Type";
+    private static final String KEY_CHARSET = "charset";
+    private static final String KEY_DATE = "Date";
+    private static final String KEY_SUBJECT = "Subject";
+    private static final String KEY_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+    private static final String KEY_REFERENCES = "References"; // TODO kick out duplicates
+    private static final String KEY_IN_REPLY_TO = "In-Reply-To";
+    private static final String KEY_USER_AGENT = "User-Agent";
 
     private String lastKey = "";
 

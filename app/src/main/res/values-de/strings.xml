@@ -135,4 +135,6 @@
     <string name="sync_prompt_period">Download-Zeitraum</string>
     <string name="success_modifying_server">News-Server erfolgreich bearbeitet!</string>
     <string name="success_modifying_group">Newsgroup erfolgreich bearbeitet!</string>
+    <string name="sync">Synchronisieren</string>
+    <string name="newsgroup_settings">Newsgroup-Einstellungen</string>
 </resources>

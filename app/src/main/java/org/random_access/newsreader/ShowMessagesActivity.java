@@ -51,7 +51,7 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
     private ViewStatus viewStatus;
 
     public enum ViewStatus {
-        HIERARCHIAL, FLAT, CHILDREN;
+        HIERARCHIAL, FLAT, CHILDREN
     }
 
     @Override

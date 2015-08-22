@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
 import android.util.Log;
-
-import org.random_access.newsreader.sync.NNTPSyncAdapter;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

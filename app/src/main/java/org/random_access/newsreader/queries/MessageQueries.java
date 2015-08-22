@@ -16,6 +16,7 @@ import org.random_access.newsreader.provider.contracts.MessageContract;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
+@SuppressWarnings("WeakerAccess")
 public class MessageQueries {
 
     private static final String TAG = MessageQueries.class.getSimpleName();
@@ -223,16 +224,16 @@ public class MessageQueries {
      * @return Point containing the left value as x coordinate and the right value as y coordinate
      */
     private Point getLeftRightValue(long messageId) {
-        int rightValue = -1;
-        int leftValue = -1;
+        int rValue = -1;
+        int lValue = -1;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{
             MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_LEFT_VALUE}, MessageContract.MessageEntry._ID + " = ? ", new String[]{messageId + ""}, null);
         if (c.moveToFirst()) {
-            rightValue = c.getInt(0);
-            leftValue = c.getInt(1);
+            rValue = c.getInt(0);
+            lValue = c.getInt(1);
         }
         c.close();
-        return new Point(leftValue, rightValue);
+        return new Point(lValue, rValue);
     }
 
     /**
@@ -243,18 +244,18 @@ public class MessageQueries {
      */
     private Point calculateLeftRightValues(long parentMsg, Point parentLeftRightValues) {
         long idOfYoungestSibling = getYoungestSibling(parentMsg);
-        int leftValue;
-        int rightValue;
+        int lValue;
+        int rValue;
         if (parentLeftRightValues.x == -1) {
-            leftValue = 1;
-            rightValue = 2;
+            lValue = 1;
+            rValue = 2;
         } else {
             Point youngestSiblingLeftRightValues = getLeftRightValue(idOfYoungestSibling);
-            leftValue = idOfYoungestSibling == -1 ? // the node has no younger siblings.
+            lValue = idOfYoungestSibling == -1 ? // the node has no younger siblings.
                     parentLeftRightValues.x + 1 : youngestSiblingLeftRightValues.y + 1;
-            rightValue = leftValue + 1;
+            rValue = lValue + 1;
         }
-        return new Point(leftValue, rightValue);
+        return new Point(lValue, rValue);
     }
 
     /**

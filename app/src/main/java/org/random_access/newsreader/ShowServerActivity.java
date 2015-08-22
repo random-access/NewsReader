@@ -1,7 +1,6 @@
 package org.random_access.newsreader;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
@@ -10,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.content.SyncInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,13 +25,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.random_access.newsreader.adapter.ServerCursorAdapter;
-import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.queries.ServerQueries;
-import org.random_access.newsreader.sync.NNTPSyncAdapter;
 import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
-
-import java.util.List;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

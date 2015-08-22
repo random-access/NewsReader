@@ -3,10 +3,8 @@ package org.random_access.newsreader;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +24,7 @@ public class DialogNewsgroupSettings extends DialogFragment {
 
     private static final String TAG = DialogNewsgroupSettings.class.getSimpleName();
 
-    public static final String KEY_NEWSGROUP_ID = "newsgroup-id";
+    private static final String KEY_NEWSGROUP_ID = "newsgroup-id";
     private long newsgroupId;
 
     public static DialogNewsgroupSettings newInstance(long newsgroupId) {

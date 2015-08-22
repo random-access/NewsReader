@@ -94,7 +94,6 @@ public class WriteMessageActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
         switch(item.getItemId()) {
             case R.id.action_settings:
                 return true;
@@ -198,7 +197,7 @@ public class WriteMessageActivity extends AppCompatActivity {
     }
 
     
-    class PrepareMessageTask extends AsyncTask<Void, Void, Void> {
+    private class PrepareMessageTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             Context ctxt = WriteMessageActivity.this;

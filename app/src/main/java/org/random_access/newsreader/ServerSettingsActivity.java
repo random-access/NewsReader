@@ -79,7 +79,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         }
     }
 
-    public void modifyServerSettings() {
+    private void modifyServerSettings() {
         if (TextUtils.isEmpty(txtServer.getText().toString())) {
             txtServer.setError(getResources().getString(R.string.error_empty_field));
             txtServer.requestFocus();
@@ -131,7 +131,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         }
     }
 
-    class LoadServerSettingsTask extends AsyncTask<Void, Void, Void> {
+    private class LoadServerSettingsTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {

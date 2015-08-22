@@ -7,7 +7,6 @@
 
     <TextView
         android:id="@+id/subscription_title"
-        android:text="Test"
         android:textSize="9pt"
         android:textColor="@color/black"
         android:lines="1"

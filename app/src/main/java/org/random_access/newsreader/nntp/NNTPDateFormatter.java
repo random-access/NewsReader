@@ -3,12 +3,10 @@ package org.random_access.newsreader.nntp;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -22,8 +20,8 @@ public class NNTPDateFormatter {
     private static final String TAG = NNTPDateFormatter.class.getSimpleName();
 
     public static final String DATE_PATTERN_DATABASE = "yyyyMMddhhmmss Z";
-    public static final String DATE_PATTERN_MSG_HEADER = "EEE, dd MMM yyyy hh:mm:ss Z";
-    public static final String[] DATE_PATTERNS_MSG_HEADER =  new String []{"EEE, dd MMM yyyy hh:mm:ss Z", "EEE, dd MMM yyyy hh:mm Z"};
+    private static final String DATE_PATTERN_MSG_HEADER = "EEE, dd MMM yyyy hh:mm:ss Z";
+    private static final String[] DATE_PATTERNS_MSG_HEADER =  new String []{"EEE, dd MMM yyyy hh:mm:ss Z", "EEE, dd MMM yyyy hh:mm Z"};
 
     private long lastParsedDate;
 

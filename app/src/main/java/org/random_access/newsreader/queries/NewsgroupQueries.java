@@ -6,11 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -18,6 +16,7 @@ import java.util.ArrayList;
  * <b>Author:</b> Monika Schrenk <br>
  * <b>E-Mail:</b> software@random-access.org <br>
  */
+@SuppressWarnings("WeakerAccess")
 public class NewsgroupQueries {
 
     private static final String TAG = NewsgroupQueries.class.getSimpleName();
@@ -88,7 +87,6 @@ public class NewsgroupQueries {
     /**
      * Deletes all newsgroups from server with id serverId
      * @param serverId id of a given server
-     * @return number of newsgroups deleted
      */
     public void deleteNewsgroupsFromServer(long serverId) {
         MessageQueries messageQueries = new MessageQueries(context);

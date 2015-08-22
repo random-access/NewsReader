@@ -4,9 +4,7 @@ import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
-import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.sync.NNTPSyncAdapter;
 
 /**

@@ -14,8 +14,8 @@ import android.os.Bundle;
  */
 public class InfoFragment extends DialogFragment{
 
-    public static final String KEY_TITLE = "key-title";
-    public static final String KEY_MESSAGE = "key-message";
+    private static final String KEY_TITLE = "key-title";
+    private static final String KEY_MESSAGE = "key-message";
 
         public static InfoFragment getInstance(String title, String message) {
             Bundle bundle = new Bundle();
