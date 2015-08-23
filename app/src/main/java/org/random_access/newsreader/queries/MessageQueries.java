@@ -344,8 +344,21 @@ public class MessageQueries {
      * @param newsgroupId ID of a newsgroup
      */
     public  void deleteMessagesFromNewsgroup(long newsgroupId) {
-        int delCount = context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
+        int delCount = context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[]{newsgroupId + ""});
         Log.i(TAG, delCount + " rows deleted");
     }
 
+
+    /**
+     * Deletes all messages with COL_FK_N_ID = newsgroupId
+     * @param newsgroupId ID of a newsgroup
+     */
+    public  void deleteOldMessages(long newsgroupId, long timeLimit) {
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[]{newsgroupId + ""}, null);
+        if (c.moveToFirst()) {
+            while(c.moveToNext()) {
+
+            }
+        }
+    }
 }

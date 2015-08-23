@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -17,7 +18,7 @@ public class MsgHierarchyView extends View {
     private static final String TAG = MsgHierarchyView.class.getSimpleName();
 
     private Paint mPaint;
-    private int level = 5;
+    private int level;
 
     private final float strokeWidth = 10.0F;
     private final float paddingBetween = 5.0F;
@@ -50,7 +51,7 @@ public class MsgHierarchyView extends View {
     }
 
     private int measureWidth(int measureSpec) {
-        int preferred = (int) (5 * (strokeWidth + paddingBetween) + paddingBetween);
+        int preferred =  (level * (int)(strokeWidth + paddingBetween) + (int)paddingBetween);
         return getMeasurement(measureSpec,preferred);
     }
 

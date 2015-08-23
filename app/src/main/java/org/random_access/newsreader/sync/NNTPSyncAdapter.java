@@ -144,7 +144,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             while (!c.isAfterLast()) {
                 Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), c.getInt(NewsgroupQueries.COL_MSG_LOAD_INTERVAL));
-                // TODO cleanup old news -> use number of messages to keep / number of days to keep messages
+                cleanupOldNewsFromNewsgroup(serverId, c.getLong(NewsgroupQueries.COL_ID));
                 Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();
             }
@@ -189,6 +189,12 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
         currentNewsgroupId = -1;
         currentMessageDate = -1;
+    }
+
+    // delete all news older than the current date minus the timespan
+    // to keep messages
+    private void cleanupOldNewsFromNewsgroup(long serverId, long groupId) {
+        //TODO
     }
 
     //Fallback method if news server doesnt' support listNewNews -> this is much slower
