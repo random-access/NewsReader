@@ -43,6 +43,7 @@ public class MsgHierarchyView extends View {
     public void setLevel(int level) {
         this.level = level;
         invalidate();
+        requestLayout();
     }
 
     @Override
