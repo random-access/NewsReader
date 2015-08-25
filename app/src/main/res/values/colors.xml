@@ -8,4 +8,5 @@
     <item name="background_blue" type="color">#566DFF</item>
     <item name="light_blue" type="color">#1589FF</item>
     <item name="white" type="color">#FFFFFF</item>
+    <item name="activated_color" type="color">#C1D4E6</item>
 </resources>
