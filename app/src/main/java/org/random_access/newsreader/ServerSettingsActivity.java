@@ -90,7 +90,6 @@ public class ServerSettingsActivity extends AppCompatActivity {
             txtEmailAddress.setError(getResources().getString(R.string.error_empty_field));
             txtEmailAddress.requestFocus();
         } else {
-
             updateSettingsFragment();
             new ServerConnectTask().execute();
         }
@@ -235,8 +234,9 @@ public class ServerSettingsActivity extends AppCompatActivity {
                             port, false, serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
                     long settingsId = serverQueries.getServerSettingsId(serverId);
                     SettingsQueries settingsQueries = new SettingsQueries(ServerSettingsActivity.this);
+                    int loadTimeSpan = getResources().getIntArray(R.array.sync_period_values)[serverSettingsFragment.getChooseMsgLoadTimeIndex()];
                     settingsQueries.modifySettingsEntry(settingsId, serverSettingsFragment.getUserDisplayName(), serverSettingsFragment.getMailAddress(),
-                            serverSettingsFragment.getSignature(), serverSettingsFragment.getChooseMsgLoadTimeIndex());
+                            serverSettingsFragment.getSignature(), loadTimeSpan);
                 } catch (IOException e) {
                     msg = getResources().getString(R.string.error_connection);
                 } catch (LoginException e) {
