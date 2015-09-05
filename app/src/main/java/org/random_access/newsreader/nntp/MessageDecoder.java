@@ -26,7 +26,7 @@ class MessageDecoder {
 
 
 
-    private final String decodePattern = "=\\?(.*?)\\?([bBqQ])\\?(.*?)\\?=";
+    private static final String decodePattern = "=\\?(.*?)\\?([bBqQ])\\?(.*?)\\?=";
 
     //=?UTF-8?B?w6TDtsO8?=
     public String decodeHeader(String text) throws DecoderException {
@@ -72,6 +72,7 @@ class MessageDecoder {
                 try {
                     return quotedPrintableDecode(text, charset);
                 } catch (DecoderException e) {
+                    e.printStackTrace();
                     Log.e(TAG, "Unsupported charset: [" + charset + "] - encoding: " + encoding);
                     return text;
                 }

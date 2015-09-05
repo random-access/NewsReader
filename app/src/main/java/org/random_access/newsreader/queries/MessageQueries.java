@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Message;
 import android.util.Log;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
@@ -354,11 +355,66 @@ public class MessageQueries {
      * @param newsgroupId ID of a newsgroup
      */
     public  void deleteOldMessages(long newsgroupId, long timeLimit) {
-        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[]{newsgroupId + ""}, null);
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND "
+                + MessageContract.MessageEntry.COL_DATE + " < ? ", new String[]{newsgroupId + "", timeLimit + ""}, MessageContract.MessageEntry.COL_DATE + " ASC");
         if (c.moveToFirst()) {
-            while(c.moveToNext()) {
-
+            while(!c.isAfterLast()) {
+                deleteRootMessage(c.getLong(COL_ID));
+                c.moveToNext();
             }
         }
+        c.close();
     }
+
+    private void deleteRootMessage(long rootId) {
+        // get all children of message with id = rootId
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE,
+                MessageContract.MessageEntry.COL_ROOT_MSG + " = ? AND " + MessageContract.MessageEntry.COL_PARENT_MSG + " = ? ", new String[]{rootId + "", rootId + ""}, null);
+        if (c.moveToFirst()) {
+            while(!c.isAfterLast()) {
+                long msgId = c.getLong(COL_ID);
+                int left = c.getInt(COL_LEFT_VALUE);
+                int right = c.getInt(COL_RIGHT_VALUE);
+                // get all messages in the subtree of message with ID msgId
+                Cursor c1 = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? AND "
+                     + MessageContract.MessageEntry.COL_LEFT_VALUE + " > ? AND " + MessageContract.MessageEntry.COL_RIGHT_VALUE + " < ? ", new String[] {rootId + "", left + "", right + ""}, null);
+                if (c1.moveToFirst()) {
+                    while(!c1.isAfterLast()) {
+                        adjustValues(c1.getLong(COL_ID), c1.getInt(COL_LEFT_VALUE), c1.getInt(COL_RIGHT_VALUE), c1.getInt(COL_LEVEL), left-1, msgId);
+                        c1.moveToNext();
+                    }
+                }
+                c1.close();
+                adjustValues(c.getLong(COL_ID), c.getInt(COL_LEFT_VALUE), c.getInt(COL_RIGHT_VALUE), c.getInt(COL_LEVEL), left - 1, -1);
+                c.moveToNext();
+            }
+        }
+        c.close();
+        context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry._ID + " = ? ", new String[]{rootId + ""});
+        Log.d(TAG, "Deleted message with id: " + rootId);
+    }
+
+    /**
+     * Adjusts the values of a message responsible for the order of this message in the hierarchy
+     * @param id database _ID value
+     * @param left current database _LEFT value
+     * @param right current database _RIGHT value
+     * @param level current database _LEVEL value
+     * @param diff how much to subtract from left and right
+     * @param rootId id of new message root
+     */
+    private void adjustValues(long id, int left, int right, int level, int diff, long rootId) {
+        ContentValues cv = new ContentValues();
+        if (rootId == -1) {
+            cv.put(MessageContract.MessageEntry.COL_PARENT_MSG, -1);
+        }
+        cv.put(MessageContract.MessageEntry.COL_ROOT_MSG, rootId);
+        cv.put(MessageContract.MessageEntry.COL_LEFT_VALUE, left-diff);
+        cv.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, right-diff);
+        cv.put(MessageContract.MessageEntry.COL_LEVEL, level-1);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, cv, MessageContract.MessageEntry._ID + " = ? ", new String[]{id + ""});
+        Log.d(TAG, "Adjust values: ID = " + id + ", root = " + rootId + ", left = " + (left-diff) + ", right = " + (right-diff) + ", level = " + (level-1));
+    }
+
+
 }

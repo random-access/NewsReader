@@ -1,5 +1,7 @@
 package org.random_access.newsreader.nntp;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -20,7 +22,8 @@ public class NNTPMessageBody {
             sbMessageBody.append(line).append("\n");
         }
         reader.close();
-        return new MessageDecoder().decodeBody(sbMessageBody.toString(), charset, encoding);
+        String res = new MessageDecoder().decodeBody(sbMessageBody.toString(), charset, encoding);
+        return res;
     }
 
 }

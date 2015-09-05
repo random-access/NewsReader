@@ -144,7 +144,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             while (!c.isAfterLast()) {
                 Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), c.getInt(NewsgroupQueries.COL_MSG_LOAD_INTERVAL));
-                cleanupOldNewsFromNewsgroup(serverId, c.getLong(NewsgroupQueries.COL_ID));
+                cleanupOldNewsFromNewsgroup(c.getLong(NewsgroupQueries.COL_ID), c.getInt(NewsgroupQueries.COL_MSG_KEEP_INTERVAL));
                 Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();
             }
@@ -193,8 +193,12 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // delete all news older than the current date minus the timespan
     // to keep messages
-    private void cleanupOldNewsFromNewsgroup(long serverId, long groupId) {
-        //TODO
+    private void cleanupOldNewsFromNewsgroup(long groupId, long keepInterval) {
+        if (keepInterval != -1) {
+            long keepTime = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(keepInterval, TimeUnit.DAYS);
+            Log.d(TAG, "Delete messages older than: " + NNTPDateFormatter.getPrettyDateString(keepTime, context));
+            new MessageQueries(context).deleteOldMessages(groupId, keepTime);
+        }
     }
 
     //Fallback method if news server doesnt' support listNewNews -> this is much slower
@@ -233,6 +237,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             String charset = headerData.getCharset();
             Log.d(TAG, charset);
             String transferEncoding = headerData.getTransferEncoding();
+            Log.d(TAG, transferEncoding);
             msgDate = new NNTPDateFormatter().getDateInMillis(headerData.getDate());
             client.disconnect();
 
