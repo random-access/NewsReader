@@ -164,5 +164,11 @@
     <string name="send_success">Message sent.</string>
     <string name="send_error">Error while sending message!</string>
     <string name="sync">Sync</string>
-    <string name="crash_toast_text">Application crash</string>
+
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report can be sent to my developer to help fix the issue!</string>
+
+    <string name="crash_dialog_title">NewsReader has crashed :(</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help me fix this by sending me error data, all you have to do is click OK.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast">Thank you !</string>
 </resources>

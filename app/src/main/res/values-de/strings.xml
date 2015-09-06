@@ -137,5 +137,9 @@
     <string name="success_modifying_group">Newsgroup erfolgreich bearbeitet!</string>
     <string name="sync">Synchronisieren</string>
     <string name="newsgroup_settings">Newsgroup-Einstellungen</string>
-    <string name="crash_toast_text">Absturz der App</string>
+    <string name="crash_toast_text">Ooooops ! Ich bin abgestürzt, aber ein Report kann an meinen Entwickler gesendet werden damit der Fehler behoben werden kann!</string>
+    <string name="crash_dialog_comment_prompt">Du kannst zusätzliche Kommentare unterhalb hinzufügen:</string>
+    <string name="crash_dialog_ok_toast">Danke!</string>
+    <string name="crash_dialog_text">Ein unerwarteter Fehler ist aufgetreten, die Anwendung musste beendet werden. Bitte hilf mir den Fehler zu beheben, indem du das Absturzlog an mich sendest. Dazu musst du lediglich auf OK klicken.</string>
+    <string name="crash_dialog_title">NewsReader ist abgestürzt :(</string>
 </resources>

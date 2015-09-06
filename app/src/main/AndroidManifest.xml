@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <application
         android:name=".NewsReader"
@@ -86,6 +85,13 @@
             android:name=".ServerSettingsActivity"
             android:label="@string/title_activity_server_settings" >
         </activity>
+        <activity android:name="org.acra.CrashReportDialog"
+            android:theme="@style/Theme.Dialog"
+            android:process=":error_report"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true" />
+
     </application>
 
 </manifest>
