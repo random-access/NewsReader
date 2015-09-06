@@ -119,7 +119,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
             subscriptionsFragment.setCheckedSelection(selection == null ? R.id.groups_all : selection.getCheckedRadioButtonId());
             subscriptionsFragment.setCurrentDetailView(adapter == null ? -1 : adapter.getCurrentDetailView());
             subscriptionsFragment.setMsgLoadDefaultInterval(defaultMsgLoadInterval);
-            Log.d(TAG, "Save selection: only selected = " + (selection.getCheckedRadioButtonId() == R.id.groups_selection));
+            Log.d(TAG, "Save selection: only selected = " + (selection != null ? selection.getCheckedRadioButtonId() == R.id.groups_selection : null));
         }
     }
 

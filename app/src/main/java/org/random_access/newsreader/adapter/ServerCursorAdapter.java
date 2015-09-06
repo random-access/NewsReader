@@ -52,7 +52,9 @@ public class ServerCursorAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return (position == mCurrentDetailPosition) ? EXTENDED : COLLAPSED;
+        return EXTENDED;
+        // TODO maybe remove this
+       // return (position == mCurrentDetailPosition) ? EXTENDED : COLLAPSED;
     }
 
     @Override

@@ -164,4 +164,5 @@
     <string name="send_success">Message sent.</string>
     <string name="send_error">Error while sending message!</string>
     <string name="sync">Sync</string>
+    <string name="crash_toast_text">Application crash</string>
 </resources>

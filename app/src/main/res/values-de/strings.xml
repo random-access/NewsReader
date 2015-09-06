@@ -137,4 +137,5 @@
     <string name="success_modifying_group">Newsgroup erfolgreich bearbeitet!</string>
     <string name="sync">Synchronisieren</string>
     <string name="newsgroup_settings">Newsgroup-Einstellungen</string>
+    <string name="crash_toast_text">Absturz der App</string>
 </resources>

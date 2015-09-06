@@ -168,7 +168,8 @@ public class ShowServerActivity extends AppCompatActivity implements
     }
 
     private void setListActions () {
-        mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* // TODO maybe remove this
+          mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mServerAdapter.getmCurrentDetailPosition() == -1) {
@@ -180,7 +181,7 @@ public class ShowServerActivity extends AppCompatActivity implements
                 }
                 Log.d(TAG, "Set mCurrentDetailView to " + mServerAdapter.getmCurrentDetailPosition());
             }
-        });
+        }); */
 
         mServerListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mServerListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
