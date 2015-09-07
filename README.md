@@ -26,3 +26,9 @@ alt="Newsreader Screencast" width="480" height="360" border="10" /></a>
 The app will be made completely **open source** and distributed via PlayStore for **free** and **without advertisement**, as soon as there’s a stable release.
 
 More information can be found <a href="http://random-access.org/en/newsreader-en/" target="_blank">here</a>.
+
+## Alpha version available :)
+If you wanna become an Alpha Tester, please feel free to contact me via E-Mail: 
+<software@random-access.org>
+
+What I need from you is your Gmail-Address (the one you use for Google PlayStore on your phone) in order to add you to my tester list.
