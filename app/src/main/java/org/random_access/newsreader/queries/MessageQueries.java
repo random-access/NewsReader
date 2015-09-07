@@ -196,7 +196,7 @@ public class MessageQueries {
         contentValues.put(MessageContract.MessageEntry.COL_MSG_ID, messageId);
         contentValues.put(MessageContract.MessageEntry.COL_FROM_EMAIL, fromEmail);
         contentValues.put(MessageContract.MessageEntry.COL_FROM_NAME, fromName);
-        contentValues.put(MessageContract.MessageEntry.COL_SUBJECT, subject);
+        contentValues.put(MessageContract.MessageEntry.COL_SUBJECT, subject == null ? "" : subject);
         contentValues.put(MessageContract.MessageEntry.COL_CHARSET, charset);
         contentValues.put(MessageContract.MessageEntry.COL_DATE, date);
         contentValues.put(MessageContract.MessageEntry.COL_NEW, isNew);

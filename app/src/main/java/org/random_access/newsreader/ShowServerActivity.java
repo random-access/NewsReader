@@ -75,6 +75,7 @@ public class ShowServerActivity extends AppCompatActivity implements
         setListActions();
         mServerListView.setAdapter(mServerAdapter);
         getLoaderManager().initLoader(0, null, this);
+
     }
 
     @Override
@@ -99,6 +100,8 @@ public class ShowServerActivity extends AppCompatActivity implements
                 DialogServerConnection addServerFragment = DialogServerConnection.newInstance();
                 addServerFragment.show(getFragmentManager(), DialogServerConnection.TAG_ADD_SERVER);
                 return true;
+            case R.id.action_testcrash:
+                throw new NullPointerException(); // TODO remove
             default:
                 return super.onOptionsItemSelected(item);
         }

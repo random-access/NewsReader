@@ -142,4 +142,5 @@
     <string name="crash_dialog_ok_toast">Danke!</string>
     <string name="crash_dialog_text">Ein unerwarteter Fehler ist aufgetreten, die Anwendung musste beendet werden. Bitte hilf mir den Fehler zu beheben, indem du das Absturzlog an mich sendest. Dazu musst du lediglich auf OK klicken.</string>
     <string name="crash_dialog_title">NewsReader ist abgestürzt :(</string>
+    <string name="action_testcrash">Crash app! (debug)</string>
 </resources>
