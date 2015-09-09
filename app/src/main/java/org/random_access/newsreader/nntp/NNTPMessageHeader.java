@@ -7,6 +7,7 @@ import android.util.Log;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.net.nntp.SimpleNNTPHeader;
 import org.random_access.newsreader.queries.MessageQueries;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -85,9 +86,11 @@ public class NNTPMessageHeader {
         SimpleNNTPHeader header = new SimpleNNTPHeader(fullName + " <" + email + ">", subject);
         header.addNewsgroup(newsgroup);
         header.addHeaderField(KEY_USER_AGENT, DEFAULT_USER_AGENT);
-        header.addHeaderField(KEY_REFERENCES, replyIds);
         // header.addHeaderField(KEY_DATE, date); TODO
-        header.addHeaderField(KEY_IN_REPLY_TO, replyIds.substring(replyIds.lastIndexOf("<"), replyIds.length()));
+        if (!TextUtils.isEmpty(replyIds)) {
+            header.addHeaderField(KEY_REFERENCES, replyIds);
+            header.addHeaderField(KEY_IN_REPLY_TO, replyIds.substring(replyIds.lastIndexOf("<"), replyIds.length()));
+        }
         header.addHeaderField(KEY_TRANSFER_ENCODING, DEFAULT_TRANSFER_ENCODING);
         header.addHeaderField(KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE + "; " + KEY_CHARSET + "=" + DEFAULT_CHARSET);
         Log.d(TAG, header.toString());
