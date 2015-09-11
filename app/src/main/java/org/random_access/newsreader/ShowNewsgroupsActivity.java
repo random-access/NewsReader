@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.random_access.newsreader.adapter.NewsgroupCursorAdapter;
+import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 
 /**
@@ -109,6 +110,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mNewsgroupAdapter.swapCursor(data);
+        data.setNotificationUri(getContentResolver(), MessageContract.CONTENT_URI);
     }
 
     @Override
