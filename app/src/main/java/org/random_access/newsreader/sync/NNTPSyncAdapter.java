@@ -292,8 +292,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_star)
                         .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_newsreader))
-                        .setContentTitle("New news!")
-                        .setContentText("Fresh messages: " + freshMessages)
+                        .setContentTitle(context.getResources().getString(R.string.app_name))
+                        .setContentText(context.getResources().getQuantityString(R.plurals.new_news, freshMessages, freshMessages))
                         .setSound(soundURI)
                         .setVibrate(vibratePattern)
                         .setAutoCancel(true);

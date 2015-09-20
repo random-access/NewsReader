@@ -1,5 +1,6 @@
 package org.random_access.newsreader.nntp;
 
+import android.text.Html;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -19,11 +20,9 @@ public class NNTPMessageBody {
         String line;
         StringBuilder sbMessageBody = new StringBuilder();
         while((line=reader.readLine()) != null) {
-            sbMessageBody.append(line).append("\n");
+            sbMessageBody.append(Html.fromHtml(line).toString()).append("\n");
         }
         reader.close();
-        String res = new MessageDecoder().decodeBody(sbMessageBody.toString(), charset, encoding);
-        return res;
+        return new MessageDecoder().decodeBody(sbMessageBody.toString(), charset, encoding);
     }
-
 }
