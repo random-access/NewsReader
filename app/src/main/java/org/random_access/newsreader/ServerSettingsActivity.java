@@ -252,6 +252,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         protected void onPostExecute(String[] args) {
             if (TextUtils.isEmpty(msg)) {
                 Toast.makeText(ServerSettingsActivity.this, getResources().getString(R.string.success_modifying_server), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Successfully connected to server: " + debugOutput);
                 finish();
             } else {
                 Log.e(TAG, "Error in ServerConnectTask: " + debugOutput);

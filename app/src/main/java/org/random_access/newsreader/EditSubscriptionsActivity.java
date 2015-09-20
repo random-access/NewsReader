@@ -276,7 +276,11 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         if (c.getCount() > 0) {
             c.moveToFirst();
             while (!c.isAfterLast()) {
-                if (c.getString(NewsgroupQueries.COL_NAME).equals(item.getNewsgroupInfo().getNewsgroup())) {
+                // also compare if newsgroup in database is from the same server entry -> makes
+                // it possible to get news from 2 groups with identical name from different servers
+                // or different server entries
+                if (c.getString(NewsgroupQueries.COL_NAME).equals(item.getNewsgroupInfo().getNewsgroup()) &&
+                        c.getLong(NewsgroupQueries.COL_SERVERID) == serverId) {
                     item.setNewsgroupId(c.getLong(NewsgroupQueries.COL_ID));
                     item.setSelected(true);
                 }

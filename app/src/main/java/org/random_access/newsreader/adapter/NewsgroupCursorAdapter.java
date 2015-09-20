@@ -39,9 +39,11 @@ public class NewsgroupCursorAdapter extends CursorAdapter {
         String name = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_NAME);
         String title = cursor.getString(ShowNewsgroupsActivity.COL_NEWSGROUP_TITLE);
         int newNewsCount= new MessageQueries(context).getNewMessagesCount(cursor.getLong(ShowNewsgroupsActivity.COL_NEWSGROUP_ID));
+        int freshNewsCount = new MessageQueries(context).getFreshMessagesCount(cursor.getLong(ShowNewsgroupsActivity.COL_NEWSGROUP_ID));
         tvTitle.setText(TextUtils.isEmpty(title) ? name : title);
         tvNewNews.setText(Integer.toString(newNewsCount));
         tvNewNews.setVisibility(newNewsCount == 0 ? View.GONE : View.VISIBLE);
+        tvNewNews.setBackgroundResource(freshNewsCount == 0 ? R.drawable.shape_new_messages : R.drawable.shape_fresh_messages);
     }
 
 

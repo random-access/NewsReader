@@ -16,9 +16,11 @@
 
     <TextView
         android:id="@+id/message_title"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/img_children"
+        android:layout_toLeftOf="@+id/message_fresh"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:textColor="@color/black"
         android:lines="2"
         android:ellipsize="end"
@@ -27,6 +29,17 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp" />
+
+    <ImageView
+        android:id="@+id/message_fresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/shape_new_msg_markup"
+        android:paddingTop="17dp"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:layout_alignTop="@+id/message_title"
+        android:layout_toLeftOf="@+id/img_children" />
 
 
     <TextView

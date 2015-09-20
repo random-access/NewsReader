@@ -9,12 +9,15 @@
 
     <TextView
         android:id="@+id/id_server_title_extended"
+        android:text="Servertitel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10pt"
         android:textColor="@color/black"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="10dp"
+        android:paddingRight="10dp" />
+
 
     <ImageButton
         android:id="@+id/btn_open"

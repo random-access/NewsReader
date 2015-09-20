@@ -129,7 +129,7 @@
     <string name="new_message">Neue Nachricht</string>
     <string name="send_success">Nachricht gesendet.</string>
     <string name="send_error">Fehler beim Senden.</string>
-    <string name="title_activity_server_settings">ServerSettingsActivity</string>
+    <string name="title_activity_server_settings">Server-Einstellungen</string>
     <string name="msg_load">Nachrichten laden</string>
     <string name="sync_prompt_keep">Nachrichten behalten</string>
     <string name="sync_prompt_period">Download-Zeitraum</string>

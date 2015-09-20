@@ -160,7 +160,7 @@
         <item>h</item>
     </string-array>
     <string name="title_activity_write_message">Write message</string>
-    <string name="title_activity_server_settings">ServerSettingsActivity</string>
+    <string name="title_activity_server_settings">Server settings</string>
     <string name="send_success">Message sent.</string>
     <string name="send_error">Error while sending message!</string>
     <string name="sync">Sync</string>

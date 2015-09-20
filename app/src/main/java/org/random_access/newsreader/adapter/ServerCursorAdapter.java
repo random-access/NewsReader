@@ -18,7 +18,9 @@ import org.random_access.newsreader.R;
 import org.random_access.newsreader.ServerSettingsActivity;
 import org.random_access.newsreader.ShowNewsgroupsActivity;
 import org.random_access.newsreader.ShowServerActivity;
+import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
+import org.random_access.newsreader.queries.ServerQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.random_access.newsreader.MsgHierarchyView;
@@ -35,10 +36,12 @@ public class MessageChildrenCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         boolean isNew = cursor.getInt(MessageQueries.COL_NEW) == 1;
+        boolean isFresh = cursor.getInt(MessageQueries.COL_FRESH) == 1;
 
         TextView title = (TextView) view.findViewById(R.id.message_title);
         TextView date = (TextView) view.findViewById(R.id.message_date);
         TextView from = (TextView) view.findViewById(R.id.message_from);
+        ImageView fresh = (ImageView) view.findViewById(R.id.message_fresh);
         MsgHierarchyView levelIcon = (MsgHierarchyView) view.findViewById(R.id.ic_level);
 
         title.setText(cursor.getString(MessageQueries.COL_SUBJECT));
@@ -47,7 +50,7 @@ public class MessageChildrenCursorAdapter extends CursorAdapter {
         date.setTextColor(isNew ? context.getResources().getColor(R.color.light_blue) : context.getResources().getColor(R.color.dark_grey));
         from.setText(cursor.getString(MessageQueries.COL_FROM_NAME));
         from.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.dark_grey));
-
+        fresh.setVisibility(isFresh ? View.VISIBLE : View.INVISIBLE);
         levelIcon.setLevel(cursor.getInt(MessageQueries.COL_LEVEL));
     }
 

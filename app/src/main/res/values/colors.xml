@@ -6,7 +6,9 @@
     <item name="black" type="color">#000000</item>
     <item name="blue" type="color">#000090</item>
     <item name="background_blue" type="color">#566DFF</item>
-    <item name="light_blue" type="color">#1589FF</item>
+    <item name="light_blue" type="color">#0066FF</item>
     <item name="white" type="color">#FFFFFF</item>
     <item name="activated_color" type="color">#C1D4E6</item>
+    <item name="yellow" type="color">#FFCC00</item>
+    <item name="background_yellow" type="color">#FFFF00</item>
 </resources>

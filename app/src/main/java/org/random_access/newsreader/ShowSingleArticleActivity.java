@@ -119,7 +119,7 @@ public class ShowSingleArticleActivity extends AppCompatActivity {
                 articleFragment.setMessageHeader(c.getString(MessageQueries.COL_HEADER));
             }
             c.close();
-            mQueries.setMessageReadStatus(messageId, false);
+            mQueries.setMessageNewStatus(messageId, false);
             return null;
         }
 

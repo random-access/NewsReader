@@ -36,11 +36,14 @@ public class MessageHierarchyCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         boolean isNew = cursor.getInt(MessageQueries.COL_NEW) == 1 || cursor.getInt(MessageQueries.COL_NEW) == -1;
             // -1: root messages which have unread children -> should be shown as new
+        boolean isFresh = cursor.getInt(MessageQueries.COL_FRESH) == 1 || cursor.getInt(MessageQueries.COL_FRESH) == -1;
+            // -1: root messages which have fresh children -> should be shown as fresh
 
         TextView title = (TextView) view.findViewById(R.id.message_title);
         TextView date = (TextView) view.findViewById(R.id.message_date);
         TextView from = (TextView) view.findViewById(R.id.message_from);
         ImageView imgChildren = (ImageView) view.findViewById(R.id.img_children);
+        ImageView fresh = (ImageView) view.findViewById(R.id.message_fresh);
 
         title.setText(cursor.getString(MessageQueries.COL_SUBJECT));
         title.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.grey));
@@ -51,6 +54,7 @@ public class MessageHierarchyCursorAdapter extends CursorAdapter {
         boolean isParent = new MessageQueries(context).hasMessageChildren(cursor.getLong(MessageQueries.COL_ID));
         imgChildren.setVisibility(isParent ? View.VISIBLE : View.INVISIBLE);
         imgChildren.setColorFilter(context.getResources().getColor(R.color.light_blue));
+        fresh.setVisibility(isFresh ? View.VISIBLE : View.INVISIBLE);
     }
 
 }

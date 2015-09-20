@@ -214,15 +214,25 @@ public class ShowMessagesActivity extends AppCompatActivity implements LoaderMan
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // if exiting newsgroup view, remove messages "fresh" markup
+        if (viewStatus != ViewStatus.CHILDREN) {
+            MessageQueries messageQueries = new MessageQueries(this);
+            messageQueries.markAllMessagesNonFresh(groupId);
+        }
+        super.onBackPressed();
+    }
+
     private void markMessagesNew(boolean isNew) {
             Log.d(TAG, "Started thread");
             long[] ids = lvMessages.getCheckedItemIds();
             MessageQueries queries = new MessageQueries(ShowMessagesActivity.this);
             for (long l : ids) {
                 if (viewStatus == ViewStatus.HIERARCHIAL) {
-                    queries.setMessageReadStatusThroughTheHierarchy(l, isNew);
+                    queries.setMessageNewStatusThroughTheHierarchy(l, isNew);
                 } else {
-                    queries.setMessageReadStatus(l, isNew);
+                    queries.setMessageNewStatus(l, isNew);
                 }
             }
             Log.d(TAG, "Finished thread!");

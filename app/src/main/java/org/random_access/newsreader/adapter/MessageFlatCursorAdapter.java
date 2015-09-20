@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.random_access.newsreader.R;
@@ -35,11 +36,12 @@ public class MessageFlatCursorAdapter extends CursorAdapter{
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         boolean isNew = cursor.getInt(MessageQueries.COL_NEW) == 1;
+        boolean isFresh = cursor.getInt(MessageQueries.COL_FRESH) == 1;
 
         TextView title = (TextView) view.findViewById(R.id.message_title);
         TextView date = (TextView) view.findViewById(R.id.message_date);
         TextView from = (TextView) view.findViewById(R.id.message_from);
-
+        ImageView fresh = (ImageView) view.findViewById(R.id.message_fresh);
 
         title.setText(cursor.getString(MessageQueries.COL_SUBJECT));
         title.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.grey));
@@ -47,5 +49,6 @@ public class MessageFlatCursorAdapter extends CursorAdapter{
         date.setTextColor(isNew ? context.getResources().getColor(R.color.light_blue) : context.getResources().getColor(R.color.dark_grey));
         from.setText(cursor.getString(MessageQueries.COL_FROM_NAME));
         from.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.dark_grey));
+        fresh.setVisibility(isFresh ? View.VISIBLE : View.INVISIBLE);
     }
 }

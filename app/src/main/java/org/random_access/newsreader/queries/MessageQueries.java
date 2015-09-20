@@ -6,7 +6,6 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Message;
 import android.util.Log;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
@@ -28,7 +27,7 @@ public class MessageQueries {
             MessageContract.MessageEntry.COL_CHARSET, MessageContract.MessageEntry.COL_DATE,MessageContract.MessageEntry.COL_NEW,
             MessageContract.MessageEntry.COL_FK_N_ID, MessageContract.MessageEntry.COL_HEADER, MessageContract.MessageEntry.COL_BODY,
             MessageContract.MessageEntry.COL_LEFT_VALUE, MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_LEVEL,
-            MessageContract.MessageEntry.COL_ROOT_MSG, MessageContract.MessageEntry.COL_REFERENCES};
+            MessageContract.MessageEntry.COL_ROOT_MSG, MessageContract.MessageEntry.COL_REFERENCES, MessageContract.MessageEntry.COL_FRESH};
 
     public static final int COL_ID = 0;
     public static final int COL_MSG_ID = 1;
@@ -46,6 +45,7 @@ public class MessageQueries {
     public static final int COL_LEVEL = 13;
     public static final int COL_ROOT_MESSAGE = 14;
     public static final int COL_REFERENCES = 15;
+    public static final int COL_FRESH = 16;
 
     public MessageQueries(Context context) {
         this.context = context;
@@ -64,24 +64,22 @@ public class MessageQueries {
     /**
      * Get all children of a message with messageId sorted by their LEFT value (correct order to display them in a list)
      * @param messageId ID of the given message
-     * @return a cursor with all children of a given message in the correct order to display
+     * @return a CursorLoader with all children of a given message in the correct order to display
      */
     public CursorLoader getRootMessageWithChildren(long messageId) {
         return new CursorLoader(context, MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? OR "
                 + MessageContract.MessageEntry._ID + " = ? ", new String[]{messageId + "", messageId + ""}, MessageContract.MessageEntry.COL_LEFT_VALUE + " ASC");
     }
 
-
-
-    public Cursor getMessagesOfNewsgroup(long newsgroupId) {
-        return context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {newsgroupId + ""},
-                MessageContract.MessageEntry.COL_DATE + " DESC");
-    }
-
-    public long getIdFromMessageId(String messageId) {
+    /**
+     * Get the _ID field of a message with a given messageId
+     * @param messageId the message id value (identifying a message on the news server)
+     * @return _ID field of message, -1 if message is not existing
+     */
+    public long getIdFromMessageId(String messageId, long newsgroupId) {
         long id = -1;
-        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ?",
-                new String[] {messageId}, null);
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ? AND "
+                        + MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {messageId, newsgroupId + ""}, null);
         if (c.moveToFirst()) {
             id = c.getLong(COL_ID);
         }
@@ -89,55 +87,149 @@ public class MessageQueries {
         return  id;
     }
 
-    public Cursor getMessageWithId(long messageId) {
-        return context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry._ID + " = ?", new String[]{messageId + ""},
+    /**
+     * Get a cursor with the message identified by its _ID field
+     * @param id _ID field of a message (identifying a message in the database)
+     * @return a cursor pointing at the given message or a cursor with an empty result if this message is not existing
+     */
+    public Cursor getMessageWithId(long id) {
+        return context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry._ID + " = ?", new String[]{id + ""},
                 null);
     }
 
-    public boolean isMessageInDatabase(String messageId) {
-        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ?", new String[]{messageId + ""}, null);
+    /**
+     * Find out if a message with a given message id is in the database
+     * @param messageId the message id value (identifying a message on the news server
+     * @return true if message is in database, otherwise false
+     */
+    public boolean isMessageInDatabase(String messageId, long newsgroupId) {
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ? AND "
+                + MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[]{messageId + "", newsgroupId + ""}, null);
         boolean result = c.moveToFirst();
         c.close();
         return result;
     }
 
-    public String getMessageIdFromId(long id) {
-        String messageId = null;
-        Cursor c = getMessageWithId(id);
+    /**
+     * Counts the new messages in a given newsgroup
+     * @param serverId _ID field of a newsgroup (identifying a newsgroup in the database)
+     * @return number of new messages in the newsgroup
+     */
+    public int getNewMessagesOnServerCount(long serverId) {
+        int freshCount = 0;
+        Cursor c = new NewsgroupQueries(context).getNewsgroupsOfServer(serverId);
         if (c.moveToFirst()) {
-            messageId = c.getString(COL_MSG_ID);
+            while (!c.isAfterLast()) {
+                freshCount += getNewMessagesCount(c.getLong(NewsgroupQueries.COL_ID));
+                c.moveToNext();
+            }
         }
         c.close();
-        return messageId;
+        return freshCount;
     }
 
+
+    /**
+     * Counts the new messages in a given newsgroup
+     * @param serverId _ID field of a newsgroup (identifying a newsgroup in the database)
+     * @return number of new messages in the newsgroup
+     */
+    public int getFreshMessagesOnServerCount(long serverId) {
+        int freshCount = 0;
+        Cursor c = new NewsgroupQueries(context).getNewsgroupsOfServer(serverId);
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                freshCount += getFreshMessagesCount(c.getLong(NewsgroupQueries.COL_ID));
+                c.moveToNext();
+            }
+        }
+        c.close();
+        return freshCount;
+    }
+
+
+    /**
+     * Counts the new messages in a given newsgroup
+     * @param newsgroupId _ID field of a newsgroup (identifying a newsgroup in the database)
+     * @return number of new messages in the newsgroup
+     */
     public int getNewMessagesCount(long newsgroupId) {
         return QueryHelper.count(context, MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND " + MessageContract.MessageEntry.COL_NEW + " = ?",
                 new String[]{newsgroupId + "", "1"});
     }
 
+    /**
+     * Counts the fresh messages in a given newsgroup
+     * @param newsgroupId _ID field of a newsgroup (identifying a newsgroup in the database)
+     * @return number of new messages in the newsgroup
+     */
+    public int getFreshMessagesCount(long newsgroupId) {
+        return QueryHelper.count(context, MessageContract.CONTENT_URI, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND " + MessageContract.MessageEntry.COL_FRESH + " = ?",
+                new String[]{newsgroupId + "", "1"});
+    }
 
-    public boolean setMessageReadStatusThroughTheHierarchy (long messageId, boolean isNew) {
+    /**
+     * Mark all messages of a given newsgroup as not fresh
+     * @param newsgroupId _ID field of a newsgroup (identifying a newsgroup in the database)
+     */
+    public void markAllMessagesNonFresh(long newsgroupId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
+    }
+
+    /**
+     * Marks either a single message (if it has no children) or the root and all its child messages (if this is a root message)
+     * as read if isNew is true or as unread if isNew is false
+     * @param id _ID field of a message (identifying a message in the database)
+     * @param isNew input true to mark messages as unread, false to mark messages as read
+     */
+    public void setMessageNewStatusThroughTheHierarchy(long id, boolean isNew) {
         int value = isNew ? 1 : 0;
         // update the NEW value of the given message
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
         context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
-                new String[] {messageId + ""});
-        if (isRootMessage(messageId)) { // all children get the sam status as their root message
+                new String[] {id + ""});
+        if (isRootMessage(id)) { // all children get the same read status as their root message
             context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
-                    new String[]{messageId + ""});
+                    new String[]{id + ""});
         }
-        return true;
+        if (!isNew) {
+            // if message is marked as read, set the FRESH value also to 0, if message is marked as unread again do
+            // nothing because a message is marked as fresh only when initially fetched from server
+            setMessagesUnfreshThroughTheHierarchy(id);
+        }
     }
 
-    public boolean setMessageReadStatus(long messageId, boolean isNew) {
+    /**
+     * Marks either a single message (if it has no children) or the root and all its child messages (if this is a root message)
+     * as non-fresh
+     * @param id _ID field of a message (identifying a message in the database)
+     */
+    public void setMessagesUnfreshThroughTheHierarchy(long id) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
+                new String[]{id + ""});
+        if (isRootMessage(id)) { // all children get the same fresh status as their root message
+            context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
+                    new String[]{id + ""});
+        }
+    }
+
+    /**
+     * sets the messages NEW value, correcting values of all affected rows
+     * @param id _ID field of a message (identifying a message in the database)
+     * @param isNew true if message is new
+     */
+    public void setMessageNewStatus(long id, boolean isNew) {
         int value = 1; // assume new message
-        boolean isRootMessage = isRootMessage(messageId); // test if this message is a root message
-        if (!isNew)  {
-            if (isRootMessage && hasUnreadChildren(messageId)){ // not new & root message & unreadChildren
+        boolean isRootMessage = isRootMessage(id); // test if this message is a root message
+        if (!isNew)  { // set value to -1 if this is a root message and has any new children in order to display root message as new in hierarchial overview
+            if (isRootMessage && hasNewChildren(id)){
                 value = -1;
-            } else { // not new & no root message or no unread children -> 0
+            } else {
                 value = 0;
             }
         }
@@ -145,34 +237,90 @@ public class MessageQueries {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
         context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
-                new String[] {messageId + ""});
+                new String[]{id + ""});
 
+        // if this is no root message, we might have to change the root messages read status
         if (!isRootMessage) {
-            adjustRootMessagesReadValue(messageId);
+            adjustRootMessagesNewValue(id);
         }
+        // if this message is marked as read it should not be marked as fresh anymore. remarking it as new has no effects
+        // on the fresh status because a message is just fresh immediately after fetching it from the server
+        if (!isNew) {
+            setMessageFreshStatus(id, false);
+        }
+    }
 
+    /**
+     * sets the messages FRESH value, correcting values of all affected rows
+     * @param id _ID field of a message (identifying a message in the database)
+     * @param isFresh true if message is fresh
+     */
+    public boolean setMessageFreshStatus (long id, boolean isFresh) {
+        int value = 1; // assume fresh message
+        boolean isRootMessage = isRootMessage(id); // test if this message is a root message
+        if (!isFresh) { // set value to -1 if this is a root message and has any fresh children in order to display root message as fresh in hierarchial overview
+            if (isRootMessage && hasFreshChildren(id)) {
+                value = -1;
+            } else {
+                value = 0;
+            }
+        }
+        // update the FRESH value of the given message
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, value);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
+                new String[] {id + ""});
+
+        // if this is no root message, we might have to change the root messages fresh status
+        if (!isRootMessage) {
+            adjustRootMessagesFreshValue(id);
+        }
         return true;
     }
 
-    public boolean hasUnreadChildren (long messageId) {
+    /**
+     * Test if root message with the given rootId has unread children
+     * @param rootId ID of the given message
+     * @return true if message has unread children, otherwise false
+     */
+    private boolean hasNewChildren(long rootId) {
         boolean hasUnreadChildren = false;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_NEW}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
-                new String[]{messageId + ""}, null);
+                new String[]{rootId + ""}, null);
         if (c.moveToFirst()) {
             while(!c.isAfterLast() && !hasUnreadChildren) {
                 hasUnreadChildren = c.getInt(1) == 1;
                 c.moveToNext();
             }
-            c.close();
         }
+        c.close();
         return hasUnreadChildren;
     }
 
     /**
-     * Readjusts the status of a given messages' root message
+     * Test if root message with the given rootId has fresh children
+     * @param rootId ID of the given message
+     * @return true if message has non fresh children, otherwise false
+     */
+     private boolean hasFreshChildren(long rootId) {
+        boolean hasFreshChildren = false;
+        Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_FRESH}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
+                new String[]{rootId + ""}, null);
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast() && !hasFreshChildren) {
+                hasFreshChildren = c.getInt(1) == 1;
+                c.moveToNext();
+            }
+        }
+        c.close();
+        return hasFreshChildren;
+    }
+
+    /**
+     * Readjusts the read status of a given messages' root message
      * @param messageId ID of the given message
      */
-    public void adjustRootMessagesReadValue(long messageId) {
+    private void adjustRootMessagesNewValue(long messageId) {
         long rootMessageId = -1;
         boolean rootMessageStatus = false;
         Cursor c = getMessageWithId(messageId);
@@ -185,12 +333,35 @@ public class MessageQueries {
             rootMessageStatus = c1.getInt(COL_NEW) == 1;
         }
         c1.close();
-        setMessageReadStatus(rootMessageId, rootMessageStatus);
+        setMessageNewStatus(rootMessageId, rootMessageStatus);
+    }
+
+    /**
+     * Readjusts the fresh status of a given messages' root message
+     * @param messageId ID of the given message
+     */
+    private void adjustRootMessagesFreshValue(long messageId) {
+        long rootMessageId = -1;
+        boolean freshMessageStatus = false;
+        Cursor c = getMessageWithId(messageId);
+        if (c.moveToFirst()) {
+            rootMessageId = c.getLong(COL_ROOT_MESSAGE);
+        }
+        c.close();
+        Cursor c1 = getMessageWithId(rootMessageId);
+        if (c1.moveToFirst()) {
+            freshMessageStatus = c1.getInt(COL_FRESH) == 1;
+        }
+        c1.close();
+        setMessageFreshStatus(rootMessageId, freshMessageStatus);
     }
 
 
     public boolean addMessage(String messageId, String fromEmail, String fromName, String subject, String charset, long date, int isNew,
-                              long newsgroupId, String header, String body, long parentMsg, long rootMsg, int level, String references) {
+                              long newsgroupId, String header, String body, long parentId, long rootId, int level, String references, int isFresh) {
+        // calculate missing values
+        Point currentNodeLeftRightValues = calculateLeftRightValues(parentId, rootId);
+
         // insert message
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_MSG_ID, messageId);
@@ -203,26 +374,27 @@ public class MessageQueries {
         contentValues.put(MessageContract.MessageEntry.COL_FK_N_ID, newsgroupId);
         contentValues.put(MessageContract.MessageEntry.COL_HEADER, header);
         contentValues.put(MessageContract.MessageEntry.COL_BODY, body);
-        contentValues.put(MessageContract.MessageEntry.COL_PARENT_MSG, parentMsg);
-        contentValues.put(MessageContract.MessageEntry.COL_ROOT_MSG, rootMsg);
+        contentValues.put(MessageContract.MessageEntry.COL_PARENT_MSG, parentId);
+        contentValues.put(MessageContract.MessageEntry.COL_ROOT_MSG, rootId);
         contentValues.put(MessageContract.MessageEntry.COL_LEVEL, level);
         contentValues.put(MessageContract.MessageEntry.COL_REFERENCES, references);
-        Point rootLeftRightValues = getLeftRightValue(rootMsg);
-        Point parentLeftRightValues = getLeftRightValue(parentMsg);
-        Point currentNodeLeftRightValues = calculateLeftRightValues(parentMsg, parentLeftRightValues);
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, isFresh);
         contentValues.put(MessageContract.MessageEntry.COL_LEFT_VALUE, currentNodeLeftRightValues.x);
         contentValues.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, currentNodeLeftRightValues.y);
-        adjustLeftRightValues(currentNodeLeftRightValues, newsgroupId, rootMsg, rootLeftRightValues);
+
+        // update other message values
+        adjustLeftRightValues(currentNodeLeftRightValues, newsgroupId, rootId);
         Uri message = context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues);
         Long msgId = Long.parseLong(message.getLastPathSegment());
-        setMessageReadStatus(msgId, isNew == 1);
+        setMessageNewStatus(msgId, isNew == 1);
+        setMessageFreshStatus(msgId, isFresh == 1);
         return true;
     }
 
     /**
      * Gets the left and right value of a given message already stored in the database
      * @param messageId ID of a message
-     * @return Point containing the left value as x coordinate and the right value as y coordinate
+     * @return Point containing the left value as x coordinate and the right value as y coordinate, (-1, -1) if message is not in database
      */
     private Point getLeftRightValue(long messageId) {
         int rValue = -1;
@@ -240,10 +412,11 @@ public class MessageQueries {
     /**
      * Calculates the left and right values of the node to be inserted
      * @param parentMsg ID of the parent message of the current node
-     * @param parentLeftRightValues Point containing the parent messages' left and right value as x and y coordinate
      * @return a Point containing the current nodes' left value as x coordinate and right value as y coordinate
      */
-    private Point calculateLeftRightValues(long parentMsg, Point parentLeftRightValues) {
+    private Point calculateLeftRightValues(long parentMsg, long rootMsg) {
+        Point rootLeftRightValues = getLeftRightValue(rootMsg);
+        Point parentLeftRightValues = getLeftRightValue(parentMsg);
         long idOfYoungestSibling = getYoungestSibling(parentMsg);
         int lValue;
         int rValue;
@@ -283,9 +456,10 @@ public class MessageQueries {
      * and whose right values are smaller or equal to the root's right value.
      * @param currentNodeLeftRightValues Point containing the left value of the current node as x, the right value of the current node as y coordinate
      * @param newsgroupId ID of the current node's newsgroup
-     * @param rootLeftRightValue Point containing the left value of the current node's root as x, the right value of the current node's root as y coordinate
+     * @param rootId ID of root message
      */
-    private void adjustLeftRightValues(Point currentNodeLeftRightValues, long newsgroupId, long rootId, Point rootLeftRightValue) {
+    private void adjustLeftRightValues(Point currentNodeLeftRightValues, long newsgroupId, long rootId) {
+        Point rootLeftRightValue = getLeftRightValue(rootId);
         if (rootLeftRightValue.x == -1 && rootLeftRightValue.y == -1) {
             return;
         }
@@ -351,8 +525,9 @@ public class MessageQueries {
 
 
     /**
-     * Deletes all messages with COL_FK_N_ID = newsgroupId
+     * Deletes all messages with COL_FK_N_ID = newsgroupId older than timeLimit
      * @param newsgroupId ID of a newsgroup
+     * @param timeLimit date before which all messages in the given newsgroup should be deleted
      */
     public  void deleteOldMessages(long newsgroupId, long timeLimit) {
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND "
@@ -380,12 +555,12 @@ public class MessageQueries {
                      + MessageContract.MessageEntry.COL_LEFT_VALUE + " > ? AND " + MessageContract.MessageEntry.COL_RIGHT_VALUE + " < ? ", new String[] {rootId + "", left + "", right + ""}, null);
                 if (c1.moveToFirst()) {
                     while(!c1.isAfterLast()) {
-                        adjustValues(c1.getLong(COL_ID), c1.getInt(COL_LEFT_VALUE), c1.getInt(COL_RIGHT_VALUE), c1.getInt(COL_LEVEL), left-1, msgId);
+                        adjustLeftRightValuesWhileDeleting(c1.getLong(COL_ID), c1.getInt(COL_LEFT_VALUE), c1.getInt(COL_RIGHT_VALUE), c1.getInt(COL_LEVEL), left - 1, msgId);
                         c1.moveToNext();
                     }
                 }
                 c1.close();
-                adjustValues(c.getLong(COL_ID), c.getInt(COL_LEFT_VALUE), c.getInt(COL_RIGHT_VALUE), c.getInt(COL_LEVEL), left - 1, -1);
+                adjustLeftRightValuesWhileDeleting(c.getLong(COL_ID), c.getInt(COL_LEFT_VALUE), c.getInt(COL_RIGHT_VALUE), c.getInt(COL_LEVEL), left - 1, -1);
                 c.moveToNext();
             }
         }
@@ -403,7 +578,7 @@ public class MessageQueries {
      * @param diff how much to subtract from left and right
      * @param rootId id of new message root
      */
-    private void adjustValues(long id, int left, int right, int level, int diff, long rootId) {
+    private void adjustLeftRightValuesWhileDeleting(long id, int left, int right, int level, int diff, long rootId) {
         ContentValues cv = new ContentValues();
         if (rootId == -1) {
             cv.put(MessageContract.MessageEntry.COL_PARENT_MSG, -1);

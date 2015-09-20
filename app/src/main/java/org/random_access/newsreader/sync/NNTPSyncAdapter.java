@@ -220,7 +220,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException{
 
-        if (new MessageQueries(context).isMessageInDatabase(articleId)) {
+        if (new MessageQueries(context).isMessageInDatabase(articleId, groupId)) {
             return;
         }
 
@@ -233,7 +233,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null);
             BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
             headerData = new NNTPMessageHeader();
-            headerData.parseHeaderData(reader, articleId, context);
+            headerData.parseHeaderData(reader, articleId, groupId, context);
             String charset = headerData.getCharset();
             Log.d(TAG, charset);
             String transferEncoding = headerData.getTransferEncoding();
@@ -259,7 +259,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             MessageQueries messageQueries = new MessageQueries(context);
             messageQueries.addMessage(articleId, headerData.getEmail(), headerData.getFullName(), headerData.getSubject(), headerData.getCharset(),
                     msgDate, 1, groupId, headerData.getHeaderSource(), messageBody, headerData.getParentMsg(), headerData.getRootMsg(), headerData.getLevel(),
-                    headerData.getReferences());
+                    headerData.getReferences(), 1);
             currentMessageDate = msgDate;
             Log.d(TAG, "Added message " + articleId + "; messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
         }

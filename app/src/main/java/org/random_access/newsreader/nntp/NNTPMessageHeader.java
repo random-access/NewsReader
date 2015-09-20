@@ -57,7 +57,7 @@ public class NNTPMessageHeader {
 
     private String lastKey = "";
 
-    public boolean parseHeaderData(BufferedReader inReader, String messageId, Context context) throws IOException {
+    public boolean parseHeaderData(BufferedReader inReader, String messageId, long newsgroupId, Context context) throws IOException {
         this.messageId = messageId;
         MessageDecoder decoder = new MessageDecoder();
         boolean success = true;
@@ -77,7 +77,7 @@ public class NNTPMessageHeader {
         }
         inReader.close();
         parseFullNameAndEmail();
-        parseReferences(context);
+        parseReferences(context, newsgroupId);
         this.headerSource = sb.toString();
         return success;
     }
@@ -173,7 +173,7 @@ public class NNTPMessageHeader {
         email = fm.getEmail();
     }
 
-    private void parseReferences(Context context) {
+    private void parseReferences(Context context, long newsgroupId) {
         if (!TextUtils.isEmpty(references)) {
             Log.d(TAG, "References: " + references);
             String[] refs = references.split(" ");
@@ -181,7 +181,7 @@ public class NNTPMessageHeader {
             refIds = new long[refs.length];
             int currentIndex = 0;
             for (String s : refs) {
-                long currentId = messageQueries.getIdFromMessageId(s);
+                long currentId = messageQueries.getIdFromMessageId(s, newsgroupId);
                 if (currentId != -1) {
                     refIds[currentIndex] = currentId;
                     currentIndex++;
