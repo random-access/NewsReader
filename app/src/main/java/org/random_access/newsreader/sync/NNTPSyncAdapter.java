@@ -1,21 +1,31 @@
 package org.random_access.newsreader.sync;
 
 import android.accounts.Account;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.NetworkStateHelper;
+import org.random_access.newsreader.R;
+import org.random_access.newsreader.ShowServerActivity;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.nntp.NNTPMessageBody;
@@ -54,6 +64,13 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private long currentNewsgroupId = -1;
     private long currentMessageDate = -1;
+
+    private static final int NOTIFICATION_ID = 0;
+    // Notification Sound and Vibration on Arrival
+    private Uri soundURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+   //  Uri.parse("android.resource://org.random_access.newsreader/"
+                  //   + R.raw.mysound;
+    private long[] vibratePattern = { 0, 200, 200, 300 };
 
     /**
      * Set up the sync adapter
@@ -105,6 +122,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(TAG, "Has WIFI connection?" + hasWifiConnection);
         if (!wifiOnly || hasWifiConnection) {
             Log.d(TAG, "*************** SYNCING: " + ++syncNumber + " *****************");
+            int freshMessages = 0;
             ServerQueries serverQueries = new ServerQueries(context);
             Cursor c = serverQueries.getAllServers();
             if (c.moveToFirst()) {
@@ -113,6 +131,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                         getNewNewsForServer(c.getLong(ServerQueries.COL_ID), c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT),
                                 c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
                                 c.getString(ServerQueries.COL_PASSWORD));
+                        freshMessages += new MessageQueries(context).getFreshMessagesOnServerCount(c.getLong(ServerQueries.COL_ID));
                     } catch (IOException | LoginException e) {
                         e.printStackTrace();
                     } finally {
@@ -131,6 +150,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                 Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
             }
             c.close();
+            if (freshMessages > 0) {
+                setNotification(freshMessages);
+            }
         }
     }
 
@@ -263,5 +285,30 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             currentMessageDate = msgDate;
             Log.d(TAG, "Added message " + articleId + "; messageDate " + NNTPDateFormatter.getPrettyDateString(msgDate, context));
         }
+    }
+
+    private void setNotification (int freshMessages) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_star)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_newsreader))
+                        .setContentTitle("New news!")
+                        .setContentText("Fresh messages: " + freshMessages)
+                        .setSound(soundURI)
+                        .setVibrate(vibratePattern)
+                        .setAutoCancel(true);
+
+        // Target activity = ShowServerActivity
+        Intent resultIntent = new Intent(context, ShowServerActivity.class);
+        // Build a virtual TaskStack with the target activity on top
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(ShowServerActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // allows future updates of an existing notification
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }
