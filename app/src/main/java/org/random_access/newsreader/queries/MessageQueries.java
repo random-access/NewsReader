@@ -179,6 +179,15 @@ public class MessageQueries {
     }
 
     /**
+     * Mark all messages as not fresh
+     */
+    public void markAllMessagesNonFresh() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, null, null);
+    }
+
+    /**
      * Marks either a single message (if it has no children) or the root and all its child messages (if this is a root message)
      * as read if isNew is true or as unread if isNew is false
      * @param id _ID field of a message (identifying a message in the database)

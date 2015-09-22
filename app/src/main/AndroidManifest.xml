@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.random_access.newsreader" >
 
+    <!-- PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
@@ -15,6 +16,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- PROVIDERS -->
         <provider
             android:name=".provider.NNTPProvider"
             android:authorities="org.random_access.newsreader.provider"
@@ -24,6 +27,7 @@
             android:syncable="true" >
         </provider>
 
+        <!-- SERVICES -->
         <service
             android:name=".sync.NNTPAuthenticatorService"
             android:exported="false" >
@@ -48,6 +52,13 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
+        <!-- BROADCAST RECEIVERS -->
+        <receiver android:name=".receivers.NotificationDismissReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
+
+        <!-- ACTIVITIES -->
         <activity
             android:name=".ShowServerActivity"
             android:label="@string/app_name" >

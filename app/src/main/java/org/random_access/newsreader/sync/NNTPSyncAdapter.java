@@ -33,6 +33,7 @@ import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.receivers.NotificationDismissReceiver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -287,8 +288,21 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void setNotification (int freshMessages) {
-        NotificationCompat.Builder mBuilder =
+    private void setNotification (int freshMessages) {;
+
+        // Target activity for onClick = ShowServerActivity
+        Intent clickIntent = new Intent(context, ShowServerActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(ShowServerActivity.class);
+        stackBuilder.addNextIntent(clickIntent);
+        PendingIntent pendingClickIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Target for dismissing notification
+        Intent deleteIntent = new Intent(context, NotificationDismissReceiver.class);
+        PendingIntent pendingDeleteIntent = PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
+
+        // add intents to builder
+        NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_star)
                         .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_newsreader))
@@ -296,19 +310,13 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                         .setContentText(context.getResources().getQuantityString(R.plurals.new_news, freshMessages, freshMessages))
                         .setSound(soundURI)
                         .setVibrate(vibratePattern)
-                        .setAutoCancel(true);
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingClickIntent)
+                        .setDeleteIntent(pendingDeleteIntent);
 
-        // Target activity = ShowServerActivity
-        Intent resultIntent = new Intent(context, ShowServerActivity.class);
-        // Build a virtual TaskStack with the target activity on top
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(ShowServerActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
+        // dispatch notification, allowing future updates of an existing notification
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // allows future updates of an existing notification
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 }
