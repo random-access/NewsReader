@@ -131,6 +131,16 @@ public class ServerQueries {
         return settingsId;
     }
 
+    public String getServerName(long serverId) {
+        String serverName = "";
+        Cursor serverCursor = getServerWithId(serverId);
+        if (serverCursor.moveToFirst()) {
+            serverName = serverCursor.getString(COL_NAME);
+        }
+        serverCursor.close();
+        return serverName;
+    }
+
 
 
     /**

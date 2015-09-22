@@ -21,6 +21,8 @@ import org.random_access.newsreader.adapter.NewsgroupCursorAdapter;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.queries.MessageQueries;
+import org.random_access.newsreader.queries.NewsgroupQueries;
+import org.random_access.newsreader.queries.ServerQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -34,7 +36,6 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     private static final String TAG = ShowNewsgroupsActivity.class.getSimpleName();
 
     public static final String KEY_SERVER_ID = "server-id";
-    public static final String KEY_SERVER_TITLE = "server-title";
 
     private final String[] newsgroupProjection = { NewsgroupContract.NewsgroupEntry._ID, NewsgroupContract.NewsgroupEntry.COL_NAME, NewsgroupContract.NewsgroupEntry.COL_TITLE,
             NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID};
@@ -53,7 +54,7 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         serverId = getIntent().getExtras().getLong(KEY_SERVER_ID);
         setContentView(R.layout.activity_show_newsgroups);
-        setTitle(getIntent().getExtras().getString(KEY_SERVER_TITLE));
+        setTitle(new ServerQueries(this).getServerName(serverId));
         mNewsgroupListView = (ListView) findViewById(R.id.show_groups_list);
         mNewsgroupListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mNewsgroupAdapter = new NewsgroupCursorAdapter(this, null);

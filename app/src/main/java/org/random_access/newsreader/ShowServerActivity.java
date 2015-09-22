@@ -185,6 +185,14 @@ public class ShowServerActivity extends AppCompatActivity implements
                 Log.d(TAG, "Set mCurrentDetailView to " + mServerAdapter.getmCurrentDetailPosition());
             }
         }); */
+        mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent (ShowServerActivity.this, ShowNewsgroupsActivity.class);
+                intent.putExtra(ShowNewsgroupsActivity.KEY_SERVER_ID, id);
+                ShowServerActivity.this.startActivity(intent);
+            }
+        });
 
         mServerListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mServerListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {

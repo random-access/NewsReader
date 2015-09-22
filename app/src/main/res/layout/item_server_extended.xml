@@ -9,7 +9,6 @@
 
     <TextView
         android:id="@+id/id_server_title_extended"
-        android:text="Servertitel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10pt"
@@ -18,16 +17,6 @@
         android:paddingBottom="10dp"
         android:paddingRight="10dp" />
 
-
-    <ImageButton
-        android:id="@+id/btn_open"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_open_white"
-        android:padding="10dp" />
 
     <TextView
         android:id="@+id/id_server_name_extended"

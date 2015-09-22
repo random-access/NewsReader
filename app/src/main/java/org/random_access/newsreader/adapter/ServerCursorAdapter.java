@@ -38,7 +38,6 @@ public class ServerCursorAdapter extends CursorAdapter {
     private TextView txtTitle;
     private TextView txtName;
     private TextView txtSubscriptions;
-    private ImageButton btnShowNewsgroups;
     private ImageButton btnEditServerSettings;
     private ImageButton btnEditSubscriptions;
 
@@ -91,8 +90,6 @@ public class ServerCursorAdapter extends CursorAdapter {
                 txtTitle = (TextView) parent.findViewById(R.id.id_server_title_extended);
                 txtName = (TextView) parent.findViewById(R.id.id_server_name_extended);
                 txtSubscriptions = (TextView) parent.findViewById(R.id.id_subscriptions_extended);
-                btnShowNewsgroups = (ImageButton) parent.findViewById(R.id.btn_open);
-                btnShowNewsgroups.setColorFilter(context.getResources().getColor(R.color.light_blue));
                 btnEditServerSettings = (ImageButton) parent.findViewById(R.id.btn_edit_server);
                 btnEditServerSettings.setColorFilter(context.getResources().getColor(R.color.light_blue));
                 btnEditSubscriptions = (ImageButton) parent.findViewById(R.id.btn_edit_subscriptions);
@@ -133,15 +130,6 @@ public class ServerCursorAdapter extends CursorAdapter {
                         intent.putExtra(EditSubscriptionsActivity.KEY_SERVER_ID, id);
                         context.startActivity(intent);
                     }
-                }
-            });
-            btnShowNewsgroups.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent (context, ShowNewsgroupsActivity.class);
-                    intent.putExtra(ShowNewsgroupsActivity.KEY_SERVER_ID, id);
-                    intent.putExtra(ShowNewsgroupsActivity.KEY_SERVER_TITLE, title);
-                    context.startActivity(intent);
                 }
             });
             btnEditServerSettings.setOnClickListener(new View.OnClickListener() {
