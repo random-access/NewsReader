@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
+import java.util.ArrayList;
+
 /**
  * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 25.06.2015 <br>
@@ -24,5 +26,17 @@ class QueryHelper {
             cursor.close();
             return result;
         }
+    }
+
+    public static String makePlaceholderArray(int length) {
+        if (length < 1) {
+            throw new RuntimeException("No placeholders");
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append("?, ");
+        }
+        sb.replace(sb.length()-2, sb.length(), "");
+        return sb.toString();
     }
 }

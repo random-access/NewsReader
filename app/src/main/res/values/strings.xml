@@ -152,6 +152,9 @@
     <string name="pref_wlan_only_text">Sync only via WIFI</string>
     <string name="pref_wlan_only_summary">Syncing only via WIFI prevents you from additional costs</string>
 
+    <string name="pref_notify_on_sync_text">Enable notifications</string>
+    <string name="pref_notify_on_sync_summary">Allow NewsReader to display a notification if new messages were fetched on a sync</string>
+
     <!-- Preferences Messages -->
     <string name="pref_message_title">Message settings</string>
     <string name="pref_message_view_text">View options</string>

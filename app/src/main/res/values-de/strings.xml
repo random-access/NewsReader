@@ -148,4 +148,6 @@
     <string name="crash_dialog_text">Ein unerwarteter Fehler ist aufgetreten, die Anwendung musste beendet werden. Bitte hilf mir den Fehler zu beheben, indem du das Absturzlog an mich sendest. Dazu musst du lediglich auf OK klicken.</string>
     <string name="crash_dialog_title">NewsReader ist abgestürzt :(</string>
     <string name="action_testcrash">Crash app! (debug)</string>
+    <string name="pref_notify_on_sync_summary">NewsReader erlauben, eine Benachrichtigung anzuzeigen, wenn neue Nachrichten beim Synchronisieren abgeholt wurden.</string>
+    <string name="pref_notify_on_sync_text">Benachrichtigungen aktivieren</string>
 </resources>

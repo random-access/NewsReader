@@ -46,6 +46,7 @@ public class NNTPProvider extends ContentProvider {
     private static final int NEWSGROUP_ROW = 2002;
     private static final int MESSAGE_ROW = 2003;
 
+
     private static final HashMap<String, String> PROJECTION_MAP_SETTINGS;
     private static final HashMap<String, String> PROJECTION_MAP_SERVER;
     private static final HashMap<String, String> PROJECTION_MAP_NEWSGROUP;

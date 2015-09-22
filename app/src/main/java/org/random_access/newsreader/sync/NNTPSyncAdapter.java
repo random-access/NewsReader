@@ -118,7 +118,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only", false);
-        Log.d(TAG, "Sync only via WIFI? " + wifiOnly);
+        boolean notify = sharedPreferences.getBoolean("pref_notify_on_sync", true);
+        Log.d(TAG, "Sync only via WIFI? " + wifiOnly + ", Notify user? " + notify);
         boolean hasWifiConnection = NetworkStateHelper.hasWifiConnection(context);
         Log.d(TAG, "Has WIFI connection?" + hasWifiConnection);
         if (!wifiOnly || hasWifiConnection) {
@@ -151,7 +152,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                 Log.d(TAG, "************ FINISHED SYNC: " + syncNumber + "*********************");
             }
             c.close();
-            if (freshMessages > 0) {
+            if (notify && freshMessages > 0) {
                 setNotification(freshMessages);
             }
         }

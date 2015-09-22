@@ -9,6 +9,9 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.random_access.newsreader.provider.contracts.MessageContract;
+import org.random_access.newsreader.utils.ListUtils;
+
+import java.util.ArrayList;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -176,6 +179,29 @@ public class MessageQueries {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
         context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
+    }
+
+    /**
+     * Mark all messages of a given newsgroup as not fresh
+     * @param serverId _ID field of a newsgroup (identifying a newsgroup in the database)
+     */
+    public void markAllMessagesOnServerNonFresh(long serverId) {
+        ArrayList<Long> serverIds = new ArrayList<>();
+        Cursor c = new NewsgroupQueries(context).getNewsgroupsOfServer(serverId);
+        if (c.moveToFirst()) {
+            while(!c.isAfterLast()) {
+                serverIds.add(c.getLong(NewsgroupQueries.COL_ID));
+                c.moveToNext();
+            }
+        }
+        c.close();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
+        int updatedRows = context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues,
+                MessageContract.MessageEntry.COL_FK_N_ID + " in (" + QueryHelper.makePlaceholderArray(serverIds.size()) + ")",
+                new ListUtils<Long>().convertArrayListToStringArray(serverIds));
+        Log.d(TAG, "Successfully updated " + updatedRows + " rows (JOIN!!)");
     }
 
     /**

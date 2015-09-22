@@ -16,6 +16,11 @@
             android:title="@string/pref_wlan_only_text"
             android:summary="@string/pref_wlan_only_summary"
             android:defaultValue="false"/>
+        <CheckBoxPreference
+            android:key="pref_notify_on_sync"
+            android:title="@string/pref_notify_on_sync_text"
+            android:summary="@string/pref_notify_on_sync_summary"
+            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_message_title"

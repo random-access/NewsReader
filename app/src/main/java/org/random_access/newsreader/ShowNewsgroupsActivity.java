@@ -20,6 +20,7 @@ import android.widget.ListView;
 import org.random_access.newsreader.adapter.NewsgroupCursorAdapter;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
+import org.random_access.newsreader.queries.MessageQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -102,6 +103,14 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        // remove messages "fresh" markup
+        MessageQueries messageQueries = new MessageQueries(this);
+        messageQueries.markAllMessagesOnServerNonFresh(serverId);
+        super.onBackPressed();
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this, NewsgroupContract.CONTENT_URI, newsgroupProjection,
                 NewsgroupContract.NewsgroupEntry.COL_FK_SERV_ID + " = ?", new String[]{serverId + ""}, NewsgroupContract.NewsgroupEntry.COL_NAME + " ASC");
@@ -132,3 +141,4 @@ public class ShowNewsgroupsActivity extends AppCompatActivity implements
         });
     }
 }
+
