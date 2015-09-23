@@ -1,6 +1,7 @@
 package org.random_access.newsreader;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -17,6 +18,8 @@ public class SettingsActivity extends PreferenceActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
+    public static final String PREFS_NAME = "pref_settings";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,19 +30,22 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            getPreferenceManager().setSharedPreferencesName(PREFS_NAME);
+            getPreferenceManager().setSharedPreferencesMode(Context.MODE_MULTI_PROCESS);
             addPreferencesFromResource(R.xml.preferences);
 
             Preference syncInterval = findPreference("pref_sync_interval");
             syncInterval.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    long newSyncInterval = Long.parseLong((String)newValue) * ShowServerActivity.SECONDS_PER_MINUTE;
+                    long newSyncInterval = Long.parseLong((String) newValue) * ShowServerActivity.SECONDS_PER_MINUTE;
                     ContentResolver.removePeriodicSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, Bundle.EMPTY);
                     ContentResolver.addPeriodicSync(ShowServerActivity.ACCOUNT, ShowServerActivity.AUTHORITY, Bundle.EMPTY, newSyncInterval);
                     Log.i(TAG, "Periodic sync changed to " + (newSyncInterval / ShowServerActivity.SECONDS_PER_MINUTE));
                     return true;
                 }
             });
+
         }
     }
 

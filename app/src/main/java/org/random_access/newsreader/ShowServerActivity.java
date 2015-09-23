@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,8 +63,8 @@ public class ShowServerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_server);
         ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.setDefaultValues(getApplicationContext(), SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS, R.xml.preferences, false);
+        SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS);
         long syncIntervalInMinutes = Long.parseLong(sharedPreferences.getString("pref_sync_interval", "30"));
         SYNC_INTERVAL = syncIntervalInMinutes  * SECONDS_PER_MINUTE;
         Log.i(TAG, "Periodic sync set to " + syncIntervalInMinutes);

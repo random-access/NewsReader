@@ -1,6 +1,7 @@
 package org.random_access.newsreader.sync;
 
 import android.accounts.Account;
+import android.app.Application;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -24,7 +25,9 @@ import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.NetworkStateHelper;
+import org.random_access.newsreader.NewsReader;
 import org.random_access.newsreader.R;
+import org.random_access.newsreader.SettingsActivity;
 import org.random_access.newsreader.ShowServerActivity;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
@@ -33,6 +36,7 @@ import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.queries.SettingsQueries;
 import org.random_access.newsreader.receivers.NotificationDismissReceiver;
 
 import java.io.BufferedReader;
@@ -116,7 +120,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS);
+
+                // PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only", false);
         boolean notify = sharedPreferences.getBoolean("pref_notify_on_sync", true);
         Log.d(TAG, "Sync only via WIFI? " + wifiOnly + ", Notify user? " + notify);
@@ -290,6 +296,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void setNotification (int freshMessages) {;
+        Log.d(TAG, "***** notification coming... *****");
 
         // Target activity for onClick = ShowServerActivity
         Intent clickIntent = new Intent(context, ShowServerActivity.class);
@@ -305,8 +312,9 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // add intents to builder
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_star)
-                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_newsreader))
+                        .setSmallIcon(R.drawable.ic_newsreader)
+                        .setColor(R.color.blue)
+                       // .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                         .setContentTitle(context.getResources().getString(R.string.app_name))
                         .setContentText(context.getResources().getQuantityString(R.plurals.new_news, freshMessages, freshMessages))
                         .setSound(soundURI)
