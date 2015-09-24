@@ -19,8 +19,8 @@ Newsreader is a simple NNTP client for Android. Articles from subscribed newsgro
 
 ## A short preview:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=ABWrEQUv200
-" target="_blank"><img src="http://img.youtube.com/vi/ABWrEQUv200/0.jpg" 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=tCvMBDigVbM
+" target="_blank"><img src="http://img.youtube.com/vi/tCvMBDigVbM/0.jpg" 
 alt="Newsreader Screencast" width="480" height="360" border="10" /></a>
 
 The app will be made completely **open source** and distributed via PlayStore for **free** and **without advertisement**, as soon as there’s a stable release.
