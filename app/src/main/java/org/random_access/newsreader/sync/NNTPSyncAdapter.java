@@ -2,6 +2,7 @@ package org.random_access.newsreader.sync;
 
 import android.accounts.Account;
 import android.app.Application;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -13,8 +14,11 @@ import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -312,7 +316,6 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // add intents to builder
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_newsreader)
                         .setColor(R.color.blue)
                        // .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                         .setContentTitle(context.getResources().getString(R.string.app_name))
@@ -323,9 +326,16 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                         .setContentIntent(pendingClickIntent)
                         .setDeleteIntent(pendingDeleteIntent);
 
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            builder.setSmallIcon(R.drawable.ic_newsreader_inv);
+        } else {
+            builder.setSmallIcon(R.drawable.ic_newsreader);
+        }
+
         // dispatch notification, allowing future updates of an existing notification
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
+
 }
