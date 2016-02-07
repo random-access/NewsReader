@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
+import org.acra.ACRA;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.provider.contracts.ServerContract;
@@ -143,8 +145,10 @@ public class NNTPProvider extends ContentProvider {
                 return MIME_BASETYPE_ROW + "/" + MessageContract.TABLE_NAME;
             case MESSAGE_TABLE:
                 return MIME_BASETYPE_TABLE + "/" + MessageContract.TABLE_NAME;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uriCode);
+            default: // should not happen!
+                IllegalArgumentException exc = new IllegalArgumentException("Unknown URI: " + uriCode);
+                ACRA.getErrorReporter().handleException(exc);
+                throw exc;
         }
     }
 
@@ -259,8 +263,10 @@ public class NNTPProvider extends ContentProvider {
             case MESSAGE_TABLE:
             case MESSAGE_ROW:
                 return MessageContract.TABLE_NAME;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uriCode);
+            default: // should not happen!
+                IllegalArgumentException exc = new IllegalArgumentException("Unknown URI: " + uriCode);
+                ACRA.getErrorReporter().handleException(exc);
+                throw exc;
         }
     }
 
@@ -281,7 +287,7 @@ public class NNTPProvider extends ContentProvider {
             case MESSAGE_ROW:
                 return MessageContract.MessageEntry._ID;
             default:
-                return null;
+                return null; // table query
         }
     }
 
@@ -305,8 +311,10 @@ public class NNTPProvider extends ContentProvider {
             case MESSAGE_TABLE:
             case MESSAGE_ROW:
                 return PROJECTION_MAP_MESSAGE;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uriCode);
+            default: // should not happen!
+                IllegalArgumentException exc = new IllegalArgumentException("Unknown URI: " + uriCode);
+                ACRA.getErrorReporter().handleException(exc);
+                throw exc;
         }
     }
 

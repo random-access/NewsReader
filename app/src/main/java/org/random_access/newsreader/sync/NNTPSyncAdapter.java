@@ -1,8 +1,6 @@
 package org.random_access.newsreader.sync;
 
 import android.accounts.Account;
-import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -13,34 +11,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.apache.commons.net.nntp.ArticleInfo;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.random_access.newsreader.NetworkStateHelper;
-import org.random_access.newsreader.NewsReader;
 import org.random_access.newsreader.R;
 import org.random_access.newsreader.SettingsActivity;
 import org.random_access.newsreader.ShowServerActivity;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
+import org.random_access.newsreader.nntp.NNTPParsingException;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.nntp.NNTPMessageBody;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
-import org.random_access.newsreader.queries.SettingsQueries;
 import org.random_access.newsreader.receivers.NotificationDismissReceiver;
 
 import java.io.BufferedReader;
@@ -252,15 +246,15 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         return articleList.toArray(articleArray);
     }
 
-    private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException{
+    private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException {
 
         if (new MessageQueries(context).isMessageInDatabase(articleId, groupId)) {
             return;
         }
 
-        NNTPMessageHeader headerData;
-        long msgDate;
-        String messageBody;
+        NNTPMessageHeader headerData = null;
+        long msgDate = 0;
+        String messageBody = null;
 
         try {
             // fetch header
@@ -287,6 +281,8 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch(LoginException e) {
             Log.e(TAG, "Error during fetchMessage - login failed");
             throw new LoginException();
+        } catch(NNTPParsingException e) {
+            ACRA.getErrorReporter().handleException(e);
         }
         if (msgDate != -1 && messageBody != null) {
             // save message to database

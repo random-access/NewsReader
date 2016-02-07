@@ -1,13 +1,14 @@
 package org.random_access.newsreader.nntp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.net.nntp.SimpleNNTPHeader;
 import org.random_access.newsreader.queries.MessageQueries;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,6 +71,7 @@ public class NNTPMessageHeader {
                 dec = decoder.decodeHeader(nextLine);
             } catch (DecoderException e) {
                 dec  = nextLine;
+                ACRA.getErrorReporter().handleException(new NNTPParsingException("Couldn't decode " + nextLine));
                 Log.e(TAG, "Couldn't decode " + nextLine);
                 success = false;
             }
@@ -96,47 +98,6 @@ public class NNTPMessageHeader {
         Log.d(TAG, header.toString());
         return header;
     }
-
-   /* private String concatNewsgroups (String[] newsgroups) {
-        if (newsgroups == null || newsgroups.length == 0) {
-            return "";
-        } else if (newsgroups.length == 1) {
-            return newsgroups [0];
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (String s : newsgroups) {
-                sb.append(s).append(", ");
-            }
-            sb.replace(sb.length()-2, sb.length()-1, "");
-            return sb.toString();
-        }
-    }
-
-    private String getInReplyToString(long[] refIds, Context context) {
-        MessageQueries messageQueries = new MessageQueries(context);
-        if (refIds == null || refIds.length == 0) {
-            return "";
-        } else {
-            return messageQueries.getMessageIdFromId(refIds[refIds.length - 1]);
-        }
-    }
-
-     private String getReferencesAsString(long[] refIds, Context context) {
-        MessageQueries messageQueries = new MessageQueries(context);
-        if (refIds == null || refIds.length == 0) {
-            return "";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (long l : refIds) {
-                String msgId = messageQueries.getMessageIdFromId(l);
-                if (!TextUtils.isEmpty(msgId)) {
-                    sb.append(msgId).append(" ");
-                }
-            }
-            sb.replace(sb.length()-1, sb.length()-1, "");
-            return sb.toString();
-        }
-    } */
 
     private void extractLine(String s) {
         if (s.startsWith(KEY_FROM)) {
@@ -187,7 +148,7 @@ public class NNTPMessageHeader {
                     currentIndex++;
                 }
             }
-            rootMsg = currentIndex > 0 ? refIds[0] : -1;
+            rootMsg = currentIndex > 0 ? messageQueries.getRootMsgFromDb(refIds[0]) : -1;
             parentMsg = currentIndex > 0 ? refIds[currentIndex - 1] : -1;
             level = currentIndex;
             refIds = Arrays.copyOf(refIds, currentIndex);
@@ -226,6 +187,7 @@ public class NNTPMessageHeader {
                 break;
             default:
                 Log.e(TAG, "Unsupported transfer encoding: [" + enc + "]");
+                ACRA.getErrorReporter().handleException(new Exception("Unsupported transfer encoding: [" + enc + "]"));
                 break;
         }
         return result;

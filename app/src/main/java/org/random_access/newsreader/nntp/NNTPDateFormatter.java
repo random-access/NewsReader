@@ -31,13 +31,13 @@ public class NNTPDateFormatter {
     // pattern message header: "EEE, d MMM yyyy HH:mm:ss Z"
     // ----> eg Sat, 02 May 2015 18:17:29 +0200
 
-    public long getDateInMillis(String dateString, String pattern) throws ParseException {
+/*    public long getDateInMillis(String dateString, String pattern) throws ParseException {
         SimpleDateFormat df = new SimpleDateFormat(pattern, Locale.US);
         Date date = df.parse(dateString);
         return date.getTime();
-    }
+    }*/
 
-    public long getDateInMillis(String dateString) {
+    public long getDateInMillis(String dateString) throws NNTPParsingException {
         for (String pattern : DATE_PATTERNS_MSG_HEADER) {
             try {
                 DateFormat df = new SimpleDateFormat(pattern, Locale.US);
@@ -48,12 +48,10 @@ public class NNTPDateFormatter {
                 Log.e(TAG, "Date " + dateString + " not parsable with pattern " + pattern);
             }
         }
-        return lastParsedDate+1;
-        // cheat to return a more or less valid date, so the message is at least at the right position
-        // if the date cannot be parsed at all
+        throw new NNTPParsingException("Date " + dateString + " not parseable, no matching date string found.");
     }
 
-    public String getPrettyDateString(String rawDateString, Context context) {
+/*    public String getPrettyDateString(String rawDateString, Context context) {
         SimpleDateFormat rawFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
         Date date = null;
         try {
@@ -71,12 +69,12 @@ public class NNTPDateFormatter {
             return rawDateString;
         }
 
-    }
+    }*/
 
-    public static String getRawDateString(long dateInMillis) {
+/*    public static String getRawDateString(long dateInMillis) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
         return dateFormat.format(new Date(dateInMillis));
-    }
+    }*/
 
     public static String getPrettyDateString(long dateInMillis, Context context) {
         /*DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);

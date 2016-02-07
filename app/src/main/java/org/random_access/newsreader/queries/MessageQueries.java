@@ -101,6 +101,27 @@ public class MessageQueries {
     }
 
     /**
+     * Fetches the root message from the database. Sometimes, the message's references don't include
+     * the root message stored in db, therefore this method iterates recursively through the database
+     * until it reaches the root message which is stored.
+     * @param currentId the message ID belonging to the oldest reference fetched from the message header
+     * @return ID of root message fetched from DB.
+     */
+    public long getRootMsgFromDb (long currentId) {
+        Cursor cursor = new MessageQueries(context).getMessageWithId(currentId);
+        if (cursor.moveToFirst()) {
+            long rootID = cursor.getLong(MessageQueries.COL_ROOT_MESSAGE);
+            if (rootID != -1) {
+                Log.d(TAG, "Correcting root id to " + rootID);
+                cursor.close();
+                return getRootMsgFromDb(rootID);
+            }
+        }
+        cursor.close();
+        return currentId;
+    }
+
+    /**
      * Find out if a message with a given message id is in the database
      * @param messageId the message id value (identifying a message on the news server
      * @return true if message is in database, otherwise false
@@ -178,7 +199,7 @@ public class MessageQueries {
     public void markAllMessagesNonFresh(long newsgroupId) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
-        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[] {newsgroupId + ""});
+        context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_FK_N_ID + " = ? ", new String[]{newsgroupId + ""});
     }
 
     /**
@@ -198,9 +219,9 @@ public class MessageQueries {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_FRESH, 0);
-        int updatedRows = context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues,
+        int updatedRows = (serverIds.size() == 0 ? 0 : context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues,
                 MessageContract.MessageEntry.COL_FK_N_ID + " in (" + QueryHelper.makePlaceholderArray(serverIds.size()) + ")",
-                new ListUtils<Long>().convertArrayListToStringArray(serverIds));
+                new ListUtils<Long>().convertArrayListToStringArray(serverIds)));
         Log.d(TAG, "Successfully updated " + updatedRows + " rows (JOIN!!)");
     }
 
@@ -225,7 +246,7 @@ public class MessageQueries {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessageContract.MessageEntry.COL_NEW, value);
         context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry._ID + " = ? ",
-                new String[] {id + ""});
+                new String[]{id + ""});
         if (isRootMessage(id)) { // all children get the same read status as their root message
             context.getContentResolver().update(MessageContract.CONTENT_URI, contentValues, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
                     new String[]{id + ""});

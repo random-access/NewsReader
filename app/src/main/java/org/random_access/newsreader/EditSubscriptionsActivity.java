@@ -192,15 +192,15 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<NewsGroupItem> doInBackground(Void... voids) {
-            try {
+              try {
                 getServerData();
                 NNTPConnector connector = new NNTPConnector(EditSubscriptionsActivity.this);
                 NNTPClient client = connector.connectToNewsServer(EditSubscriptionsActivity.this, serverName, serverPort, auth, user, password);
                 NewsgroupInfo[] infos = client.listNewsgroups();
                 return getNewsgroupItems(infos);
-            } catch (IOException | LoginException e) {
-                e.printStackTrace();  // TODO handle exceptions
-            }
+              } catch (IOException | LoginException e) {
+                  e.printStackTrace();  // TODO handle exceptions
+              }
             return new ArrayList<>();
         }
 

@@ -2,6 +2,7 @@ package org.random_access.newsreader.nntp;
 
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.net.util.Base64;
@@ -72,8 +73,8 @@ class MessageDecoder {
                 try {
                     return quotedPrintableDecode(text, charset);
                 } catch (DecoderException e) {
-                    e.printStackTrace();
                     Log.e(TAG, "Unsupported charset: [" + charset + "] - encoding: " + encoding);
+                    ACRA.getErrorReporter().handleException(e);
                     return text;
                 }
 
@@ -88,6 +89,7 @@ class MessageDecoder {
             return new String(base64Decode(str.getBytes(charset)), charset);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported charset: " + charset);
+            ACRA.getErrorReporter().handleException(e);
             return str;
         }
     }
@@ -104,6 +106,7 @@ class MessageDecoder {
             return new String(quotedPrintableDecode(str.getBytes(charset)), charset).replace('_', ' ');
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported charset: " + charset);
+            ACRA.getErrorReporter().handleException(e);
             return str;
         }
     }

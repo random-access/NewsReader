@@ -4,8 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.apache.commons.net.nntp.NNTPClient;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
+import org.random_access.newsreader.queries.DatabaseException;
 import org.random_access.newsreader.queries.ServerQueries;
 
 import java.io.IOException;
@@ -69,8 +71,8 @@ public class NNTPConnector {
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
             c.close();
-            Log.d(TAG, "Found no server with the given ID in database");
-            throw new IOException("Found no server with the given ID in database");
+            Log.e(TAG, "Found no server with the given ID in database");
+            ACRA.getErrorReporter().handleException(new DatabaseException("Found no server with the given ID in database"));
         }
         return connectToNewsServer(context, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT), auth, c.getString(ServerQueries.COL_USER),
                 c.getString(ServerQueries.COL_PASSWORD));
@@ -87,8 +89,8 @@ public class NNTPConnector {
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
             c.close();
-            Log.d(TAG, "Found no server with the given ID in database");
-            throw new IOException("Found no server with the given ID in database");
+            Log.e(TAG, "Found no server with the given ID in database");
+            ACRA.getErrorReporter().handleException(new DatabaseException("Found no server with the given ID in database"));
         }
         CustomNNTPClient nntpClient = connectToNewsServer(charset, c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT), c.getInt(ServerQueries.COL_AUTH) == 1,
                 c.getString(ServerQueries.COL_USER), c.getString(ServerQueries.COL_PASSWORD));
