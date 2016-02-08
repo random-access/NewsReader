@@ -49,8 +49,6 @@ public class DialogServerSettings extends DialogFragment{
     private String mPassword;
 
     private Resources res;
-    private LayoutInflater inflater;
-    private View dialogView;
     private EditText mNameText;
     private EditText mEmailText;
     private EditText mSignatureText;
@@ -81,13 +79,13 @@ public class DialogServerSettings extends DialogFragment{
         mUser = getArguments().getString(TAG_USER);
         mPassword = getArguments().getString(TAG_PASSWORD);
 
-        inflater = getActivity().getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.dialog_server_settings, null);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_server_settings, null);
         res = getResources();
-        mNameText = (EditText)dialogView.findViewById(R.id.txt_name);
-        mEmailText = (EditText)dialogView.findViewById(R.id.txt_email);
-        mSignatureText = (EditText)dialogView.findViewById(R.id.txt_signature);
-        spKeepInterval = (Spinner)dialogView.findViewById(R.id.rg_msgkeep);
+        mNameText = (EditText) dialogView.findViewById(R.id.txt_name);
+        mEmailText = (EditText) dialogView.findViewById(R.id.txt_email);
+        mSignatureText = (EditText) dialogView.findViewById(R.id.txt_signature);
+        spKeepInterval = (Spinner) dialogView.findViewById(R.id.rg_msgkeep);
        //  mMsgKeepText= (EditText) dialogView.findViewById(R.id.txt_msgkeep);
         mNameText.requestFocus();
         // d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);

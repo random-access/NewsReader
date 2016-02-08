@@ -17,6 +17,7 @@
         android:id="@+id/message_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/ic_level"
         android:layout_toRightOf="@id/ic_level"
         android:textColor="@color/black"
         android:lines="2"
@@ -26,6 +27,7 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp"
+        android:layout_toStartOf="@+id/message_fresh"
         android:layout_toLeftOf="@+id/message_fresh" />
 
     <ImageView
@@ -33,6 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/shape_new_msg_markup"
+        android:contentDescription="@string/img_new_message"
         android:paddingTop="17dp"
         android:paddingRight="10dp"
         android:paddingEnd="10dp"
@@ -44,6 +47,7 @@
         android:id="@+id/message_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/light_blue"
         android:layout_below="@id/message_title"
@@ -60,7 +64,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/message_title"
+        android:layout_toStartOf="@id/message_date"
         android:layout_toLeftOf="@id/message_date"
+        android:layout_toEndOf="@id/ic_level"
         android:layout_toRightOf="@id/ic_level"
         android:lines="1"
         android:ellipsize="end"

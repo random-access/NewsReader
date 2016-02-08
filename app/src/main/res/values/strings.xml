@@ -8,7 +8,7 @@
     <string name="server_add">Add News Server</string>
     <string name="servertitle">Title</string>
     <string name="servertitle_hint">Default: same as server</string>
-    <string name="server">Server</string>
+    <string name="serverName">Server: %1$s</string>
     <string name="server_hint">news.example.com</string>
     <string name="port">Port</string>
     <string name="port_hint">Default: 119</string>
@@ -42,7 +42,7 @@
     <string name="server_delete">Delete server</string>
     <string name="select_newsgroups">Select newsgroups</string>
 
-    <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions">Subscriptions: %1$d</string>
     <string name="search_subscription">Type to search&#8230;</string>
     <string name="newsgroup_settings">Newsgroup Settings</string>
     <string name="success_modifying_group">Successfully modified newsgroup!</string>
@@ -180,5 +180,12 @@
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
     <string name="crash_dialog_ok_toast">Thank you !</string>
     <string name="action_testcrash">Crash app! (debug)</string>
+    <string name="img_reply">Reply</string>
+    <string name="img_header">Show header</string>
+    <string name="img_new_message">New message</string>
+    <string name="img_children">More messages</string>
+    <string name="img_add_server">Add server</string>
+    <string name="img_edit_subscriptions">Edit subscriptions</string>
+    <string name="server">Server</string>
 
 </resources>

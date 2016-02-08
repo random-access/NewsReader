@@ -21,7 +21,6 @@ import org.random_access.newsreader.adapter.NewsgroupCursorAdapter;
 import org.random_access.newsreader.provider.contracts.MessageContract;
 import org.random_access.newsreader.provider.contracts.NewsgroupContract;
 import org.random_access.newsreader.queries.MessageQueries;
-import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 
 /**

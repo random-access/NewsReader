@@ -1,7 +1,6 @@
 package org.random_access.newsreader.nntp;
 
 import android.text.Html;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;

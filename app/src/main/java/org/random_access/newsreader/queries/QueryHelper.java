@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import java.util.ArrayList;
-
 /**
  * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 25.06.2015 <br>
@@ -17,15 +15,14 @@ class QueryHelper {
     public static int count(Context context, Uri uri,String selection,String[] selectionArgs) {
         Cursor cursor = context.getContentResolver().query(uri,new String[] {"count(*) AS count"},
                 selection, selectionArgs, null);
-        if (cursor.getCount() == 0) {
+        int result = 0;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                result = cursor.getInt(0);
+            }
             cursor.close();
-            return 0;
-        } else {
-            cursor.moveToFirst();
-            int result = cursor.getInt(0);
-            cursor.close();
-            return result;
         }
+        return result;
     }
 
     public static String makePlaceholderArray(int length) {

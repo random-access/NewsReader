@@ -3,8 +3,8 @@ package org.random_access.newsreader;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 /**
@@ -26,17 +26,17 @@ public class MsgHierarchyView extends View {
 
     public MsgHierarchyView(Context context) {
         super(context, null, 0);
-        init();
+        init(context);
     }
 
     public MsgHierarchyView(Context context, AttributeSet attributeSet) {
         super(context,attributeSet, 0);
-        init();
+        init(context);
     }
 
     public MsgHierarchyView(Context context, AttributeSet attributeSet, int defStyleAttr ) {
         super(context, attributeSet, defStyleAttr);
-        init();
+        init(context);
     }
 
 
@@ -81,11 +81,11 @@ public class MsgHierarchyView extends View {
 
 
 
-    private void init() {
+    private void init(Context context) {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAlpha(255);
-        mPaint.setColor(getResources().getColor(R.color.blue));
+        mPaint.setColor(ContextCompat.getColor(context, R.color.blue));
         mPaint.setStrokeWidth(strokeWidth);
     }
 

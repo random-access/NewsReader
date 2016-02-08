@@ -2,13 +2,14 @@ package org.random_access.newsreader.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.acra.ACRA;
 import org.random_access.newsreader.provider.contracts.MessageContract;
@@ -126,7 +127,7 @@ public class NNTPProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         int uriCode = uriMatcher.match(uri);
         switch(uriCode) {
             case SETTINGS_ROW:
@@ -153,7 +154,7 @@ public class NNTPProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         int uriCode = uriMatcher.match(uri);
         String tableName = getTableName(uriCode);
@@ -170,23 +171,29 @@ public class NNTPProvider extends ContentProvider {
         Cursor cursor = queryBuilder.query(db, projection, selection,
                 selectionArgs, null, null, sortOrder);
         // notify listeners
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        Context ctxt = getContext();
+        if (ctxt != null) {
+            cursor.setNotificationUri(ctxt.getContentResolver(), uri);
+        }
         return cursor;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         SQLiteDatabase sqlDB = newsDBOpenHelper.getWritableDatabase();
         int uriCode = uriMatcher.match(uri);
         String tableName = getTableName(uriCode);
         long id = sqlDB.insert(tableName, null, values);
         // notify observers
-        getContext().getContentResolver().notifyChange(uri, null);
+        Context ctxt = getContext();
+        if (ctxt != null) {
+            ctxt.getContentResolver().notifyChange(uri, null);
+        }
         return  Uri.parse(tableName + "/" + id);
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase sqlDB = newsDBOpenHelper.getWritableDatabase();
         int numberOfUpdates;
         int uriCode = uriMatcher.match(uri);
@@ -208,12 +215,15 @@ public class NNTPProvider extends ContentProvider {
             }
         }
         //notify observers
-        getContext().getContentResolver().notifyChange(uri, null);
+        Context ctxt = getContext();
+        if (ctxt != null) {
+            ctxt.getContentResolver().notifyChange(uri, null);
+        }
         return numberOfUpdates;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase sqlDB = newsDBOpenHelper.getWritableDatabase();
         int numberOfDeletions;
         int uriCode = uriMatcher.match(uri);
@@ -231,7 +241,10 @@ public class NNTPProvider extends ContentProvider {
             }
         }
         // notify potential observers
-        getContext().getContentResolver().notifyChange(uri,null);
+        Context ctxt = getContext();
+        if (ctxt != null) {
+            ctxt.getContentResolver().notifyChange(uri, null);
+        }
         return numberOfDeletions;
     }
 

@@ -14,13 +14,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.acra.ACRA;
 import org.apache.commons.net.nntp.SimpleNNTPHeader;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.nntp.NNTPDateFormatter;
 import org.random_access.newsreader.nntp.NNTPMessageHeader;
 import org.random_access.newsreader.nntp.SupportedCharsets;
-import org.random_access.newsreader.queries.DatabaseException;
 import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;

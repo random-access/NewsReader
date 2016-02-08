@@ -32,7 +32,7 @@
     <string name="select_all">Alle auswählen</string>
     <string name="select_newsgroups">Newsgroups auswählen</string>
     <string name="selected">Momentan ausgewählt</string>
-    <string name="server">Server</string>
+    <string name="serverName">Server: %1$s</string>
     <string name="server_add">News-Server hinzufügen</string>
     <string name="server_delete">Server löschen</string>
     <string name="server_hint">news.beispiel.de</string>
@@ -41,7 +41,7 @@
     <string name="servertitle_hint">Standard: gleich wie Server</string>
     <string name="show">Anzeigen</string>
     <string name="signature">Signatur</string>
-    <string name="subscriptions">Abonnements</string>
+    <string name="subscriptions">Abonnements: %1$d</string>
     <string name="success_adding_server">News-Server erfolgreich hinzugefügt! Viel Spaß beim Posten ;)</string>
     <string name="success_connect_server">Strike! Verbindungstest erfolgreich ;)</string>
     <string name="title_activity_show_messages">Nachrichten</string>
@@ -150,4 +150,11 @@
     <string name="action_testcrash">Crash app! (debug)</string>
     <string name="pref_notify_on_sync_summary">NewsReader erlauben, eine Benachrichtigung anzuzeigen, wenn neue Nachrichten beim Synchronisieren abgeholt wurden.</string>
     <string name="pref_notify_on_sync_text">Benachrichtigungen aktivieren</string>
+    <string name="img_reply">Antworten</string>
+    <string name="img_header">Header anzeigen</string>
+    <string name="img_new_message">Neue Nachricht</string>
+    <string name="img_children">Weitere Nachrichten</string>
+    <string name="img_add_server">Server hinzufügen</string>
+    <string name="img_edit_subscriptions">Abonnements bearbeiten</string>
+    <string name="server">Server</string>
 </resources>

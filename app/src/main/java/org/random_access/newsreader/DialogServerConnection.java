@@ -37,8 +37,6 @@ public class DialogServerConnection extends DialogFragment {
     public static final String TAG_ADD_SERVER = "Add-server";
 
     private Resources res;
-    private LayoutInflater inflater;
-    private View dialogView;
     private EditText mServerTitle;
     private EditText mServerText;
     private EditText mPortText;
@@ -59,13 +57,13 @@ public class DialogServerConnection extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        inflater = getActivity().getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.dialog_add_server, null);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_server, null);
         res = getResources();
         mServerTitle = (EditText) dialogView.findViewById(R.id.txt_servertitle);
-        mServerText = (EditText)dialogView.findViewById(R.id.txt_server);
-        mPortText = (EditText)dialogView.findViewById(R.id.txt_port);
-        mUserText = (EditText)dialogView.findViewById(R.id.txt_user);
+        mServerText = (EditText) dialogView.findViewById(R.id.txt_server);
+        mPortText = (EditText) dialogView.findViewById(R.id.txt_port);
+        mUserText = (EditText) dialogView.findViewById(R.id.txt_user);
         mPasswordText = (EditText) dialogView.findViewById(R.id.txt_password);
         mUserLabel = (TextView) dialogView.findViewById(R.id.lbl_user);
         mPassLabel = (TextView) dialogView.findViewById(R.id.lbl_pass);

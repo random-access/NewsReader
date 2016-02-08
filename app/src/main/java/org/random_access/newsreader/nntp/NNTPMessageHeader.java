@@ -1,7 +1,6 @@
 package org.random_access.newsreader.nntp;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 

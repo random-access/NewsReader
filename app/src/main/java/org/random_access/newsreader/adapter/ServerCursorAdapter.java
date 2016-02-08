@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,8 @@ import org.random_access.newsreader.EditSubscriptionsActivity;
 import org.random_access.newsreader.NetworkStateHelper;
 import org.random_access.newsreader.R;
 import org.random_access.newsreader.ServerSettingsActivity;
-import org.random_access.newsreader.ShowNewsgroupsActivity;
 import org.random_access.newsreader.ShowServerActivity;
-import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
-import org.random_access.newsreader.queries.ServerQueries;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -91,9 +89,9 @@ public class ServerCursorAdapter extends CursorAdapter {
                 txtName = (TextView) parent.findViewById(R.id.id_server_name_extended);
                 txtSubscriptions = (TextView) parent.findViewById(R.id.id_subscriptions_extended);
                 btnEditServerSettings = (ImageButton) parent.findViewById(R.id.btn_edit_server);
-                btnEditServerSettings.setColorFilter(context.getResources().getColor(R.color.light_blue));
+                btnEditServerSettings.setColorFilter(ContextCompat.getColor(context, R.color.light_blue));
                 btnEditSubscriptions = (ImageButton) parent.findViewById(R.id.btn_edit_subscriptions);
-                btnEditSubscriptions.setColorFilter(context.getResources().getColor(R.color.light_blue));
+                btnEditSubscriptions.setColorFilter(ContextCompat.getColor(context, R.color.light_blue));
                 break;
             default:
                 txtTitle = (TextView) parent.findViewById(R.id.id_server_title);
@@ -107,8 +105,10 @@ public class ServerCursorAdapter extends CursorAdapter {
         switch (type) {
             case EXTENDED:
                 txtTitle.setText(title);
-                txtName.setText(res.getString(R.string.server) + ": " + name);
-                txtSubscriptions.setText(res.getString(R.string.subscriptions) + ": " + noOfSubscriptions);
+                // txtName.setText(res.getString(R.string.server) + ": " + name);
+                txtName.setText(String.format(res.getString(R.string.serverName), name));
+                // txtSubscriptions.setText(res.getString(R.string.subscriptions) + ": " + noOfSubscriptions);
+                txtSubscriptions.setText(String.format(res.getString(R.string.subscriptions), noOfSubscriptions));
                 break;
             default:
                 txtTitle.setText(title);

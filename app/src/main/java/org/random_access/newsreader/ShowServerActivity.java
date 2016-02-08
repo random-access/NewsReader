@@ -45,7 +45,6 @@ public class ShowServerActivity extends AppCompatActivity implements
 
     // Sync interval constants
     public static final long SECONDS_PER_MINUTE = 60L;
-    private static long SYNC_INTERVAL;
 
     private final String[] serverProjection = { ServerContract.ServerEntry._ID, ServerContract.ServerEntry.COL_TITLE,
             ServerContract.ServerEntry.COL_SERVERNAME };
@@ -63,12 +62,12 @@ public class ShowServerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_server);
         ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
-        PreferenceManager.setDefaultValues(getApplicationContext(), SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS, R.xml.preferences, false);
-        SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS);
+        PreferenceManager.setDefaultValues(getApplicationContext(), SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE, R.xml.preferences, false);
+        SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
         long syncIntervalInMinutes = Long.parseLong(sharedPreferences.getString("pref_sync_interval", "30"));
-        SYNC_INTERVAL = syncIntervalInMinutes  * SECONDS_PER_MINUTE;
+        long syncIntervalInSeconds = syncIntervalInMinutes * SECONDS_PER_MINUTE;
         Log.i(TAG, "Periodic sync set to " + syncIntervalInMinutes);
-        ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+        ContentResolver.addPeriodicSync(ACCOUNT, AUTHORITY, Bundle.EMPTY, syncIntervalInSeconds);
 
         mServerListView = (ListView)findViewById(R.id.server_list);
         mServerListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);

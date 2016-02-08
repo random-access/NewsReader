@@ -28,21 +28,25 @@
             android:layout_below="@id/article_subject"/>
 
         <ImageButton
+            android:contentDescription="@string/img_reply"
             android:id="@+id/article_reply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/article_from"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:src="@drawable/ic_reply_white"
             android:background="@android:color/transparent"
             android:padding="5dp"
             />
 
         <ImageButton
+            android:contentDescription="@string/img_header"
             android:id="@+id/article_fullheader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/article_from"
+            android:layout_toStartOf="@id/article_reply"
             android:layout_toLeftOf="@id/article_reply"
             android:src="@drawable/ic_info_white"
             android:background="@android:color/transparent"
@@ -55,9 +59,11 @@
             android:paddingBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/article_reply"
             android:layout_toLeftOf="@id/article_reply"
             android:textColor="@color/grey"
             android:layout_below="@id/article_from"
+            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true" />
 
         <View
@@ -73,7 +79,6 @@
             android:id="@+id/article_text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:textColor="@color/black"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"/>

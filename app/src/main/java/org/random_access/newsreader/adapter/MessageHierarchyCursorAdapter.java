@@ -2,6 +2,7 @@ package org.random_access.newsreader.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,14 +47,14 @@ public class MessageHierarchyCursorAdapter extends CursorAdapter {
         ImageView fresh = (ImageView) view.findViewById(R.id.message_fresh);
 
         title.setText(cursor.getString(MessageQueries.COL_SUBJECT));
-        title.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.grey));
+        title.setTextColor(isNew ? ContextCompat.getColor(context, R.color.black) : ContextCompat.getColor(context, R.color.grey));
         date.setText(NNTPDateFormatter.getPrettyDateString(cursor.getLong(MessageQueries.COL_DATE), context));
-        date.setTextColor(isNew ? context.getResources().getColor(R.color.light_blue) : context.getResources().getColor(R.color.dark_grey));
+        date.setTextColor(isNew ? ContextCompat.getColor(context, R.color.light_blue) : ContextCompat.getColor(context, R.color.dark_grey));
         from.setText(cursor.getString(MessageQueries.COL_FROM_NAME));
-        from.setTextColor(isNew ? context.getResources().getColor(R.color.black) : context.getResources().getColor(R.color.dark_grey));
+        from.setTextColor(isNew ? ContextCompat.getColor(context, R.color.black) : ContextCompat.getColor(context, R.color.dark_grey));
         boolean isParent = new MessageQueries(context).hasMessageChildren(cursor.getLong(MessageQueries.COL_ID));
         imgChildren.setVisibility(isParent ? View.VISIBLE : View.INVISIBLE);
-        imgChildren.setColorFilter(context.getResources().getColor(R.color.light_blue));
+        imgChildren.setColorFilter(ContextCompat.getColor(context, R.color.light_blue));
         fresh.setVisibility(isFresh ? View.VISIBLE : View.INVISIBLE);
     }
 

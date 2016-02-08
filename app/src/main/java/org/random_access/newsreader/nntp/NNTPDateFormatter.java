@@ -23,8 +23,6 @@ public class NNTPDateFormatter {
     private static final String DATE_PATTERN_MSG_HEADER = "EEE, dd MMM yyyy hh:mm:ss Z";
     private static final String[] DATE_PATTERNS_MSG_HEADER =  new String []{"EEE, dd MMM yyyy hh:mm:ss Z", "EEE, dd MMM yyyy hh:mm Z"};
 
-    private long lastParsedDate;
-
     // pattern database: "yyyyMMddhhmmss Z"
     // ----> eg 20150502181729 +0200
 
@@ -42,8 +40,7 @@ public class NNTPDateFormatter {
             try {
                 DateFormat df = new SimpleDateFormat(pattern, Locale.US);
                 Date date = df.parse(dateString);
-                lastParsedDate = date.getTime();
-                return lastParsedDate;
+                return date.getTime();
             } catch (ParseException e) {
                 Log.e(TAG, "Date " + dateString + " not parsable with pattern " + pattern);
             }
@@ -51,38 +48,7 @@ public class NNTPDateFormatter {
         throw new NNTPParsingException("Date " + dateString + " not parseable, no matching date string found.");
     }
 
-/*    public String getPrettyDateString(String rawDateString, Context context) {
-        SimpleDateFormat rawFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
-        Date date = null;
-        try {
-            date = rawFormat.parse(rawDateString);
-        } catch (ParseException e) {
-            Log.e(TAG, "Error parsing date from " + rawDateString);
-        }
-        DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
-        if (date != null) {
-            String formattedDate = dateFormat.format(date);
-            String formattedTime = timeFormat.format(date);
-            return formattedDate + " " + formattedTime;
-        } else {
-            return rawDateString;
-        }
-
-    }*/
-
-/*    public static String getRawDateString(long dateInMillis) {
-        DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_MSG_HEADER, Locale.US);
-        return dateFormat.format(new Date(dateInMillis));
-    }*/
-
     public static String getPrettyDateString(long dateInMillis, Context context) {
-        /*DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
-        Date date = new Date(dateInMillis);
-        String formattedDate = dateFormat.format(date);
-        String formattedTime = timeFormat.format(date);
-        return formattedDate + " " + formattedTime; */
         return getPrettyDateStringDate(dateInMillis, context) + " " + getPrettyDateStringTime(dateInMillis, context);
     }
 

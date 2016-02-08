@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.acra.ACRA;
@@ -118,7 +119,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_MULTI_PROCESS);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
 
                 // PreferenceManager.getDefaultSharedPreferences(context);
         boolean wifiOnly = sharedPreferences.getBoolean("pref_wlan_only", false);
@@ -295,7 +296,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void setNotification (int freshMessages) {;
+    private void setNotification (int freshMessages) {
         Log.d(TAG, "***** notification coming... *****");
 
         // Target activity for onClick = ShowServerActivity
@@ -312,7 +313,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         // add intents to builder
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setColor(R.color.blue)
+                        .setColor(ContextCompat.getColor(context, R.color.blue))
                        // .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                         .setContentTitle(context.getResources().getString(R.string.app_name))
                         .setContentText(context.getResources().getQuantityString(R.plurals.new_news, freshMessages, freshMessages))
@@ -320,7 +321,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                         .setVibrate(vibratePattern)
                         .setAutoCancel(true)
                         .setContentIntent(pendingClickIntent)
-                        .setDeleteIntent(pendingDeleteIntent);
+                .setDeleteIntent(pendingDeleteIntent);
 
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             builder.setSmallIcon(R.drawable.ic_newsreader_inv);

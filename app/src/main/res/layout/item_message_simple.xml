@@ -17,12 +17,14 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp"
+        android:layout_toStartOf="@+id/message_fresh"
         android:layout_toLeftOf="@+id/message_fresh" />
 
     <ImageView
         android:id="@+id/message_fresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/img_new_message"
         android:src="@drawable/shape_new_msg_markup"
         android:paddingTop="17dp"
         android:paddingRight="10dp"
@@ -37,6 +39,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/light_blue"
         android:layout_below="@id/message_title"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:lines="1"
         android:ellipsize="none"
@@ -51,7 +54,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/message_title"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_toStartOf="@id/message_date"
         android:layout_toLeftOf="@id/message_date"
         android:lines="1"
         android:ellipsize="end"

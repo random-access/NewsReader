@@ -15,6 +15,7 @@
         android:textColor="@color/black"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
         android:paddingRight="10dp" />
 
 
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/id_server_title_extended"
         android:textSize="8pt"
+        android:textColor="@color/black"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
 
@@ -31,6 +33,7 @@
         android:id="@+id/btn_edit_server"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/img_add_server"
         android:layout_toRightOf="@id/id_server_name_extended"
         android:layout_toEndOf="@id/id_server_name_extended"
         android:background="@android:color/transparent"
@@ -44,11 +47,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="8pt"
+        android:textColor="@color/black"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
 
     <ImageButton
         android:id="@+id/btn_edit_subscriptions"
+        android:contentDescription="@string/img_edit_subscriptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/id_subscriptions_extended"
@@ -57,9 +62,4 @@
         android:src="@drawable/ic_settings_white"
         android:padding="10dp"
         android:layout_alignBottom="@id/id_subscriptions_extended" />
-
-
-
-
-
 </RelativeLayout>

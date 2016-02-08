@@ -31,7 +31,7 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(PREFS_NAME);
-            getPreferenceManager().setSharedPreferencesMode(Context.MODE_MULTI_PROCESS);
+            getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
             addPreferencesFromResource(R.xml.preferences);
 
             Preference syncInterval = findPreference("pref_sync_interval");

@@ -112,7 +112,7 @@ public class ServerQueries {
         long settingsId = getServerSettingsId(serverId);
 
         // delete all server entries
-        int noOfServerRows =  context.getContentResolver().delete(ServerContract.CONTENT_URI, ServerContract.ServerEntry._ID + " = ?", new String[] {serverId + ""});
+        int noOfServerRows =  context.getContentResolver().delete(ServerContract.CONTENT_URI, ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""});
 
         // delete all settings entries
         new SettingsQueries(context).deleteSettingsWitId(settingsId);
@@ -123,11 +123,13 @@ public class ServerQueries {
         long settingsId = 0;
         Cursor serverCursor = context.getContentResolver().query(ServerContract.CONTENT_URI, PROJECTION_SERVER,
                 ServerContract.ServerEntry._ID + " = ?", new String[]{serverId + ""}, null);
-        if (serverCursor.moveToFirst()) {
-            // we just have 1 setting entry for 1 project
-            settingsId = serverCursor.getLong(COL_SETTINGS_ID);
+        if (serverCursor != null) {
+            if (serverCursor.moveToFirst()) {
+                // we just have 1 setting entry for 1 project
+                settingsId = serverCursor.getLong(COL_SETTINGS_ID);
+            }
+            serverCursor.close();
         }
-        serverCursor.close();
         return settingsId;
     }
 

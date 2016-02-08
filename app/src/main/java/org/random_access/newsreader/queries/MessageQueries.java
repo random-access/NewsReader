@@ -83,10 +83,12 @@ public class MessageQueries {
         long id = -1;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ? AND "
                         + MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[] {messageId, newsgroupId + ""}, null);
-        if (c.moveToFirst()) {
-            id = c.getLong(COL_ID);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(COL_ID);
+            }
+            c.close();
         }
-        c.close();
         return  id;
     }
 
@@ -129,8 +131,10 @@ public class MessageQueries {
     public boolean isMessageInDatabase(String messageId, long newsgroupId) {
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_MSG_ID + " = ? AND "
                 + MessageContract.MessageEntry.COL_FK_N_ID + " = ?", new String[]{messageId + "", newsgroupId + ""}, null);
-        boolean result = c.moveToFirst();
-        c.close();
+        boolean result = c != null && c.moveToFirst();
+        if (c != null) {
+            c.close();
+        }
         return result;
     }
 
@@ -343,13 +347,15 @@ public class MessageQueries {
         boolean hasUnreadChildren = false;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_NEW}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
                 new String[]{rootId + ""}, null);
-        if (c.moveToFirst()) {
-            while(!c.isAfterLast() && !hasUnreadChildren) {
-                hasUnreadChildren = c.getInt(1) == 1;
-                c.moveToNext();
+        if (c != null) {
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast() && !hasUnreadChildren) {
+                    hasUnreadChildren = c.getInt(1) == 1;
+                    c.moveToNext();
+                }
             }
+            c.close();
         }
-        c.close();
         return hasUnreadChildren;
     }
 
@@ -362,13 +368,15 @@ public class MessageQueries {
         boolean hasFreshChildren = false;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID, MessageContract.MessageEntry.COL_FRESH}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
                 new String[]{rootId + ""}, null);
-        if (c.moveToFirst()) {
-            while (!c.isAfterLast() && !hasFreshChildren) {
-                hasFreshChildren = c.getInt(1) == 1;
-                c.moveToNext();
-            }
-        }
-        c.close();
+         if (c != null) {
+             if (c.moveToFirst()) {
+                 while (!c.isAfterLast() && !hasFreshChildren) {
+                     hasFreshChildren = c.getInt(1) == 1;
+                     c.moveToNext();
+                 }
+             }
+             c.close();
+         }
         return hasFreshChildren;
     }
 
@@ -441,10 +449,12 @@ public class MessageQueries {
         // update other message values
         adjustLeftRightValues(currentNodeLeftRightValues, newsgroupId, rootId);
         Uri message = context.getContentResolver().insert(MessageContract.CONTENT_URI, contentValues);
-        Long msgId = Long.parseLong(message.getLastPathSegment());
-        setMessageNewStatus(msgId, isNew == 1);
-        setMessageFreshStatus(msgId, isFresh == 1);
-        return true;
+        if (message != null) {
+            Long msgId = Long.parseLong(message.getLastPathSegment());
+            setMessageNewStatus(msgId, isNew == 1);
+            setMessageFreshStatus(msgId, isFresh == 1);
+        }
+        return message != null;
     }
 
     /**
@@ -457,11 +467,13 @@ public class MessageQueries {
         int lValue = -1;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{
             MessageContract.MessageEntry.COL_RIGHT_VALUE, MessageContract.MessageEntry.COL_LEFT_VALUE}, MessageContract.MessageEntry._ID + " = ? ", new String[]{messageId + ""}, null);
-        if (c.moveToFirst()) {
-            rValue = c.getInt(0);
-            lValue = c.getInt(1);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                rValue = c.getInt(0);
+                lValue = c.getInt(1);
+            }
+            c.close();
         }
-        c.close();
         return new Point(lValue, rValue);
     }
 
@@ -500,10 +512,12 @@ public class MessageQueries {
         }
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID}, MessageContract.MessageEntry.COL_PARENT_MSG + " = ? ",
                 new String[]{parentMsg + ""}, MessageContract.MessageEntry.COL_DATE + " DESC");
-        if (c.moveToFirst()) {
-            youngestSibling = c.getLong(0);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                youngestSibling = c.getLong(0);
+            }
+            c.close();
         }
-        c.close();
         return youngestSibling;
     }
 
@@ -521,21 +535,23 @@ public class MessageQueries {
         }
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND (" +
                         MessageContract.MessageEntry.COL_ROOT_MSG + " = ? OR " + MessageContract.MessageEntry._ID + " = ?)", new String[] {newsgroupId + "", rootId + "", rootId + ""}, MessageContract.MessageEntry.COL_DATE + " DESC");
-        if (c.moveToFirst()) {
-            while (!c.isAfterLast()) {
-                int left = c.getInt(COL_LEFT_VALUE);
-                int right = c.getInt(COL_RIGHT_VALUE);
-                ContentValues cv = new ContentValues();
-                if (left >= currentNodeLeftRightValues.x)
-                    cv.put(MessageContract.MessageEntry.COL_LEFT_VALUE, left + 2);
-                if (right >= currentNodeLeftRightValues.x)
-                    cv.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, right + 2);
-                if (cv.containsKey(MessageContract.MessageEntry.COL_LEFT_VALUE) || cv.containsKey(MessageContract.MessageEntry.COL_RIGHT_VALUE))
-                    context.getContentResolver().update(MessageContract.CONTENT_URI, cv, MessageContract.MessageEntry._ID + " = ? ", new String[]{c.getInt(COL_ID) + ""});
-                c.moveToNext();
+        if (c != null) {
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast()) {
+                    int left = c.getInt(COL_LEFT_VALUE);
+                    int right = c.getInt(COL_RIGHT_VALUE);
+                    ContentValues cv = new ContentValues();
+                    if (left >= currentNodeLeftRightValues.x)
+                        cv.put(MessageContract.MessageEntry.COL_LEFT_VALUE, left + 2);
+                    if (right >= currentNodeLeftRightValues.x)
+                        cv.put(MessageContract.MessageEntry.COL_RIGHT_VALUE, right + 2);
+                    if (cv.containsKey(MessageContract.MessageEntry.COL_LEFT_VALUE) || cv.containsKey(MessageContract.MessageEntry.COL_RIGHT_VALUE))
+                        context.getContentResolver().update(MessageContract.CONTENT_URI, cv, MessageContract.MessageEntry._ID + " = ? ", new String[]{c.getInt(COL_ID) + ""});
+                    c.moveToNext();
+                }
             }
+            c.close();
         }
-        c.close();
     }
 
     /**
@@ -547,10 +563,12 @@ public class MessageQueries {
         boolean hasChildren = false;
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, new String[]{MessageContract.MessageEntry._ID}, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? ",
                 new String[]{messageId + ""}, null);
-        if (c.moveToFirst()) {
-            hasChildren = true;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                hasChildren = true;
+            }
+            c.close();
         }
-        c.close();
         return  hasChildren;
     }
 
@@ -588,39 +606,45 @@ public class MessageQueries {
     public  void deleteOldMessages(long newsgroupId, long timeLimit) {
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_FK_N_ID + " = ? AND "
                 + MessageContract.MessageEntry.COL_DATE + " < ? ", new String[]{newsgroupId + "", timeLimit + ""}, MessageContract.MessageEntry.COL_DATE + " ASC");
-        if (c.moveToFirst()) {
-            while(!c.isAfterLast()) {
-                deleteRootMessage(c.getLong(COL_ID));
-                c.moveToNext();
+        if (c != null) {
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast()) {
+                    deleteRootMessage(c.getLong(COL_ID));
+                    c.moveToNext();
+                }
             }
+            c.close();
         }
-        c.close();
     }
 
     private void deleteRootMessage(long rootId) {
         // get all children of message with id = rootId
         Cursor c = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE,
                 MessageContract.MessageEntry.COL_ROOT_MSG + " = ? AND " + MessageContract.MessageEntry.COL_PARENT_MSG + " = ? ", new String[]{rootId + "", rootId + ""}, null);
-        if (c.moveToFirst()) {
-            while(!c.isAfterLast()) {
-                long msgId = c.getLong(COL_ID);
-                int left = c.getInt(COL_LEFT_VALUE);
-                int right = c.getInt(COL_RIGHT_VALUE);
-                // get all messages in the subtree of message with ID msgId
-                Cursor c1 = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? AND "
-                     + MessageContract.MessageEntry.COL_LEFT_VALUE + " > ? AND " + MessageContract.MessageEntry.COL_RIGHT_VALUE + " < ? ", new String[] {rootId + "", left + "", right + ""}, null);
-                if (c1.moveToFirst()) {
-                    while(!c1.isAfterLast()) {
-                        adjustLeftRightValuesWhileDeleting(c1.getLong(COL_ID), c1.getInt(COL_LEFT_VALUE), c1.getInt(COL_RIGHT_VALUE), c1.getInt(COL_LEVEL), left - 1, msgId);
-                        c1.moveToNext();
+        if (c != null) {
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast()) {
+                    long msgId = c.getLong(COL_ID);
+                    int left = c.getInt(COL_LEFT_VALUE);
+                    int right = c.getInt(COL_RIGHT_VALUE);
+                    // get all messages in the subtree of message with ID msgId
+                    Cursor c1 = context.getContentResolver().query(MessageContract.CONTENT_URI, PROJECTION_MESSAGE, MessageContract.MessageEntry.COL_ROOT_MSG + " = ? AND "
+                            + MessageContract.MessageEntry.COL_LEFT_VALUE + " > ? AND " + MessageContract.MessageEntry.COL_RIGHT_VALUE + " < ? ", new String[]{rootId + "", left + "", right + ""}, null);
+                    if (c1 != null) {
+                        if (c1.moveToFirst()) {
+                            while (!c1.isAfterLast()) {
+                                adjustLeftRightValuesWhileDeleting(c1.getLong(COL_ID), c1.getInt(COL_LEFT_VALUE), c1.getInt(COL_RIGHT_VALUE), c1.getInt(COL_LEVEL), left - 1, msgId);
+                                c1.moveToNext();
+                            }
+                        }
+                        c1.close();
                     }
+                    adjustLeftRightValuesWhileDeleting(c.getLong(COL_ID), c.getInt(COL_LEFT_VALUE), c.getInt(COL_RIGHT_VALUE), c.getInt(COL_LEVEL), left - 1, -1);
+                    c.moveToNext();
                 }
-                c1.close();
-                adjustLeftRightValuesWhileDeleting(c.getLong(COL_ID), c.getInt(COL_LEFT_VALUE), c.getInt(COL_RIGHT_VALUE), c.getInt(COL_LEVEL), left - 1, -1);
-                c.moveToNext();
             }
+            c.close();
         }
-        c.close();
         context.getContentResolver().delete(MessageContract.CONTENT_URI, MessageContract.MessageEntry._ID + " = ? ", new String[]{rootId + ""});
         Log.d(TAG, "Deleted message with id: " + rootId);
     }
