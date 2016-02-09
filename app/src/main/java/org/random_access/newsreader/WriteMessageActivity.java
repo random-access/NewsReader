@@ -133,7 +133,8 @@ public class WriteMessageActivity extends AppCompatActivity {
                 Cursor c = new ServerQueries(ctxt).getServerWithId(serverId);
                 if (c.moveToFirst()) {
                     NNTPConnector nntpConnector = new NNTPConnector(ctxt);
-                    CustomNNTPClient client = nntpConnector.connectToNewsServer(serverId, SupportedCharsets.UTF_8);
+                    boolean ssl = c.getInt(ServerQueries.COL_ENCRYPTION) == 1;
+                    CustomNNTPClient client = nntpConnector.connectToNewsServer(ssl, serverId, SupportedCharsets.UTF_8);
                     Writer writer = client.postArticle();
                     if(writer != null) {
                         writer.write(header);

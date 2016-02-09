@@ -45,13 +45,11 @@ public class DialogServerConnection extends DialogFragment {
     private TextView mUserLabel;
     private TextView mPassLabel;
     private CheckBox mAuthentication;
+    private CheckBox mEncryption;
 
     private AlertDialog dialog;
 
     public static DialogServerConnection newInstance() {
-        // Bundle bundle = new Bundle();
-        // DialogServerConnection fragment = new DialogServerConnection();
-        // fragment.setArguments(bundle);
         return new DialogServerConnection();
     }
 
@@ -75,6 +73,13 @@ public class DialogServerConnection extends DialogFragment {
                 mUserText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 mPassLabel.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 mPasswordText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
+        mEncryption = (CheckBox) dialogView.findViewById(R.id.chk_ssl);
+        mEncryption.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPortText.setHint(isChecked ? getResources().getString(R.string.port_hint_ssl) : getResources().getString(R.string.port_hint));
             }
         });
         mServerText.requestFocus();
@@ -118,22 +123,23 @@ public class DialogServerConnection extends DialogFragment {
                     String servertitle = mServerTitle.getText().toString();
                     String server = mServerText.getText().toString();
                     String port = mPortText.getText().toString();
+                    String ssl = mEncryption.isChecked() ? "1" : "0";
                     String withAuth = mAuthentication.isChecked() ? "1" : "0";
                     String user = mUserText.getText().toString();
                     String password = mPasswordText.getText().toString();
-                    handleDialogInput(servertitle, server, port, withAuth, user, password);
+                    handleDialogInput(servertitle, server, port, ssl, withAuth, user, password);
                 }
             });
         }
 
-        private void handleDialogInput(String servertitle, String server, String port, String withAuth, String user, String password) {
+        private void handleDialogInput(String servertitle, String server, String port, String ssl, String withAuth, String user, String password) {
             if (TextUtils.isEmpty(server)) {
                 mServerText.setError(res.getString(R.string.error_empty_field));
                 mServerText.requestFocus();
                 getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             } else {
-               new ServerConnectTask().execute(servertitle, server, port, withAuth, user, password);
+               new ServerConnectTask().execute(servertitle, server, port, ssl, withAuth, user, password);
             }
         }
     }
@@ -146,6 +152,7 @@ public class DialogServerConnection extends DialogFragment {
         private String servertitle;
         private String server;
         private int port;
+        private boolean ssl;
         private boolean withAuth;
         private String user;
         private String password;
@@ -154,16 +161,18 @@ public class DialogServerConnection extends DialogFragment {
         protected String[] doInBackground(String... params) {
             servertitle = TextUtils.isEmpty(params[0]) ? params [1] : params [0]; // if blank, servertitle = server
             server = params[1];
-            port = TextUtils.isEmpty(params[2]) ? 119 : Integer.parseInt(params[2]); // if blank, serverport = 119
-            withAuth = params[3].equals("1");
-            user = params[4];
-            password = params[5];
-            message = "SERVERTITLE: " + servertitle + ", SERVER: " + server + ", PORT: " + port + ", AUTH: " + withAuth + ", USER: " + user +
+            int standardPort = ssl ? 563 : 119; // TODO global vars
+            port = TextUtils.isEmpty(params[2]) ? standardPort : Integer.parseInt(params[2]);
+            ssl = params[3].equals("1");
+            withAuth = params[4].equals("1");
+            user = params[5];
+            password = params[6];
+            message = "SERVERTITLE: " + servertitle + ", SERVER: " + server + ", PORT: " + port + ", SSL: " + ssl  +", AUTH: " + withAuth + ", USER: " + user +
                     ", GOT PASSWORD: " + (!TextUtils.isEmpty(password));
             if (NetworkStateHelper.isOnline(getActivity())) {
                 try {
                     NNTPConnector connector = new NNTPConnector(getActivity());
-                    connector.connectToNewsServer(getActivity(), server, port, withAuth, user, password);
+                    connector.connectToNewsServer(server, port, ssl, withAuth, user, password);
                 } catch (IOException e) {
                     msg = res.getString(R.string.error_connection);
                 } catch (LoginException e) {
@@ -180,7 +189,7 @@ public class DialogServerConnection extends DialogFragment {
             if (TextUtils.isEmpty(msg)) {
                 Toast.makeText(getActivity(), res.getString(R.string.success_connect_server), Toast.LENGTH_SHORT).show();
                 dismiss();
-                DialogServerSettings serverSettingsFragment = DialogServerSettings.newInstance(servertitle, server, port, false, withAuth, user, password);
+                DialogServerSettings serverSettingsFragment = DialogServerSettings.newInstance(servertitle, server, port, ssl, withAuth, user, password);
                 serverSettingsFragment.show(getFragmentManager(), DialogServerSettings.TAG_ADD_SETTINGS);
             } else {
                 Log.e(TAG, "Error in ServerConnectTask: " + message);

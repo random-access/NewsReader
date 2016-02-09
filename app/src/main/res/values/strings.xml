@@ -12,6 +12,7 @@
     <string name="server_hint">news.example.com</string>
     <string name="port">Port</string>
     <string name="port_hint">Default: 119</string>
+    <string name="port_hint_ssl">Default: 563</string>
     <string name="authenticate">With authentication</string>
     <string name="user">Username</string>
     <string name="user_hint">user@example.com</string>
@@ -187,5 +188,6 @@
     <string name="img_add_server">Add server</string>
     <string name="img_edit_subscriptions">Edit subscriptions</string>
     <string name="server">Server</string>
+    <string name="ssl">SSL / TLS</string>
 
 </resources>

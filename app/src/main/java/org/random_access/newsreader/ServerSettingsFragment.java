@@ -14,6 +14,7 @@ public class ServerSettingsFragment extends Fragment{
     private String serverTitle;
     private String serverName;
     private String serverPort;
+    private boolean encryption;
     private boolean auth;
     private String userName;
     private String password;
@@ -52,6 +53,14 @@ public class ServerSettingsFragment extends Fragment{
 
     public void setServerPort(String serverPort) {
         this.serverPort = serverPort;
+    }
+
+    public boolean hasEncryption() {
+        return encryption;
+    }
+
+    public void setEncryption(boolean encryption) {
+        this.encryption = encryption;
     }
 
     public boolean isAuth() {
