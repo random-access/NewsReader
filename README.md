@@ -13,9 +13,9 @@ Newsreader is a simple NNTP client for Android. Articles from subscribed newsgro
 - [x] Post messages
 - [x] Synchronize only over wifi or always
 - [x] Displaying messages hierarchically
-- [ ] Individual settings for saving messages
+- [x] Secure connection to news servers with SSL / TLS
 - [ ] Secure password storage on the device
-- [ ] Connect to news servers over SSL (if supported) -> not sure yet..
+- [ ] Individual settings for saving messages
 
 ## A short preview:
 
@@ -24,8 +24,6 @@ Newsreader is a simple NNTP client for Android. Articles from subscribed newsgro
 alt="Newsreader Screencast" width="480" height="360" border="10" /></a>
 
 The app will be made completely **open source** and distributed via PlayStore for **free** and **without advertisement**, as soon as there’s a stable release.
-
-More information can be found <a href="http://random-access.org/en/newsreader-en/" target="_blank">here</a>.
 
 ## Alpha version available :)
 If you wanna become an Alpha Tester, please feel free to contact me via E-Mail: 
