@@ -75,7 +75,7 @@ public class ServerQueries {
         values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
         values.put(ServerContract.ServerEntry.COL_SERVERNAME, serverName);
         values.put(ServerContract.ServerEntry.COL_SERVERPORT, serverPort);
-        values.put(ServerContract.ServerEntry.COL_ENCRYPTION, 0); // TODO handle encrypted connections
+        values.put(ServerContract.ServerEntry.COL_ENCRYPTION, encryption ? 1 : 0);
         values.put(ServerContract.ServerEntry.COL_AUTH, auth ? 1 : 0);
         values.put(ServerContract.ServerEntry.COL_USER, user);
         values.put(ServerContract.ServerEntry.COL_PASSWORD, password);
@@ -88,7 +88,7 @@ public class ServerQueries {
         values.put(ServerContract.ServerEntry.COL_TITLE, serverTitle);
         values.put(ServerContract.ServerEntry.COL_SERVERNAME, serverName);
         values.put(ServerContract.ServerEntry.COL_SERVERPORT, serverPort);
-        values.put(ServerContract.ServerEntry.COL_ENCRYPTION, 0); // TODO handle encrypted connections
+        values.put(ServerContract.ServerEntry.COL_ENCRYPTION, encryption ? 1 : 0);
         values.put(ServerContract.ServerEntry.COL_AUTH, auth ? 1 : 0);
         values.put(ServerContract.ServerEntry.COL_USER, user);
         values.put(ServerContract.ServerEntry.COL_PASSWORD, password);

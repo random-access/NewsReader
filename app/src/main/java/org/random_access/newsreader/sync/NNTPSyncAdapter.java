@@ -136,7 +136,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                 while (!c.isAfterLast()) {
                     try {
                         getNewNewsForServer(c.getLong(ServerQueries.COL_ID), c.getString(ServerQueries.COL_NAME), c.getInt(ServerQueries.COL_PORT),
-                                c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
+                                c.getInt(ServerQueries.COL_ENCRYPTION) == 1, c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
                                 c.getString(ServerQueries.COL_PASSWORD));
                         freshMessages += new MessageQueries(context).getFreshMessagesOnServerCount(c.getLong(ServerQueries.COL_ID));
                     } catch (IOException | LoginException e) {
@@ -163,16 +163,16 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getNewNewsForServer(long serverId, String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
+    private void getNewNewsForServer(long serverId, String server, int port, boolean ssl, boolean auth, String user, String password) throws IOException, LoginException {
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
 
         NNTPConnector nntpConnector = new NNTPConnector(context);
-        NNTPClient client =  nntpConnector.connectToNewsServer(context, server, port, auth, user, password);
+        NNTPClient client =  nntpConnector.connectToNewsServer(server, port, ssl, auth, user, password);
         Cursor c = newsgroupQueries.getNewsgroupsOfServer(serverId);
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 Log.d(TAG, "Starting sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
-                getNewNewsForNewsgroup(serverId, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), c.getInt(NewsgroupQueries.COL_MSG_LOAD_INTERVAL));
+                getNewNewsForNewsgroup(serverId, ssl, client, c.getLong(NewsgroupQueries.COL_ID), c.getString(NewsgroupQueries.COL_NAME), c.getInt(NewsgroupQueries.COL_MSG_LOAD_INTERVAL));
                 cleanupOldNewsFromNewsgroup(c.getLong(NewsgroupQueries.COL_ID), c.getInt(NewsgroupQueries.COL_MSG_KEEP_INTERVAL));
                 Log.d(TAG, "Finished sync for Newsgroup " + c.getString(NewsgroupQueries.COL_NAME) + "( id " + c.getLong(NewsgroupQueries.COL_ID) + ")");
                 c.moveToNext();
@@ -182,7 +182,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
 
-    private void  getNewNewsForNewsgroup(long serverId, NNTPClient client, long groupId, String groupName, int syncTime) throws IOException, LoginException{
+    private void  getNewNewsForNewsgroup(long serverId, boolean ssl, NNTPClient client, long groupId, String groupName, int syncTime) throws IOException, LoginException{
         currentNewsgroupId = groupId;
 
         // Create a GregorianCalendar instance with date of last sync.
@@ -208,7 +208,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Get messages and add them to database.
         for (String s : messages) {
-            fetchMessage(serverId, groupId, s);
+            fetchMessage(serverId, ssl, groupId, s);
         }
 
         // Store date of last message that we fetched in newsgroup table and reset values.
@@ -247,7 +247,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         return articleList.toArray(articleArray);
     }
 
-    private void fetchMessage(long serverId, long groupId, String articleId) throws IOException, LoginException {
+    private void fetchMessage(long serverId, boolean ssl, long groupId, String articleId) throws IOException, LoginException {
 
         if (new MessageQueries(context).isMessageInDatabase(articleId, groupId)) {
             return;
@@ -259,7 +259,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             // fetch header
-            CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(serverId, null);
+            CustomNNTPClient client = new NNTPConnector(context).connectToNewsServer(ssl, serverId, null);
             BufferedReader reader = new BufferedReader(client.retrieveArticleHeader(articleId));
             headerData = new NNTPMessageHeader();
             headerData.parseHeaderData(reader, articleId, groupId, context);
@@ -271,7 +271,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
             client.disconnect();
 
             // fetch body
-            client = new NNTPConnector(context).connectToNewsServer(serverId, charset);
+            client = new NNTPConnector(context).connectToNewsServer(ssl, serverId, charset);
             reader = new BufferedReader(client.retrieveArticleBody(articleId));
             messageBody = new NNTPMessageBody().parseBodyData(reader, charset, transferEncoding);
             client.disconnect();

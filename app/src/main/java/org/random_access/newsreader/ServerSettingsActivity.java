@@ -42,7 +42,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
 
     private ServerSettingsFragment serverSettingsFragment;
     private EditText txtServerTitle, txtServer, txtPort, txtUserName, txtPassword, txtUserDisplayName, txtEmailAddress, txtSignature;
-    private CheckBox chkAuth;
+    private CheckBox chkAuth, chkEncryption;
     private Spinner spMsgLoadPeriod;
     private TextView lblUser, lblPassword;
 
@@ -104,9 +104,11 @@ public class ServerSettingsActivity extends AppCompatActivity {
     }
 
     private void updateSettingsFragment() {
-        serverSettingsFragment.setServerTitle(txtServerTitle.getText().toString());
+        String standardPort = chkEncryption.isChecked() ? "563" : "119"; // TODO global vars
+        serverSettingsFragment.setServerTitle(TextUtils.isEmpty(txtServerTitle.getText().toString()) ? txtServer.getText().toString() : txtServerTitle.getText().toString());
         serverSettingsFragment.setServerName(txtServer.getText().toString());
-        serverSettingsFragment.setServerPort(txtPort.getText().toString());
+        serverSettingsFragment.setServerPort(TextUtils.isEmpty(txtPort.getText().toString()) ? standardPort : txtPort.getText().toString());
+        serverSettingsFragment.setEncryption(chkEncryption.isChecked());
         serverSettingsFragment.setAuth(chkAuth.isChecked());
         serverSettingsFragment.setUserName(txtUserName.getText().toString());
         serverSettingsFragment.setPassword(txtPassword.getText().toString());
@@ -140,6 +142,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
                 serverSettingsFragment.setServerTitle(c.getString(ServerQueries.COL_TITLE));
                 serverSettingsFragment.setServerName(c.getString(ServerQueries.COL_NAME));
                 serverSettingsFragment.setServerPort(c.getString(ServerQueries.COL_PORT));
+                serverSettingsFragment.setEncryption(c.getInt(ServerQueries.COL_ENCRYPTION) == 1);
                 serverSettingsFragment.setAuth(c.getInt(ServerQueries.COL_AUTH) == 1);
                 serverSettingsFragment.setUserName(c.getString(ServerQueries.COL_USER));
                 serverSettingsFragment.setPassword(c.getString(ServerQueries.COL_PASSWORD));
@@ -177,6 +180,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         txtServerTitle = (EditText) findViewById(R.id.txt_servertitle);
         txtServer = (EditText) findViewById(R.id.txt_server);
         txtPort = (EditText) findViewById(R.id.txt_port);
+        chkEncryption = (CheckBox) findViewById(R.id.chk_ssl);
         chkAuth = (CheckBox) findViewById(R.id.chk_auth);
         lblUser = (TextView) findViewById(R.id.lbl_user);
         txtUserName = (EditText) findViewById(R.id.txt_user);
@@ -190,6 +194,7 @@ public class ServerSettingsActivity extends AppCompatActivity {
         txtServerTitle.setText(serverSettingsFragment.getServerTitle() == null ? "" : serverSettingsFragment.getServerTitle() );
         txtServer.setText(serverSettingsFragment.getServerName() == null ? "" : serverSettingsFragment.getServerName());
         txtPort.setText(serverSettingsFragment.getServerPort() == null ? "" : serverSettingsFragment.getServerPort());
+        chkEncryption.setChecked(serverSettingsFragment.hasEncryption());
         chkAuth.setChecked(serverSettingsFragment.isAuth());
         manageAuthVisibility(chkAuth.isChecked());
         txtUserName.setText(serverSettingsFragment.getUserName() == null ? "" : serverSettingsFragment.getUserName());
@@ -203,6 +208,12 @@ public class ServerSettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 manageAuthVisibility(isChecked);
+            }
+        });
+        chkEncryption.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                txtPort.setHint(isChecked ? getResources().getString(R.string.port_hint_ssl) : getResources().getString(R.string.port_hint));
             }
         });
     }
@@ -225,13 +236,14 @@ public class ServerSettingsActivity extends AppCompatActivity {
 
             if (NetworkStateHelper.isOnline(ServerSettingsActivity.this)) {
                 try {
-                    int port = Integer.parseInt(TextUtils.isEmpty(serverSettingsFragment.getServerPort()) ? "119" : serverSettingsFragment.getServerPort());
+                    int port = Integer.parseInt(TextUtils.isEmpty(serverSettingsFragment.getServerPort()) ? "119" : serverSettingsFragment.getServerPort());// TODO handle standard ports
                     NNTPConnector connector = new NNTPConnector(ServerSettingsActivity.this);
-                    connector.connectToNewsServer(ServerSettingsActivity.this, serverSettingsFragment.getServerName(), port,
+                    connector.connectToNewsServer(serverSettingsFragment.getServerName(), port, serverSettingsFragment.hasEncryption(),
                             serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
                     ServerQueries serverQueries = new ServerQueries(ServerSettingsActivity.this);
                     serverQueries.modifyServer(serverId, serverSettingsFragment.getServerTitle(), serverSettingsFragment.getServerName(),
-                            port, false, serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
+                            port, serverSettingsFragment.hasEncryption(), serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(),
+                            serverSettingsFragment.getPassword());
                     long settingsId = serverQueries.getServerSettingsId(serverId);
                     SettingsQueries settingsQueries = new SettingsQueries(ServerSettingsActivity.this);
                     int loadTimeSpan = getResources().getIntArray(R.array.sync_period_values)[serverSettingsFragment.getChooseMsgLoadTimeIndex()];

@@ -43,7 +43,7 @@ public class DialogServerSettings extends DialogFragment{
     private String mServerTitle;
     private String mServer;
     private int mPort;
-    private boolean mEncryption; // TODO input for encryption - chooser?
+    private boolean mEncryption;
     private boolean mAuthentication;
     private String mUser;
     private String mPassword;
@@ -149,7 +149,7 @@ public class DialogServerSettings extends DialogFragment{
                 long settingsId = Integer.parseInt(uri.getLastPathSegment());
                 Log.i(TAG, uri.getPath());
                 ServerQueries serverQueries = new ServerQueries(getActivity());
-                uri = serverQueries.addServer(mServerTitle, mServer, mPort, false, mAuthentication, mUser, mPassword, settingsId); // TODO handle encrypted connections
+                uri = serverQueries.addServer(mServerTitle, mServer, mPort, mEncryption, mAuthentication, mUser, mPassword, settingsId);
                 Log.i(TAG, uri.getPath());
                 Toast.makeText(getActivity(), res.getString(R.string.success_adding_server), Toast.LENGTH_SHORT).show();
                 dismiss();

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import javax.net.ssl.SSLSocket;
+
 /**
  * <b>Project:</b> Newsreader for Android <br>
  * <b>Date:</b> 25.06.2015 <br>
@@ -93,5 +95,9 @@ public class CustomNNTPClient extends CustomNNTP {
 
     public boolean completePendingCommand() throws IOException {
         return NNTPReply.isPositiveCompletion(this.getReply());
+    }
+
+    public SSLSocket getSSLSocket() {
+        return (SSLSocket)super._socket_;
     }
 }

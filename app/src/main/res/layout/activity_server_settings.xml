@@ -61,6 +61,15 @@
             android:hint="@string/port_hint"/>
 
         <CheckBox
+            android:id="@+id/chk_ssl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#000000"
+            android:text="@string/ssl"/>
+
+        <CheckBox
             android:id="@+id/chk_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

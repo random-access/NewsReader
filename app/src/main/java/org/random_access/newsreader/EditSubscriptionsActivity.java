@@ -52,6 +52,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
     private long serverId;
     private String serverName;
     private int serverPort;
+    private boolean encryption;
     private boolean auth;
     private String user;
     private String password;
@@ -99,6 +100,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             serverName = cursor.getString(ServerQueries.COL_NAME);
             serverPort = cursor.getInt(ServerQueries.COL_PORT);
+            encryption = cursor.getInt(ServerQueries.COL_ENCRYPTION) == 1;
             auth = cursor.getInt(ServerQueries.COL_AUTH) == 1;
             user = cursor.getString(ServerQueries.COL_USER);
             password = cursor.getString(ServerQueries.COL_PASSWORD);
@@ -195,7 +197,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
               try {
                 getServerData();
                 NNTPConnector connector = new NNTPConnector(EditSubscriptionsActivity.this);
-                NNTPClient client = connector.connectToNewsServer(EditSubscriptionsActivity.this, serverName, serverPort, auth, user, password);
+                NNTPClient client = connector.connectToNewsServer(serverName, serverPort, encryption, auth, user, password);
                 NewsgroupInfo[] infos = client.listNewsgroups();
                 return getNewsgroupItems(infos);
               } catch (IOException | LoginException e) {
