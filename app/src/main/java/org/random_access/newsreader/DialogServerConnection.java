@@ -161,7 +161,7 @@ public class DialogServerConnection extends DialogFragment {
         protected String[] doInBackground(String... params) {
             servertitle = TextUtils.isEmpty(params[0]) ? params [1] : params [0]; // if blank, servertitle = server
             server = params[1];
-            int standardPort = ssl ? 563 : 119; // TODO global vars
+            int standardPort = params[3].equals("1") ? 563 : 119; // TODO global vars
             port = TextUtils.isEmpty(params[2]) ? standardPort : Integer.parseInt(params[2]);
             ssl = params[3].equals("1");
             withAuth = params[4].equals("1");
