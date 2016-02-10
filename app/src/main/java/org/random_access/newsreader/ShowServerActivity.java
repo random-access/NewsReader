@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,11 @@ import android.widget.Toast;
 import org.random_access.newsreader.adapter.ServerCursorAdapter;
 import org.random_access.newsreader.provider.contracts.ServerContract;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.security.AndroidMKeyStoreHandler;
+import org.random_access.newsreader.security.CryptUtils;
+import org.random_access.newsreader.security.IKeyStoreHandler;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
+import org.random_access.newsreader.security.LegacyKeyStoreHandler;
 import org.random_access.newsreader.sync.NNTPSyncDummyAccount;
 
 /**
@@ -61,6 +67,7 @@ public class ShowServerActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_server);
+
         ACCOUNT = NNTPSyncDummyAccount.createSyncAccount(this);
         PreferenceManager.setDefaultValues(getApplicationContext(), SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE, R.xml.preferences, false);
         SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
@@ -171,20 +178,6 @@ public class ShowServerActivity extends AppCompatActivity implements
     }
 
     private void setListActions () {
-       /* // TODO maybe remove this
-          mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mServerAdapter.getmCurrentDetailPosition() == -1) {
-                    mServerAdapter.setmCurrentDetailPosition(position);
-                } else if (mServerAdapter.getmCurrentDetailPosition() == position) {
-                    mServerAdapter.setmCurrentDetailPosition(-1);
-                } else {
-                    mServerAdapter.setmCurrentDetailPosition(position);
-                }
-                Log.d(TAG, "Set mCurrentDetailView to " + mServerAdapter.getmCurrentDetailPosition());
-            }
-        }); */
         mServerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

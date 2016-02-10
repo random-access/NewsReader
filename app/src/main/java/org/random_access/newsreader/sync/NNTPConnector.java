@@ -9,8 +9,11 @@ import org.apache.commons.net.nntp.NNTPClient;
 import org.random_access.newsreader.nntp.CustomNNTPClient;
 import org.random_access.newsreader.queries.DatabaseException;
 import org.random_access.newsreader.queries.ServerQueries;
+import org.random_access.newsreader.security.CryptUtils;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 
 import java.io.IOException;
+import java.security.Key;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
@@ -48,14 +51,15 @@ public class NNTPConnector {
      * @return NNTPClient object to communicate with
      * @throws IOException
      */
-    public NNTPClient connectToNewsServer(String server, int port, boolean ssl, boolean auth, String user, String password) throws IOException, LoginException {
+    public NNTPClient connectToNewsServer(String server, int port, boolean ssl, boolean auth, String user, String password) throws IOException, LoginException, KeyStoreHandlerException {
         if (ssl) {
             return connectUsingSSL(server, port, auth, user, password);
         }
         return connect(server, port, auth, user, password);
     }
 
-    private NNTPClient connect(String server, int port, boolean auth, String user, String password) throws IOException, LoginException {
+    private NNTPClient connect(String server, int port, boolean auth, String user, String password) throws IOException, LoginException, KeyStoreHandlerException {
+
         NNTPClient nntpClient = new NNTPClient();
 
         if (port == 0) {
@@ -67,7 +71,10 @@ public class NNTPConnector {
         if (!auth) {
             return nntpClient;
         }
-        boolean authOk = nntpClient.authenticate(user, password);
+
+        String plaintextPw = CryptUtils.getInstance().decrypt(password);
+
+        boolean authOk = nntpClient.authenticate(user, plaintextPw);
         if (authOk) {
             return nntpClient;
         } else {
@@ -83,7 +90,7 @@ public class NNTPConnector {
 
 
     private NNTPClient connectUsingSSL(String server, int port, boolean auth, String user, String password)
-            throws IOException, LoginException {
+            throws IOException, LoginException, KeyStoreHandlerException {
 
         SocketFactory sf = SSLSocketFactory.getDefault();
 
@@ -107,7 +114,10 @@ public class NNTPConnector {
         if (!auth) {
             return nntpClient;
         }
-        boolean authOk = nntpClient.authenticate(user, password);
+
+        String plaintextPw = CryptUtils.getInstance().decrypt(password);
+
+        boolean authOk = nntpClient.authenticate(user, plaintextPw);
         if (authOk) {
             Log.d(TAG, "SSL connection to "  + server + " on port " + port + " established ;)");
             Log.d(TAG, "Cipher suite: " + s.getCipherSuite() + ", Protocol: " + s.getProtocol());
@@ -124,7 +134,7 @@ public class NNTPConnector {
      * @return NNTPClient object to communicate with
      * @throws IOException
      */
-    public CustomNNTPClient connectToNewsServer(boolean ssl, long serverId, String charset) throws IOException, LoginException {
+    public CustomNNTPClient connectToNewsServer(boolean ssl, long serverId, String charset) throws IOException, LoginException, KeyStoreHandlerException {
         ServerQueries sQueries = new ServerQueries(context);
         Cursor c = sQueries.getServerWithId(serverId);
         if (!c.moveToFirst()){
@@ -147,7 +157,7 @@ public class NNTPConnector {
     }
 
     private CustomNNTPClient connect(String charset, String server, int port, boolean auth, String user, String password)
-            throws IOException, LoginException {
+            throws IOException, LoginException, KeyStoreHandlerException {
         CustomNNTPClient nntpClient = new CustomNNTPClient();
         if (charset != null) {
             nntpClient.setCustomEncoding(charset);
@@ -162,7 +172,10 @@ public class NNTPConnector {
         if (!auth) {
             return nntpClient;
         }
-        boolean authOk = nntpClient.authenticate(user, password);
+
+        String plaintextPw = CryptUtils.getInstance().decrypt(password);
+
+        boolean authOk = nntpClient.authenticate(user, plaintextPw);
         if (authOk) {
             return nntpClient;
         } else {
@@ -171,7 +184,7 @@ public class NNTPConnector {
     }
 
     private CustomNNTPClient connectUsingSSL(String charset, String server, int port, boolean auth, String user, String password)
-            throws IOException, LoginException {
+            throws IOException, LoginException, KeyStoreHandlerException {
 
         SocketFactory sf = SSLSocketFactory.getDefault();
 
@@ -197,7 +210,10 @@ public class NNTPConnector {
         if (!auth) {
             return nntpClient;
         }
-        boolean authOk = nntpClient.authenticate(user, password);
+
+        String plaintextPw = CryptUtils.getInstance().decrypt(password);
+
+        boolean authOk = nntpClient.authenticate(user, plaintextPw);
         if (authOk) {
             return nntpClient;
         } else {

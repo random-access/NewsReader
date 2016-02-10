@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.random_access.newsreader.security.CryptUtils;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.IOException;
@@ -133,13 +135,24 @@ public class DialogServerConnection extends DialogFragment {
         }
 
         private void handleDialogInput(String servertitle, String server, String port, String ssl, String withAuth, String user, String password) {
-            if (TextUtils.isEmpty(server)) {
-                mServerText.setError(res.getString(R.string.error_empty_field));
-                mServerText.requestFocus();
-                getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-            } else {
-               new ServerConnectTask().execute(servertitle, server, port, ssl, withAuth, user, password);
+            try {
+                String encryptedPw = "";
+                if (!TextUtils.isEmpty(password)) {
+                    encryptedPw = CryptUtils.getInstance().encrypt(password);
+                }
+                if (TextUtils.isEmpty(server)) {
+                    mServerText.setError(res.getString(R.string.error_empty_field));
+                    mServerText.requestFocus();
+                    getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
+                } else {
+                    new ServerConnectTask().execute(servertitle, server, port, ssl, withAuth, user, encryptedPw);
+                }
+            } catch (KeyStoreHandlerException e) {
+                mPasswordText.setError(res.getString(R.string.error_password_enc));
+                mPasswordText.requestFocus();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
             }
         }
     }
@@ -155,7 +168,7 @@ public class DialogServerConnection extends DialogFragment {
         private boolean ssl;
         private boolean withAuth;
         private String user;
-        private String password;
+        private String encPassword;
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -166,17 +179,19 @@ public class DialogServerConnection extends DialogFragment {
             ssl = params[3].equals("1");
             withAuth = params[4].equals("1");
             user = params[5];
-            password = params[6];
+            encPassword = params[6];
             message = "SERVERTITLE: " + servertitle + ", SERVER: " + server + ", PORT: " + port + ", SSL: " + ssl  +", AUTH: " + withAuth + ", USER: " + user +
-                    ", GOT PASSWORD: " + (!TextUtils.isEmpty(password));
+                    ", GOT PASSWORD: " + (!TextUtils.isEmpty(encPassword));
             if (NetworkStateHelper.isOnline(getActivity())) {
                 try {
                     NNTPConnector connector = new NNTPConnector(getActivity());
-                    connector.connectToNewsServer(server, port, ssl, withAuth, user, password);
+                    connector.connectToNewsServer(server, port, ssl, withAuth, user, encPassword);
                 } catch (IOException e) {
                     msg = res.getString(R.string.error_connection);
                 } catch (LoginException e) {
                     msg = res.getString(R.string.error_password);
+                } catch (KeyStoreHandlerException e) {
+                    msg = res.getString(R.string.error_password_dec);
                 }
             } else {
                 msg = res.getString(R.string.error_offline);
@@ -186,17 +201,17 @@ public class DialogServerConnection extends DialogFragment {
 
         @Override
         protected void onPostExecute(String[] args) {
-            if (TextUtils.isEmpty(msg)) {
-                Toast.makeText(getActivity(), res.getString(R.string.success_connect_server), Toast.LENGTH_SHORT).show();
-                dismiss();
-                DialogServerSettings serverSettingsFragment = DialogServerSettings.newInstance(servertitle, server, port, ssl, withAuth, user, password);
-                serverSettingsFragment.show(getFragmentManager(), DialogServerSettings.TAG_ADD_SETTINGS);
-            } else {
-                Log.e(TAG, "Error in ServerConnectTask: " + message);
-                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
-            }
+                if (TextUtils.isEmpty(msg)) {
+                    Toast.makeText(getActivity(), res.getString(R.string.success_connect_server), Toast.LENGTH_SHORT).show();
+                    dismiss();
+                    DialogServerSettings serverSettingsFragment = DialogServerSettings.newInstance(servertitle, server, port, ssl, withAuth, user, encPassword);
+                    serverSettingsFragment.show(getFragmentManager(), DialogServerSettings.TAG_ADD_SETTINGS);
+                } else {
+                    Log.e(TAG, "Error in ServerConnectTask: " + message);
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
+                }
         }
     }
 

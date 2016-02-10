@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.random_access.newsreader.security.CryptUtils;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>

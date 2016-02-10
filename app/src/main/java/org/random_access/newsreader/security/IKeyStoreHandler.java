@@ -25,7 +25,9 @@ public interface IKeyStoreHandler {
      * @return all key aliases
      *  @throws KeyStoreHandlerException wraps any kind of exception occurring here
      */
-    Enumeration<String> getKeyAliases() throws KeyStoreHandlerException ;
+    Enumeration<String> getKeyAliases() throws KeyStoreHandlerException;
+
+    boolean hasKeyWithAlias(String alias) throws KeyStoreHandlerException;
 
     /**
      * Returns the public key stored under the given alias

@@ -79,6 +79,15 @@ public class AndroidMKeyStoreHandler implements IKeyStoreHandler {
     }
 
     @Override
+    public boolean hasKeyWithAlias(String alias) throws KeyStoreHandlerException{
+        try {
+            return keyStore.containsAlias(alias);
+        } catch (Exception e) {
+            throw  new KeyStoreHandlerException(e.getMessage());
+        }
+    }
+
+    @Override
     public PublicKey getPublicKey(String alias) throws KeyStoreHandlerException {
         try {
             return keyStore.getCertificate(alias).getPublicKey();

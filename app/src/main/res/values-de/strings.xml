@@ -159,4 +159,6 @@
     <string name="server">Server</string>
     <string name="ssl">SSL / TLS</string>
     <string name="port_hint_ssl">Standard: 563</string>
+    <string name="error_password_enc">Fehler! Passwort konnte nicht verschlüsselt werden. Bitte versuche es nochmal.</string>
+    <string name="error_password_dec">Fehler! Passwort konnte nicht entschlüsselt werden.</string>
 </resources>

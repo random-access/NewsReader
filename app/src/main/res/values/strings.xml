@@ -189,5 +189,7 @@
     <string name="img_edit_subscriptions">Edit subscriptions</string>
     <string name="server">Server</string>
     <string name="ssl">SSL / TLS</string>
+    <string name="error_password_enc">Error! Password could not be encrypted. Please try again.</string>
+    <string name="error_password_dec">Error! Password could not be decrypted.</string>
 
 </resources>

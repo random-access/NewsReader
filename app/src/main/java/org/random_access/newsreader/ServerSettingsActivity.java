@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.random_access.newsreader.security.CryptUtils;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.IOException;
@@ -237,13 +239,17 @@ public class ServerSettingsActivity extends AppCompatActivity {
             if (NetworkStateHelper.isOnline(ServerSettingsActivity.this)) {
                 try {
                     int port = Integer.parseInt(TextUtils.isEmpty(serverSettingsFragment.getServerPort()) ? "119" : serverSettingsFragment.getServerPort());// TODO handle standard ports
+
+                    String encryptedPw = CryptUtils.getInstance().encrypt(serverSettingsFragment.getPassword());
+
                     NNTPConnector connector = new NNTPConnector(ServerSettingsActivity.this);
                     connector.connectToNewsServer(serverSettingsFragment.getServerName(), port, serverSettingsFragment.hasEncryption(),
-                            serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), serverSettingsFragment.getPassword());
+                            serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(), encryptedPw);
+
                     ServerQueries serverQueries = new ServerQueries(ServerSettingsActivity.this);
                     serverQueries.modifyServer(serverId, serverSettingsFragment.getServerTitle(), serverSettingsFragment.getServerName(),
                             port, serverSettingsFragment.hasEncryption(), serverSettingsFragment.isAuth(), serverSettingsFragment.getUserName(),
-                            serverSettingsFragment.getPassword());
+                            encryptedPw);
                     long settingsId = serverQueries.getServerSettingsId(serverId);
                     SettingsQueries settingsQueries = new SettingsQueries(ServerSettingsActivity.this);
                     int loadTimeSpan = getResources().getIntArray(R.array.sync_period_values)[serverSettingsFragment.getChooseMsgLoadTimeIndex()];
@@ -253,6 +259,8 @@ public class ServerSettingsActivity extends AppCompatActivity {
                     msg = getResources().getString(R.string.error_connection);
                 } catch (LoginException e) {
                     msg = getResources().getString(R.string.error_password);
+                } catch (KeyStoreHandlerException e) {
+                    msg = getResources().getString(R.string.error_password_enc);
                 }
             } else {
                 msg = getResources().getString(R.string.error_offline);

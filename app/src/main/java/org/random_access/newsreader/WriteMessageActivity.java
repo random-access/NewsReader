@@ -23,10 +23,12 @@ import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.security.Key;
 import java.util.zip.DataFormatException;
 
 import javax.security.auth.login.LoginException;
@@ -150,7 +152,7 @@ public class WriteMessageActivity extends AppCompatActivity {
                 } else {
                     throw new DataFormatException("no server data found");
                 }
-            } catch (IOException | LoginException | DataFormatException e) {
+            } catch (IOException | LoginException | DataFormatException | KeyStoreHandlerException e) {
                 exception = e;
                 Log.e(TAG, e.getMessage());
             }

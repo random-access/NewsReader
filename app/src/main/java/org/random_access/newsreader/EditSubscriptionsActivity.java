@@ -23,6 +23,7 @@ import org.random_access.newsreader.adapter.SubscriptionListAdapter;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.queries.SettingsQueries;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 import org.random_access.newsreader.sync.NNTPConnector;
 
 import java.io.IOException;
@@ -200,7 +201,7 @@ public class EditSubscriptionsActivity extends AppCompatActivity {
                 NNTPClient client = connector.connectToNewsServer(serverName, serverPort, encryption, auth, user, password);
                 NewsgroupInfo[] infos = client.listNewsgroups();
                 return getNewsgroupItems(infos);
-              } catch (IOException | LoginException e) {
+              } catch (IOException | LoginException |KeyStoreHandlerException e) {
                   e.printStackTrace();  // TODO handle exceptions
               }
             return new ArrayList<>();

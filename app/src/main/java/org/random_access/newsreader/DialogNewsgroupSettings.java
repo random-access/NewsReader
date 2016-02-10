@@ -13,6 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.random_access.newsreader.queries.NewsgroupQueries;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 
 /**
  * <b>Project:</b> Newsreader for Android <br>
@@ -48,7 +49,7 @@ public class DialogNewsgroupSettings extends DialogFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 for (int i = 0; i < checkedId; i++) {
-                    if (((RadioButton)rgMsgKeep.findViewById(i)).isChecked()) {
+                    if (((RadioButton) rgMsgKeep.findViewById(i)).isChecked()) {
                         rgMsgKeep.check(checkedId);
                     }
                     rgMsgKeep.findViewById(i).setEnabled(false);
@@ -118,7 +119,5 @@ public class DialogNewsgroupSettings extends DialogFragment {
         queries.setMsgLoadDays(newsgroupId, findValueOfIndex(rgMsgLoad.getCheckedRadioButtonId()));
 
     }
-
-
     // TODO check selection: saveValues must be >= loadValues
 }

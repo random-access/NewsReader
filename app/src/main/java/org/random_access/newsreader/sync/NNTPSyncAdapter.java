@@ -37,6 +37,7 @@ import org.random_access.newsreader.queries.MessageQueries;
 import org.random_access.newsreader.queries.NewsgroupQueries;
 import org.random_access.newsreader.queries.ServerQueries;
 import org.random_access.newsreader.receivers.NotificationDismissReceiver;
+import org.random_access.newsreader.security.KeyStoreHandlerException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -139,7 +140,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
                                 c.getInt(ServerQueries.COL_ENCRYPTION) == 1, c.getInt(ServerQueries.COL_AUTH) == 1, c.getString(ServerQueries.COL_USER),
                                 c.getString(ServerQueries.COL_PASSWORD));
                         freshMessages += new MessageQueries(context).getFreshMessagesOnServerCount(c.getLong(ServerQueries.COL_ID));
-                    } catch (IOException | LoginException e) {
+                    } catch (IOException | LoginException | KeyStoreHandlerException e) {
                         e.printStackTrace();
                     } finally {
                         // if we get interrupted during syncing a newsgroup, store date of last message that was fetched in order
@@ -163,7 +164,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getNewNewsForServer(long serverId, String server, int port, boolean ssl, boolean auth, String user, String password) throws IOException, LoginException {
+    private void getNewNewsForServer(long serverId, String server, int port, boolean ssl, boolean auth, String user, String password) throws IOException, LoginException, KeyStoreHandlerException {
         NewsgroupQueries newsgroupQueries = new NewsgroupQueries(context);
 
         NNTPConnector nntpConnector = new NNTPConnector(context);
@@ -282,7 +283,7 @@ public class NNTPSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch(LoginException e) {
             Log.e(TAG, "Error during fetchMessage - login failed");
             throw new LoginException();
-        } catch(NNTPParsingException e) {
+        } catch(NNTPParsingException | KeyStoreHandlerException e) {
             ACRA.getErrorReporter().handleException(e);
         }
         if (msgDate != -1 && messageBody != null) {
